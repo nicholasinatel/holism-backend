@@ -12,7 +12,7 @@ let app = {} // server receiver
 
 
 // Test Suite
-describe.only('Test Suite IMPORT Mechanism', function () {
+describe('Test Suite IMPORT Mechanism', function () {
     this.beforeAll(async () => {
         app = await api
     })

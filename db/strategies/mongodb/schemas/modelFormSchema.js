@@ -9,11 +9,13 @@ const modelFormSchema = new Mongoose.Schema({
     },
     step_forward: [{
         type: Mongoose.Schema.Types.ObjectId,
-        ref: 'modelForm'
+        ref: 'modelForm',
+        required: true
     }],
     step_backward: [{
         type: Mongoose.Schema.Types.ObjectId,
-        ref: 'modelForm'
+        ref: 'modelForm',
+        required: true
     }],
     flow: { // Father Flow
         type: Mongoose.Schema.Types.ObjectId,
@@ -68,10 +70,12 @@ const modelFormSchema = new Mongoose.Schema({
         _uniqueId: Number // From Form Builder
     }],
     permission: { // users & personas QUEM PODE RESPONDER!
-        type: Array
+        type: Array,
+        required: true
     },
     secret: { // Info Sensivel - Soh quem tem Admin OU Preencheu o Form
-        type: Boolean
+        type: Boolean,
+        required: true
     },
     creator: {
         type: Mongoose.Schema.Types.ObjectId,

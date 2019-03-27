@@ -2,25 +2,7 @@ const Mongoose = require('mongoose')
 const options = {
   timestamps: true
 }
-/*
-PROFESSOR
-EDITOR
-ROTEIRISTA
-CURADOR (GP) (INTERNA)
-CORPO JURIDICO (INTERNA)
-ALUNO BETA
-AGENCIA DE MARKETING
-PRODUTORA
-LOCACAO
-REVISOR
-REDATOR
-PESQUISADOR
-ANIMADOR
-EDITORES DAGORA
-ALUNO
-TUTORES (ALUNO??)
-INFLUENCIADORES
-*/
+
 const modelFlowSchema = new Mongoose.Schema({
   title: {
     type: String,
@@ -53,3 +35,22 @@ const modelFlowSchema = new Mongoose.Schema({
 }, options)
 
 module.exports = Mongoose.model('modelFlow', modelFlowSchema)
+/*
+PROFESSOR
+EDITOR
+ROTEIRISTA
+CURADOR (GP) (INTERNA)
+CORPO JURIDICO (INTERNA)
+ALUNO BETA
+AGENCIA DE MARKETING
+PRODUTORA
+LOCACAO
+REVISOR
+REDATOR
+PESQUISADOR
+ANIMADOR
+EDITORES DAGORA
+ALUNO
+TUTORES (ALUNO??)
+INFLUENCIADORES
+*/

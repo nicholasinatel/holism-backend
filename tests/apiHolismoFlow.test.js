@@ -22,7 +22,7 @@ var _ID2Del = ''
 // DB Variables
 const MOCK_FLOW_1 = {
     title: 'Flow de Marketing',
-    permission_read: 3,
+    permission_read: ['nicholas', 'gui123', 'fifi24'],
     permission_write: ['nicholas', 'gui123', 'fifi24'],
     completed: false,
     starter_form: '111177777cececef5f511111',
@@ -31,7 +31,7 @@ const MOCK_FLOW_1 = {
 }
 const MOCK_FLOW_2 = {
     title: 'Flow de Curso online',
-    permission_read: 2,
+    permission_read: ['nicholas', 'gui123', 'fifi24'],
     permission_write: ['nicholas', 'gui123', 'fifi24'],
     completed: false,
     starter_form: '111177777cececef5f511111',
@@ -40,7 +40,7 @@ const MOCK_FLOW_2 = {
 }
 const MOCK_FLOW_3 = {
     title: 'Flow Updated',
-    permission_read: 1,
+    permission_read: ['nicholas', 'gui123', 'fifi24'],
     permission_write: ['admin', 'gui123', 'fifi24', 'nicholas'],
     completed: true,
     starter_form: 'faca77777cacacaf5f511111',
@@ -49,7 +49,7 @@ const MOCK_FLOW_3 = {
 }
 const MOCK_FLOW_4 = {
     title: 'Flow To Delete Test',
-    permission_read: 1,
+    permission_read: ['nicholas', 'gui123', 'fifi24'],
     permission_write: ['admin', 'gui123', 'fifi24', 'nicholas'],
     completed: true,
     starter_form: 'faca77777cacacaf5f511111',

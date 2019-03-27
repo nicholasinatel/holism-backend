@@ -1,3 +1,6 @@
+// Este Codigo Nao Era Necessario
+// Promises e Funcoes Assincronas Somente sao necessarios quando ha tempo de execucao nas tasks
+
 const {
     promisify
 } = require('util')
