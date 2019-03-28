@@ -96,10 +96,11 @@ class ImportRoutes extends BaseRoute {
                             title: dados_starter_form.title,
                             step_forward: dados_starter_form.step_forward,
                             step_backward: dados_starter_form.step_backward,
-                            flow: new_flow._id, //!!!
+                            flow: new_flow._id, //
                             data: dados_starter_form.data,
                             permission: dados_starter_form.permission,
-                            secret: dados_starter_form.secret
+                            secret: dados_starter_form.secret,
+                            creator: dados_starter_form.creator
                         }
                         // Create New Starter_Form
                         let new_form = await this.dbForm.create(starter_form)
@@ -123,10 +124,11 @@ class ImportRoutes extends BaseRoute {
                                 title: dados_nu_form.title,
                                 step_forward: dados_nu_form.step_forward,
                                 step_backward: stepBid, // Atualiza Agora
-                                flow: new_flow._id, //!!!
+                                flow: new_flow._id, //
                                 data: dados_nu_form.data,
                                 permission: dados_nu_form.permission,
-                                secret: dados_nu_form.secret
+                                secret: dados_nu_form.secret,
+                                creator: dados_nu_form.creator
                             }
 
                             // Create New Form

@@ -1,0 +1,60 @@
+{
+    "step_forward": "5c9cc7b7844f0740ece9bfbf",
+    "step_backward": ["000000000000000000000000"],
+    "permission": ["admin", "gui123", "fifi24"],
+    "title": "From Entrada De Dados_Mocha",
+    "flow": "5c9bee59a95c5e1becf455e9",
+    "data": [{
+        "sections": [{
+            "instances": ["test"],
+            "rows": [{
+                "controls": [{
+                    "dataOptions": ["test"],
+                    "_id": "5c9bee59a95c5e1becf455ee",
+                    "componentType": "text",
+                    "name": "control_text_701290",
+                    "fieldName": "control_text_701290",
+                    "label": "Nome",
+                    "order": 0,
+                    "defaultValue": "test",
+                    "value": "test",
+                    "className": "col-md-6",
+                    "readonly": false,
+                    "labelBold": true,
+                    "labelItalic": false,
+                    "labelUnderline": false,
+                    "required": true,
+                    "isMultiLine": false,
+                    "isInteger": false,
+                    "decimalPlace": 0,
+                    "isTodayValue": false,
+                    "dateFormat": "dd/mm/yy",
+                    "isNowTimeValue": false,
+                    "timeFormat": "HH:mm",
+                    "isMultiple": false,
+                    "isAjax": false,
+                    "ajaxDataUrl": "test",
+                    "isChecked": false
+                }],
+                "_id": "5c9bee59a95c5e1becf455ed",
+                "name": "section_188114_row_82107",
+                "label": "test",
+                "order": 0
+            }],
+            "_id": "5c9bee59a95c5e1becf455ec",
+            "name": "section_188114",
+            "label": "Seção 1",
+            "clientKey": "section_188114",
+            "order": 0,
+            "labelPosition": "top",
+            "isDynamic": false,
+            "minInstance": 1,
+            "maxInstance": 0
+        }],
+        "_id": "5c9bee59a95c5e1becf455eb",
+        "layout": "tab",
+        "_uniqueId": 0.8719504664016076
+    }],
+    "secret": false,
+    "creator": "5c87cf4d476979169420f965"
+}

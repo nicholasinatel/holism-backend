@@ -17,7 +17,8 @@ var global = {
     projectID: 0,
     flowID: 0,
     form1ID: 0,
-    form2ID: 0
+    form2ID: 0,
+    responseID: 0
 }
 // Query Variables
 mode = {
@@ -29,7 +30,6 @@ mode = {
 
 // Test Suite
 describe.only('Test Suite Starting Application', function () {
-    // this.timeout(5000)
     this.beforeAll(async () => {
         app = await api
 
@@ -46,8 +46,6 @@ describe.only('Test Suite Starting Application', function () {
         const response = await FUNC.project(MOCK, mode, global, app, headers)
         global = response.global
         const status = response.statusCode
-        console.log("global: ", global)
-        console.log("status: ", status)
         assert.deepEqual(status, 200)
     })
 
@@ -55,22 +53,43 @@ describe.only('Test Suite Starting Application', function () {
         const response = await FUNC.flow(MOCK, mode, global, app, headers)
         global = response.global
         const status = response.statusCode
-        console.log("global: ", global)
-        console.log("status: ", status)
         assert.deepEqual(status, 200)
     })
 
-    it('Create Form With UserID AND ProjectID AND FlowID and Update FlowFather', async function () {
+    it('Create Form With UserID AND FlowID and Update FlowFather', async function () {
         const response = await FUNC.form1(MOCK, mode, global, app, headers)
         global = response.global
         const status = {
             form: response.statusObject.form,
             flow: response.statusObject.flow
         }
-        console.log("global: ", global)
-        console.log("status: ", status)
         assert.deepEqual(status.form, 200)
         assert.deepEqual(status.flow, 200)
     })
 
+    it('Create Form #2 With UserID AND FlowID and Update previous Form', async function(){
+        const response = await FUNC.form2(MOCK, mode, global, app, headers)
+        global = response.global
+        const status = {
+            formCreate: response.statusObject.formCreate,
+            formUpdate: response.statusObject.formUpdate
+        }
+        
+        assert.deepEqual(status.formCreate, 200)
+        assert.deepEqual(status.formUpdate, 200)
+    })
+
+    it('Create Response With UserID AND FormID', async function(){
+        const response = await FUNC.response(MOCK,mode,global, app, headers)
+        global = response.global
+        const status = response.statusCode
+        assert.deepEqual(status, 200)
+    })
+
+    it('Make Import Duplicating Flow And Forms', async function(){
+        const response = await FUNC.import(MOCK, mode, global, app, headers)
+        // global = response.global
+        // const status = response.statusCode
+        assert.deepEqual(response, 200)
+    })
 })
