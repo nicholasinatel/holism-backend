@@ -80,7 +80,7 @@ async function main() {
 
     const swaggerOptions = {
         info: {
-            title: 'API Holismo - #Dagora MVP',
+            title: 'API Holismo - #Dagora - MVP',
             version: 'v1.0'
         },
         lang: 'pt'
