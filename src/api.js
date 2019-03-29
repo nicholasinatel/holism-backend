@@ -57,7 +57,6 @@ const app = new Hapi.Server({
     routes: {
         cors: true
     }
-    // address: 172.31.5.155
 })
 
 // Mapeamento de Rotas
@@ -81,7 +80,7 @@ async function main() {
 
     const swaggerOptions = {
         info: {
-            title: 'API Holismo - #Dagora',
+            title: 'API Holismo - #Dagora MVP',
             version: 'v1.0'
         },
         lang: 'pt'

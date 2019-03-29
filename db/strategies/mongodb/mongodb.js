@@ -15,7 +15,6 @@ const dbOption = {
 const database = dbOption.local
 
 // Classes concretas que implementam as funcoes de fato
-// Teste
 class MongoDB extends ICrud {
     constructor(connection, schema) {
         super()
