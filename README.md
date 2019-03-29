@@ -34,9 +34,9 @@ npm run prod
 ## Deploy Automático
 Para fazer o deploy automático, utilizar o script deploy.sh localizado na pasta scripts conforme indicado abaixo
 
-1 - Copiar Somente o script deploy.sh e a chave encriptada para um mesmo diretorio dentro do servidor (AWS ou qualquer outro contanto que utilize uma versão estável do Ubuntu).
-2 - Instalar Node, Forever e MongoDb.
-3 - Ter uma instancia do MongoDb rodando e copiar as informações para os arquivos necessários.
+1 - Copiar Somente o script **deploy.sh** e a **chave encriptada** para um mesmo diretório dentro do servidor (AWS ou qualquer outro contanto que utilize uma versão estável do Ubuntu).
+2 - Instalar Node, Forever e MongoDb..
+3 - Ter uma instância do MongoDb rodando e copiar as informações para os arquivos necessários.
 2 - executar ```sh deploy.sh```
 
 ## Utilizando a API
