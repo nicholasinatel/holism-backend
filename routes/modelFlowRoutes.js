@@ -64,8 +64,6 @@ class FlowRoutes extends BaseRoute {
                         username
                     } = request.query
                     
-                    console.log("username: ", username)
-
                     const query = await QueryHelper.queryFlowSelecter(search, mode)
 
                     if (mode == 3) {
@@ -184,7 +182,8 @@ class FlowRoutes extends BaseRoute {
                 validate: {
                     headers,
                     params: {
-                        id: Joi.string().required().min(24).max(24)
+                        id: Joi.string().required().min(24).max(24),
+                        username: Joi.string().required()
                     },
                     payload: {
                         title: Joi.string().required().min(3).max(100).default("flow teste_update"),
@@ -200,13 +199,22 @@ class FlowRoutes extends BaseRoute {
             handler: async (request) => {
                 try {
                     const {
-                        id
+                        id,
+                        username
                     } = request.params
 
                     const {
                         payload
                     } = request
 
+                    const query = request.params
+
+                    // const query = {
+                    //     id,
+                    //     username
+                    // }
+
+                    console.log("query: ", query)
                     // TimeStamp Get
                     // const now = await DateHandler.DateGetter()
 
@@ -218,7 +226,9 @@ class FlowRoutes extends BaseRoute {
                     // } // Object Assignment in ECMAScript 2018 https://stackoverflow.com/questions/171251/how-can-i-merge-properties-of-two-javascript-objects-dynamically
 
                     const dados = JSON.parse(dadosString)
-                    const result = await this.db.update(id, dados)
+                    // const result = await this.db.update(id, dados)
+                    // const result = await this.db.updateWithPermission(query, dados)
+
                     if (result.nModified !== 1) return Boom.preconditionFailed('ID não encontrado ou arquivo sem modificações')
 
                     return {

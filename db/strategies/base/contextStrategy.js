@@ -25,6 +25,9 @@ class ContextStrategy extends ICrud {
     update(id, item, upsert = false) {
         return this._database.update(id, item, upsert)
     }
+    updateWithPermission(query, item,upsert = false){
+        return this._database.update(query, item, upsert)
+    }
     delete(id) {
         return this._database.delete(id)
     }

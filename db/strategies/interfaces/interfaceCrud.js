@@ -21,11 +21,11 @@ class ICrud {
         throw new NotImplementedException()
     }
 
-    readPermission(item, skip, limit, username) {
+    readPermission(query, skip, limit) {
         throw new NotImplementedException()
     }
 
-    update(id, item) {
+    update(id, item, username) {
         throw new NotImplementedException()
     }
 

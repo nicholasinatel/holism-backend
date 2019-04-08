@@ -60,7 +60,19 @@ class MongoDB extends ICrud {
         }, {
             $set: item
         })
+        // return this._schema.updateOne({
+        //     _id: id
+        // }, {
+        //     $set: item
+        // })
     }
+    updateWithPermission(query, skip, limit) {
+
+        return this._schema.updateOne(query, {
+            $set: item
+        })
+    }
+
 
     read(item, skip, limit) {
         return this._schema.find(item).skip(skip).limit(limit)
