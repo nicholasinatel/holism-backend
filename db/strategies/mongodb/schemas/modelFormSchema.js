@@ -55,7 +55,7 @@ const modelFormSchema = new Mongoose.Schema({
                     timeFormat: String,
                     isMultiple: Boolean,
                     isAjax: Boolean,
-                    dataOptions: [String], // Check Later if it is a Real String
+                    dataOptions: [Mongoose.Schema.Types.Mixed], // Check Later if it is a Real String
                     ajaxDataUrl: String,
                     isChecked: Boolean
                 }]

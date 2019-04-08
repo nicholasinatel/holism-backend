@@ -51,7 +51,10 @@ const CREATE_DEFAULT = {
                     "timeFormat": "HH:mm",
                     "isMultiple": false,
                     "isAjax": false,
-                    "dataOptions": ["test"],
+                    "dataOptions": [{
+                        "id": 4321,
+                        "text": 1
+                    }],
                     "ajaxDataUrl": "test",
                     "isChecked": false
                 }]
