@@ -1,0 +1,372 @@
+response:  Query {
+    _mongooseOptions: { populate: { creator: [Object
+            ]
+        }
+    },
+    _transforms: [],
+    _hooks: Kareem { _pres: Map {}, _posts: Map {}
+    },
+    _executionCount: 0,
+    mongooseCollection:
+     NativeCollection {
+       collection: Collection { s: [Object
+            ]
+        },
+       opts: { bufferCommands: true,
+          capped: false,
+          '$wasForceClosed': undefined
+        },
+       name: 'modelflows',
+       collectionName: 'modelflows',
+       conn:
+        NativeConnection {
+          base: [Object
+            ],
+          collections: [Object
+            ],
+          models: [Object
+            ],
+          config: [Object
+            ],
+          replica: false,
+          options: null,
+          otherDbs: [],
+          relatedDbs: {},
+          states: [Object
+            ],
+          _readyState: 1,
+          _closeCalled: false,
+          _hasOpened: true,
+          '$internalEmitter': [Object
+            ],
+          _listening: false,
+          _connectionOptions: [Object
+            ],
+          name: 'herois',
+          host: '192.168.99.100',
+          port: 27017,
+          user: 'nicholas',
+          pass: '123456',
+          client: [Object
+            ],
+          '$initialConnection': [Object
+            ],
+          _events: {},
+          _eventsCount: 0,
+          db: [Object
+            ]
+        },
+       queue: [],
+       buffer: false,
+       emitter:
+        EventEmitter {
+          domain: null,
+          _events: {},
+          _eventsCount: 0,
+          _maxListeners: undefined
+        }
+    },
+    model: {
+        [Function: model
+        ]
+       hooks: Kareem { _pres: [Object
+            ], _posts: [Object
+            ]
+        },
+       base:
+        Mongoose {
+          connections: [Array
+            ],
+          models: [Object
+            ],
+          modelSchemas: [Object
+            ],
+          options: [Object
+            ],
+          _pluralize: [Function: pluralize
+            ],
+          Schema: [Object
+            ],
+          model: [Function
+            ],
+          plugins: [Array
+            ]
+        },
+       modelName: 'modelFlow',
+       model: [Function: model
+        ],
+       db:
+        NativeConnection {
+          base: [Object
+            ],
+          collections: [Object
+            ],
+          models: [Object
+            ],
+          config: [Object
+            ],
+          replica: false,
+          options: null,
+          otherDbs: [],
+          relatedDbs: {},
+          states: [Object
+            ],
+          _readyState: 1,
+          _closeCalled: false,
+          _hasOpened: true,
+          '$internalEmitter': [Object
+            ],
+          _listening: false,
+          _connectionOptions: [Object
+            ],
+          name: 'herois',
+          host: '192.168.99.100',
+          port: 27017,
+          user: 'nicholas',
+          pass: '123456',
+          client: [Object
+            ],
+          '$initialConnection': [Object
+            ],
+          _events: {},
+          _eventsCount: 0,
+          db: [Object
+            ]
+        },
+       discriminators: undefined,
+       events:
+        EventEmitter {
+          domain: null,
+          _events: {},
+          _eventsCount: 0,
+          _maxListeners: undefined
+        },
+       '$appliedMethods': true,
+       '$appliedHooks': true,
+       _middleware: Kareem { _pres: [Object
+            ], _posts: [Object
+            ]
+        },
+       schema:
+        Schema {
+          obj: [Object
+            ],
+          paths: [Object
+            ],
+          aliases: {},
+          subpaths: {},
+          virtuals: [Object
+            ],
+          singleNestedPaths: {},
+          nested: {},
+          inherits: {},
+          callQueue: [],
+          _indexes: [],
+          methods: [Object
+            ],
+          methodOptions: {},
+          statics: {},
+          tree: [Object
+            ],
+          query: {},
+          childSchemas: [],
+          plugins: [Array
+            ],
+          '$id': 2,
+          s: [Object
+            ],
+          _userProvidedOptions: [Object
+            ],
+          options: [Object
+            ],
+          '$timestamps': [Object
+            ],
+          '$globalPluginsApplied': true
+        },
+       collection:
+        NativeCollection {
+          collection: [Object
+            ],
+          opts: [Object
+            ],
+          name: 'modelflows',
+          collectionName: 'modelflows',
+          conn: [Object
+            ],
+          queue: [],
+          buffer: false,
+          emitter: [Object
+            ]
+        },
+       Query: {
+            [Function
+            ] base: [Object
+            ]
+        },
+       '$__insertMany': [Function
+        ],
+       '$init': Promise {
+            [Circular
+            ]
+        },
+       '$caught': true,
+        [Symbol(mongoose#Model)
+        ]: true
+    },
+    schema:
+     Schema {
+       obj: { title: [Object
+            ],
+          permission_read: [Object
+            ],
+          permission_write: [Object
+            ],
+          completed: [Object
+            ],
+          starter_form: [Object
+            ],
+          creator: [Object
+            ],
+          project: [Object
+            ]
+        },
+       paths: { title: [Object
+            ],
+          permission_read: [Object
+            ],
+          permission_write: [Object
+            ],
+          completed: [Object
+            ],
+          starter_form: [Object
+            ],
+          creator: [Object
+            ],
+          project: [Object
+            ],
+          _id: [Object
+            ],
+          updatedAt: [Object
+            ],
+          createdAt: [Object
+            ],
+          __v: [Object
+            ]
+        },
+       aliases: {},
+       subpaths: {},
+       virtuals: { id: [Object
+            ]
+        },
+       singleNestedPaths: {},
+       nested: {},
+       inherits: {},
+       callQueue: [],
+       _indexes: [],
+       methods: { initializeTimestamps: [Function
+            ]
+        },
+       methodOptions: {},
+       statics: {},
+       tree: { title: [Object
+            ],
+          permission_read: [Object
+            ],
+          permission_write: [Object
+            ],
+          completed: [Object
+            ],
+          starter_form: [Object
+            ],
+          creator: [Object
+            ],
+          project: [Object
+            ],
+          _id: [Object
+            ],
+          updatedAt: [Function: Date
+            ],
+          createdAt: [Function: Date
+            ],
+          __v: [Function: Number
+            ],
+          id: [Object
+            ]
+        },
+       query: {},
+       childSchemas: [],
+       plugins: [
+            [Object
+            ],
+            [Object
+            ],
+            [Object
+            ],
+            [Object
+            ],
+            [Object
+            ]
+        ],
+       '$id': 2,
+       s: { hooks: [Object
+            ]
+        },
+       _userProvidedOptions: { timestamps: true
+        },
+       options: { timestamps: true,
+          typeKey: 'type',
+          id: true,
+          noVirtualId: false,
+          _id: true,
+          noId: false,
+          validateBeforeSave: true,
+          read: null,
+          shardKey: null,
+          autoIndex: null,
+          minimize: true,
+          discriminatorKey: '__t',
+          versionKey: '__v',
+          capped: false,
+          bufferCommands: true,
+          strict: true,
+          pluralization: true
+        },
+       '$timestamps': { createdAt: 'createdAt', updatedAt: 'updatedAt'
+        },
+       '$globalPluginsApplied': true
+    },
+    op: 'find',
+    options: {},
+    _conditions: { '$and': [
+            [Object
+            ],
+            [Object
+            ]
+        ]
+    },
+    _fields: undefined,
+    _update: undefined,
+    _path: undefined,
+    _distinct: undefined,
+    _collection:
+     NodeCollection {
+       collection:
+        NativeCollection {
+          collection: [Object
+            ],
+          opts: [Object
+            ],
+          name: 'modelflows',
+          collectionName: 'modelflows',
+          conn: [Object
+            ],
+          queue: [],
+          buffer: false,
+          emitter: [Object
+            ]
+        },
+       collectionName: 'modelflows'
+    },
+    _traceFunction: undefined,
+    '$useProjection': true
+}

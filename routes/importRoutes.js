@@ -28,7 +28,7 @@ class ImportRoutes extends BaseRoute {
                 STEP_FORWARDS dos FORMS precisa estar correto <br>\
                 I.E um linkado no outro sem erros <br>\
                 ULTIMO STEP_FORWARD PRECISA SER ffffffffffffffffffffffff <br>\
-                SE NAO FOR VAI DAR PROBLEMA e.g LOOP INFINITO NO SERVER!!!!<br>\
+                SE NÃO FOR! VAI DAR PROBLEMA! e.g LOOP INFINITO NO SERVER!!!!<br>\
                 ...',
                 validate: {
                     failAction,

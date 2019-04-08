@@ -29,14 +29,16 @@ class AuthRoutes extends BaseRoute {
             method: 'GET',
             config: {
                 tags: ['api'],
-                description: 'Deve listar Users',
+                description: 'Deve listar Usuários',
                 notes: 'Query com 4 Parametros,<br> \
                 >>><br> \
                 #mode = 0 se for realizar query para achar tudo na collection, campo search em branco <br> \
-                #mode = 1 para query por username, colocar no campo search <br> \
-                #mode = 2 para query por role, colocar role no campo search <br> \
-                #mode = 3 para query por _id, colocar _ID no campo search <br> \
-                >>><br> \
+                #mode = 1 para query por <b>username</b>, colocar no campo search <br> \
+                #mode = 2 para query por <b>role</b>, colocar role no campo search <br> \
+                #mode = 3 para query por <b>_id</b>, colocar _ID no campo search <br> \
+                >>> <br>\
+                Em Caso de Erro Retorna: \
+                User List Route Server Internal Error: "codigo_do_erro" <br> \
                 ',
                 validate: {
                     headers,
@@ -88,7 +90,7 @@ class AuthRoutes extends BaseRoute {
                 auth: false, //Somente essa rota nao passa pela autenticacao para poder obter o token
                 tags: ['api'],
                 description: 'Fazer login',
-                notes: 'retorna o token',
+                notes: 'Retorna token de autenticação',
                 validate: {
                     failAction,
                     payload: {
@@ -139,7 +141,7 @@ class AuthRoutes extends BaseRoute {
                 auth: false, //rota nao passa pela autenticacao para poder obter o token
                 tags: ['api'],
                 description: 'Registrar Usuario',
-                notes: 'Retorna Usuario Criado ou Nao',
+                notes: 'Retorna Usuário Criado ou Não',
                 validate: {
                     failAction,
                     payload: {

@@ -55,15 +55,42 @@ class MongoDB extends ICrud {
     }
 
     update(id, item) {
-        return this._schema.updateOne({_id: id}, {$set: item})
+        return this._schema.updateOne({
+            _id: id
+        }, {
+            $set: item
+        })
     }
 
     read(item, skip, limit) {
         return this._schema.find(item).skip(skip).limit(limit)
     }
 
-    joinRead(item, join) {
-        return this._schema.find(item).populate(join)
+    readPermission(item, skip, limit, username) {
+        console.log('item: ', item)
+        console.log('username: ', username)
+
+        return this._schema.find({
+            $and: [item,
+                {
+                    permission_read: username
+                }
+            ]
+        }).skip(skip).limit(limit)
+    }
+
+    joinRead(item, join, username) {
+        // console.log('item: ', item)
+        // console.log('username: ', username)
+        // console.log('join: ', join)
+        return this._schema.find({
+            $and: [item,
+                {
+                    permission_read: username
+                }
+            ]
+        }).populate(join, '-password')
+        // https://stackoverflow.com/questions/12096262/how-to-protect-the-password-field-in-mongoose-mongodb-so-it-wont-return-in-a-qu
     }
 
     fieldRead(item, skip, limit, select) {

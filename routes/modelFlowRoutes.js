@@ -29,7 +29,12 @@ class FlowRoutes extends BaseRoute {
             config: {
                 tags: ['api'],
                 description: 'Deve listar Flows na Collection, por ID || title || retorna todos',
-                notes: 'Query com 4 Parametros,<br> \
+                notes: 'Query com 5 Parâmetros,<br> \
+                skip = Paginação <br> \
+                limit = Limita objetos na resposta <br> \
+                search = parametro do objeto procurado <br> \
+                username = usuario realizando a query <br> \
+                <b> Somente Serão Mostrados Fluxos que o usuário está no array de permission_read </b> <br> \
                 >>><br> \
                 #mode = 0 se for realizar query para achar tudo na collection, campo search em branco <br> \
                 #mode = 1 para query por id, colocar id no campo search <br> \
@@ -44,7 +49,8 @@ class FlowRoutes extends BaseRoute {
                         skip: Joi.number().integer().default(0),
                         limit: Joi.number().integer().default(10),
                         search: Joi.allow(),
-                        mode: Joi.number().integer().default(0).min(0).max(4)
+                        mode: Joi.number().integer().default(0).min(0).max(4),
+                        username: Joi.string().default('admin')
                     } // query end
                 } // validate end
             },
@@ -54,17 +60,20 @@ class FlowRoutes extends BaseRoute {
                         skip,
                         limit,
                         search,
-                        mode
+                        mode,
+                        username
                     } = request.query
+                    
+                    console.log("username: ", username)
 
                     const query = await QueryHelper.queryFlowSelecter(search, mode)
 
                     if (mode == 3) {
-                        return this.db.joinRead(query, 'creator')
+                        return this.db.joinRead(query, 'creator', username)
                     } else if (mode == 4) {
-                        return this.db.joinRead(query, 'project')
+                        return this.db.joinRead(query, 'project', username)
                     } else {
-                        return this.db.read(query, skip, limit)
+                        return this.db.readPermission(query, skip, limit, username)
                     }
 
                 } catch (error) {
