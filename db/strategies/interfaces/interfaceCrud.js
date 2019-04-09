@@ -8,27 +8,25 @@ class ICrud {
     create(item) {
         throw new NotImplementedException()
     }
-
     read(query, skip, limit) {
         throw new NotImplementedException()
     }
-
     joinRead(item, join, username) {
         throw new NotImplementedException()
     }
-
     fieldRead(item, skip, limit, select) {
         throw new NotImplementedException()
     }
-
-    readPermission(query, skip, limit) {
+    readPermission(query, skip, limit, username) {
+        throw new NotImplementedException()
+    }
+    writePermission(item, skip, limit, username) {
         throw new NotImplementedException()
     }
 
-    update(id, item, username) {
+    update(id, item) {
         throw new NotImplementedException()
     }
-
     delete(id) {
         throw new NotImplementedException()
     }

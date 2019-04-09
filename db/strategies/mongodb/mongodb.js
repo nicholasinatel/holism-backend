@@ -60,19 +60,7 @@ class MongoDB extends ICrud {
         }, {
             $set: item
         })
-        // return this._schema.updateOne({
-        //     _id: id
-        // }, {
-        //     $set: item
-        // })
     }
-    updateWithPermission(query, skip, limit) {
-
-        return this._schema.updateOne(query, {
-            $set: item
-        })
-    }
-
 
     read(item, skip, limit) {
         return this._schema.find(item).skip(skip).limit(limit)
@@ -86,6 +74,19 @@ class MongoDB extends ICrud {
             $and: [item,
                 {
                     permission_read: username
+                }
+            ]
+        }).skip(skip).limit(limit)
+    }
+
+    writePermission(item, skip, limit, username) {
+        console.log('item: ', item)
+        console.log('username: ', username)
+
+        return this._schema.find({
+            $and: [item,
+                {
+                    permission_write: username
                 }
             ]
         }).skip(skip).limit(limit)

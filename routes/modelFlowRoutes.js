@@ -63,7 +63,7 @@ class FlowRoutes extends BaseRoute {
                         mode,
                         username
                     } = request.query
-                    
+
                     const query = await QueryHelper.queryFlowSelecter(search, mode)
 
                     if (mode == 3) {
@@ -145,7 +145,6 @@ class FlowRoutes extends BaseRoute {
                         title: result.title
                     }
 
-
                 } catch (error) {
                     console.error('Error at create', error)
                     return Boom.internal()
@@ -156,7 +155,7 @@ class FlowRoutes extends BaseRoute {
 
     update() {
         return {
-            path: '/model_flow/{id}',
+            path: '/model_flow/{id}/{username}',
             method: 'PATCH',
             config: {
                 tags: ['api'],
@@ -207,32 +206,21 @@ class FlowRoutes extends BaseRoute {
                         payload
                     } = request
 
-                    const query = request.params
+                    const query = { // findByID
+                        '_id': `${id}`
+                    }
+                    const nuId = await this.db.writePermission(query, 0, 1, username)
 
-                    // const query = {
-                    //     id,
-                    //     username
-                    // }
-
-                    console.log("query: ", query)
-                    // TimeStamp Get
-                    // const now = await DateHandler.DateGetter()
-
-                    // FORMAT FOR UPDATE
-                    const dadosString = JSON.stringify(payload)
-                    // const dados = {
-                    //     ...JSON.parse(dadosString),
-                    //     ...now
-                    // } // Object Assignment in ECMAScript 2018 https://stackoverflow.com/questions/171251/how-can-i-merge-properties-of-two-javascript-objects-dynamically
-
-                    const dados = JSON.parse(dadosString)
-                    // const result = await this.db.update(id, dados)
-                    // const result = await this.db.updateWithPermission(query, dados)
-
-                    if (result.nModified !== 1) return Boom.preconditionFailed('ID não encontrado ou arquivo sem modificações')
-
-                    return {
-                        message: 'Fluxo atualizado com sucesso'
+                    if (nuId.length == 0) {
+                        return Boom.unauthorized()
+                    } else {
+                        const dadosString = JSON.stringify(payload)
+                        const dados = JSON.parse(dadosString)
+                        const result = await this.db.update(nuId[0]._id, dados)
+                        if (result.nModified !== 1) return Boom.preconditionFailed('ID não encontrado ou arquivo sem modificações')
+                        return {
+                            message: 'Fluxo atualizado com sucesso'
+                        }
                     }
 
                 } catch (error) {
@@ -245,7 +233,7 @@ class FlowRoutes extends BaseRoute {
 
     delete() {
         return {
-            path: '/model_flow/{id}',
+            path: '/model_flow/{id}/{username}',
             method: 'DELETE',
             config: {
                 tags: ['api'],
@@ -255,22 +243,33 @@ class FlowRoutes extends BaseRoute {
                     headers,
                     failAction,
                     params: {
-                        id: Joi.string().min(24).max(24).required()
+                        id: Joi.string().min(24).max(24).required(),
+                        username: Joi.string().required()
                     }
                 } // validate end
             }, // config end
             handler: async (request) => {
                 try {
                     const {
-                        id
+                        id,
+                        username
                     } = request.params
-                    const result = await this.db.delete(id)
-
-                    if (result.n !== 1)
-                        return Boom.preconditionFailed('ID nao encontrado no banco')
-
-                    return {
-                        message: 'Fluxo removido com sucesso'
+                    const query = { // findByID
+                        '_id': `${id}`
+                    }
+                    console.log(query)
+                    const nuId = await this.db.writePermission(query, 0, 1, username)
+                    if (nuId.length == 0) {
+                        return Boom.unauthorized()
+                    } else {
+                        const result = await this.db.delete(nuId[0]._id)
+    
+                        if (result.n !== 1)
+                            return Boom.preconditionFailed('ID nao encontrado no banco')
+    
+                        return {
+                            message: 'Fluxo removido com sucesso'
+                        }
                     }
 
                 } catch (error) {
