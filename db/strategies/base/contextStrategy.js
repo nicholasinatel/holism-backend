@@ -13,17 +13,17 @@ class ContextStrategy extends ICrud {
     read(item, skip, limit) {
         return this._database.read(item, skip, limit)
     }
-    joinRead(item, join, username) {
-        return this._database.joinRead(item, join, username)
+    joinRead(item, join, username, type) {
+        return this._database.joinRead(item, join, username, type)
     }
     fieldRead(item, skip, limit, select) {
         return this._database.fieldRead(item, skip, limit, select)
     }
-    readPermission(item, skip, limit, username) {
-        return this._database.readPermission(item, skip, limit, username)
+    readPermission(item, skip, limit, username, type) {
+        return this._database.readPermission(item, skip, limit, username, type)
     }
-    writePermission(item, skip, limit, username) {
-        return this._database.writePermission(item, skip, limit, username)
+    writePermission(item, skip, limit, username, type) {
+        return this._database.writePermission(item, skip, limit, username, type)
     }
     update(id, item, upsert = false) {
         return this._database.update(id, item, upsert)

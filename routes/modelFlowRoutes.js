@@ -33,7 +33,7 @@ class FlowRoutes extends BaseRoute {
                 skip = Paginação <br> \
                 limit = Limita objetos na resposta <br> \
                 search = parametro do objeto procurado <br> \
-                username = usuario realizando a query <br> \
+                username = usuario realizando a query (permission_read)<br> \
                 <b> Somente Serão Mostrados Fluxos que o usuário está no array de permission_read </b> <br> \
                 >>><br> \
                 #mode = 0 se for realizar query para achar tudo na collection, campo search em branco <br> \
@@ -71,7 +71,7 @@ class FlowRoutes extends BaseRoute {
                     } else if (mode == 4) {
                         return this.db.joinRead(query, 'project', username)
                     } else {
-                        return this.db.readPermission(query, skip, limit, username)
+                        return this.db.readPermission(query, skip, limit, username, 'flow')
                     }
 
                 } catch (error) {
@@ -162,6 +162,10 @@ class FlowRoutes extends BaseRoute {
                 description: 'Deve atualizar um Flow por <b>_id</b>',
                 notes: 'Para o update preciso que mande o objeto <b>id</b> do form em string.<br>\
                 neste caso, deve ser um <b>objeto id válido</b>, <b>(i.e existente no banco)</b>, utilize um que tenha retornado pelo read no banco.<br> \
+                Params: <br>\
+                @id: id do flow para ser feito o Update <br>\
+                @username: nome do usuário fazendo update, este usuáro precisa estar na lista de permission_write !!!<br>\
+                caso o usuario nao esteja na lista correta, retornara erro de nao autorizado<br> \
                 Segue exemplo com um objeto para update válido, é o mesmo no Example Value, porém em <b>formato de objeto</b>: <br> \
                 >>><br>\
                 var MOCK_FLOW_UPDATE = {<br>\
@@ -209,7 +213,7 @@ class FlowRoutes extends BaseRoute {
                     const query = { // findByID
                         '_id': `${id}`
                     }
-                    const nuId = await this.db.writePermission(query, 0, 1, username)
+                    const nuId = await this.db.writePermission(query, 0, 1, username, 'flow')
 
                     if (nuId.length == 0) {
                         return Boom.unauthorized()
@@ -222,7 +226,6 @@ class FlowRoutes extends BaseRoute {
                             message: 'Fluxo atualizado com sucesso'
                         }
                     }
-
                 } catch (error) {
                     console.error('Error at Flow Update', error)
                     return Boom.internal()
@@ -238,7 +241,10 @@ class FlowRoutes extends BaseRoute {
             config: {
                 tags: ['api'],
                 description: 'Deve deletar um flow por <b>_id</b>',
-                notes: 'o <b> id </b> deve ser válido, realizar um read no banco antes, passar como <b>String</b>',
+                notes: 'Parametros: <br>\
+                @id: o <b> id </b> deve ser válido, realizar um read no banco antes, passar como <b>String</b> <br>\
+                @username: nome do usuário fazendo o delete, este usuáro precisa estar na lista de permission_write !!! <br> \
+                caso o usuario nao esteja na lista correta, retornara erro de nao autorizado',
                 validate: {
                     headers,
                     failAction,
@@ -257,21 +263,17 @@ class FlowRoutes extends BaseRoute {
                     const query = { // findByID
                         '_id': `${id}`
                     }
-                    console.log(query)
-                    const nuId = await this.db.writePermission(query, 0, 1, username)
+                    const nuId = await this.db.writePermission(query, 0, 1, username, 'flow')
                     if (nuId.length == 0) {
                         return Boom.unauthorized()
                     } else {
-                        const result = await this.db.delete(nuId[0]._id)
-    
+                        const result = await this.db.delete(nuId[0]._id)    
                         if (result.n !== 1)
-                            return Boom.preconditionFailed('ID nao encontrado no banco')
-    
+                            return Boom.preconditionFailed('ID nao encontrado no banco')    
                         return {
                             message: 'Fluxo removido com sucesso'
                         }
                     }
-
                 } catch (error) {
                     console.error('Error at Flow Delete', error)
                     return Boom.internal()

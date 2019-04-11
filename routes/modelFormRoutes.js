@@ -81,7 +81,12 @@ class FormRoutes extends BaseRoute {
             config: {
                 tags: ['api'],
                 description: 'Deve listar FORMS Template',
-                notes: 'Query com 4 Parametros,<br> \
+                notes: 'Query com 5 Parametros,<br> \
+                skip = Paginação <br> \
+                limit = Limita objetos na resposta <br> \
+                search = parametro do objeto procurado <br> \
+                username = usuario realizando a query (permission_read)<br> \
+                <b> Somente Serão Mostrados Forms que o usuário está no array de permission_read </b> <br> \
                 >>><br> \
                 #mode = 0 se for realizar query para achar tudo na collection, campo search em branco <br> \
                 #mode = 1 para query por id, colocar id no campo search <br> \
@@ -96,7 +101,8 @@ class FormRoutes extends BaseRoute {
                         skip: Joi.number().integer().default(0),
                         limit: Joi.number().integer().default(10),
                         search: Joi.allow(),
-                        mode: Joi.number().integer().default(0).max(3)
+                        mode: Joi.number().integer().default(0).max(3),
+                        username: Joi.string().default('admin')
                     } // query end
                 } // validate end
             },
@@ -106,15 +112,16 @@ class FormRoutes extends BaseRoute {
                         skip,
                         limit,
                         search,
-                        mode
+                        mode,
+                        username
                     } = request.query
 
                     const query = await QueryHelper.queryFormSelecter(search, mode)
 
                     if (mode == 3) {
-                        return this.db.joinRead(query, 'flow')
+                        return this.db.joinRead(query, 'flow', username, 'form')
                     } else {
-                        return this.db.read(query, skip, limit)
+                        return this.db.readPermission(query, skip, limit, username, 'form')
                     }
                 } catch (error) {
                     console.error('Server Internal Error: ', error)
@@ -202,13 +209,16 @@ class FormRoutes extends BaseRoute {
 
     update() {
         return {
-            path: '/model_form/{id}',
+            path: '/model_form/{id}/{username}',
             method: 'PATCH',
             config: {
                 tags: ['api'],
                 description: 'Deve atualizar um Form por <b>_id</b>',
                 notes: 'Para o update preciso que mande o objeto <b>id</b> do form em string.<br>\
                 neste caso, deve ser um <b>objeto id válido</b>, <b>(i.e existente no banco)</b>, utilize um que tenha retornado pelo read no banco.<br> \
+                Params: <br>\
+                @id: id do flow para ser feito o Update <br>\
+                @username: nome do usuário fazendo update, este usuáro precisa estar na lista de permission !!!<br>\
                 Segue exemplo com um objeto para update válido, é o mesmo no Example Value, porém em <b>formato de objeto</b>: <br> \
                 >>><br>\
                 var MOCK_FORM_UPDATE = {<br>\
@@ -239,7 +249,8 @@ class FormRoutes extends BaseRoute {
                 validate: {
                     headers,
                     params: {
-                        id: Joi.string().required()
+                        id: Joi.string().required(),
+                        username: Joi.string().required()
                     },
                     payload: {
                         title: Joi.string().required().min(3).max(100),
@@ -256,25 +267,30 @@ class FormRoutes extends BaseRoute {
             handler: async (request) => {
                 try {
                     const {
-                        id
+                        id,
+                        username
                     } = request.params
 
                     const {
                         payload
                     } = request
 
-                    // FORMAT FOR UPDATE
-                    const dadosString = JSON.stringify(payload)
-                    const dados = JSON.parse(dadosString)
-
-                    const result = await this.db.update(id, dados)
-
-                    if (result.nModified !== 1) return Boom.preconditionFailed('ID não encontrado ou arquivo sem modificações')
-
-                    return {
-                        message: 'Form atualizado com sucesso'
+                    const query = { // findByID
+                        '_id': `${id}`
                     }
-
+                    const nuId = await this.db.writePermission(query, 0, 1, username, 'form')
+                    if(nuId.length == 0){
+                        return Boom.unauthorized()
+                    } else {
+                        // FORMAT FOR UPDATE
+                        const dadosString = JSON.stringify(payload)
+                        const dados = JSON.parse(dadosString)
+                        const result = await this.db.update(nuId[0]._id, dados)
+                        if (result.nModified !== 1) return Boom.preconditionFailed('ID não encontrado ou arquivo sem modificações')
+                        return {
+                            message: 'Form atualizado com sucesso'
+                        }      
+                    }
                 } catch (error) {
                     console.error('Error at Form Update', error)
                     return Boom.internal()
@@ -285,34 +301,44 @@ class FormRoutes extends BaseRoute {
 
     delete() {
         return {
-            path: '/model_form/{id}',
+            path: '/model_form/{id}/{username}',
             method: 'DELETE',
             config: {
                 tags: ['api'],
                 description: 'Deve deletar um form por <b>_id</b>',
-                notes: 'o <b> id </b> deve ser válido, realizar um read no banco antes, passar como <b>String</b>',
+                notes: 'Parametros: <br>\
+                @id: o <b> id </b> deve ser válido, realizar um read no banco antes, passar como <b>String</b> <br>\
+                @username: nome do usuário fazendo o delete, este usuáro precisa estar na lista de permission_write !!! <br> \
+                caso o usuario nao esteja na lista correta, retornara erro de nao autorizado',
                 validate: {
                     headers,
                     failAction,
                     params: {
-                        id: Joi.string().required()
+                        id: Joi.string().required(),
+                        username: Joi.string().required()
                     }
                 } // validate end
             }, // config end
             handler: async (request) => {
                 try {
                     const {
-                        id
+                        id,
+                        username
                     } = request.params
-                    const result = await this.db.delete(id)
-
-                    if (result.n !== 1)
-                        return Boom.preconditionFailed('ID nao encontrado no banco')
-
-                    return {
-                        message: 'Form removido com sucesso'
+                    const query = { // findByID
+                        '_id': `${id}`
                     }
-
+                    const nuId = await this.db.writePermission(query, 0, 1, username, 'form')
+                    if(nuId.length == 0){
+                        return Boom.unauthorized()
+                    } else {
+                        const result = await this.db.delete(id)    
+                        if (result.n !== 1)
+                            return Boom.preconditionFailed('ID nao encontrado no banco')                        
+                        return {
+                            message: 'Form removido com sucesso'
+                        }                        
+                    }
                 } catch (error) {
                     console.error('Error at Form Delete', error)
                     return Boom.internal()
@@ -320,7 +346,6 @@ class FormRoutes extends BaseRoute {
             }
         } // return delete end
     } // delete end
-
 }
 
 module.exports = FormRoutes

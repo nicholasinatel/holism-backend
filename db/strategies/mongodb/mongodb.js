@@ -66,44 +66,65 @@ class MongoDB extends ICrud {
         return this._schema.find(item).skip(skip).limit(limit)
     }
 
-    readPermission(item, skip, limit, username) {
-        console.log('item: ', item)
-        console.log('username: ', username)
+    writePermission(item, skip, limit, username, type) {
+        if(type === 'flow'){
+            return this._schema.find({
+                $and: [item,
+                    {
+                        permission_write: username
+                    }
+                ]
+            }).skip(skip).limit(limit)
+        } else if(type === 'form'){
+            return this._schema.find({
+                $and: [item,
+                    {
+                        permission: username
+                    }
+                ]
+            }).skip(skip).limit(limit)
+        }
 
-        return this._schema.find({
-            $and: [item,
-                {
-                    permission_read: username
-                }
-            ]
-        }).skip(skip).limit(limit)
+    }
+    readPermission(item, skip, limit, username, type) {
+        if (type === 'form') {
+            return this._schema.find({
+                $and: [item,
+                    {
+                        permission: username
+                    }
+                ]
+            }).skip(skip).limit(limit)
+        } else if (type === 'flow') {
+            return this._schema.find({
+                $and: [item,
+                    {
+                        permission_read: username
+                    }
+                ]
+            }).skip(skip).limit(limit)
+        }
     }
 
-    writePermission(item, skip, limit, username) {
-        console.log('item: ', item)
-        console.log('username: ', username)
-
-        return this._schema.find({
-            $and: [item,
-                {
-                    permission_write: username
-                }
-            ]
-        }).skip(skip).limit(limit)
-    }
-
-    joinRead(item, join, username) {
-        // console.log('item: ', item)
-        // console.log('username: ', username)
-        // console.log('join: ', join)
-        return this._schema.find({
-            $and: [item,
-                {
-                    permission_read: username
-                }
-            ]
-        }).populate(join, '-password')
-        // https://stackoverflow.com/questions/12096262/how-to-protect-the-password-field-in-mongoose-mongodb-so-it-wont-return-in-a-qu
+    joinRead(item, join, username, type) {
+        if (type === 'form') {
+            return this._schema.find({
+                $and: [item,
+                    {
+                        permission: username
+                    }
+                ]
+            }).populate(join, '-password')
+        } else if (type === 'flow') {
+            return this._schema.find({
+                $and: [item,
+                    {
+                        permission_read: username
+                    }
+                ]
+            }).populate(join, '-password')
+            // https://stackoverflow.com/questions/12096262/how-to-protect-the-password-field-in-mongoose-mongodb-so-it-wont-return-in-a-qu
+        }
     }
 
     fieldRead(item, skip, limit, select) {

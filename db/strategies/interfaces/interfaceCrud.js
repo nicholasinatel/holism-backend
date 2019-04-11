@@ -11,16 +11,16 @@ class ICrud {
     read(query, skip, limit) {
         throw new NotImplementedException()
     }
-    joinRead(item, join, username) {
+    joinRead(item, join, username, type) {
         throw new NotImplementedException()
     }
     fieldRead(item, skip, limit, select) {
         throw new NotImplementedException()
     }
-    readPermission(query, skip, limit, username) {
+    readPermission(query, skip, limit, username, type) {
         throw new NotImplementedException()
     }
-    writePermission(item, skip, limit, username) {
+    writePermission(item, skip, limit, username, type) {
         throw new NotImplementedException()
     }
 
