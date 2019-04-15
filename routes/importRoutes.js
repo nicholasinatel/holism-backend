@@ -50,8 +50,7 @@ class ImportRoutes extends BaseRoute {
                         title: Joi.string().required().min(3).max(100),
                         permission_read: Joi.array().min(1).items(Joi.string()).default(['admin', 'gui123', 'fifi24']),
                         permission_write: Joi.array().min(1).items(Joi.string()).default(['admin', 'gui123', 'fifi24']),
-                        completed: Joi.bool().default(false),
-                        starter_form: Joi.string().min(24).max(24).default('000000000000000000000000'),
+                        completed: Joi.bool().default(false)
                         creator: Joi.string().min(24).max(24).default('111111111111111111111111'),
                         project: Joi.string().min(24).max(24).default('222222222222222222222222')
                     }
@@ -69,7 +68,6 @@ class ImportRoutes extends BaseRoute {
                         permission_read,
                         permission_write,
                         completed,
-                        starter_form,
                         creator,
                         project
                     } = request.payload
