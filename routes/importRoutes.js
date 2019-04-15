@@ -29,12 +29,31 @@ class ImportRoutes extends BaseRoute {
                 I.E um linkado no outro sem erros <br>\
                 ULTIMO STEP_FORWARD PRECISA SER ffffffffffffffffffffffff <br>\
                 SE NAO FOR VAI DAR PROBLEMA e.g LOOP INFINITO NO SERVER!!!!<br>\
-                ...',
+                Os valores Default podem ser substituídos, seguindo o padrão.<br>\
+                >>><br>\
+                --> title: Título único.<br>\
+                --> permission_read: um número de 0 a 3 para os níveis de acesso de cada usuário.<br>\
+                --> permission_write: um array que pode conter <b>personas</b> e <b>usuários</b>, ver default para exemplo.<br>\
+                --> starter_form: correspode ao <b>primeiro form do flow</b>, será sempre adicionado quando o mesmo,<br>\
+                for criado, utilizando um <b>update</b> após o <b>create form</b>.<br>\
+                --> creator: corresponde ao usuário que está criando o flow<br>\
+                --> project: corresponde ao projeto pai do flow <br>\
+                >>><br>\
+                Salvar <b>id retornado</b> após criação com sucesso em alguma variável pois será útil em breve.<br>....',
                 validate: {
                     failAction,
                     headers,
                     params: {
                         id: Joi.string().required()
+                    },
+                    payload: {
+                        title: Joi.string().required().min(3).max(100),
+                        permission_read: Joi.array().min(1).items(Joi.string()).default(['admin', 'gui123', 'fifi24']),
+                        permission_write: Joi.array().min(1).items(Joi.string()).default(['admin', 'gui123', 'fifi24']),
+                        completed: Joi.bool().default(false),
+                        starter_form: Joi.string().min(24).max(24).default('000000000000000000000000'),
+                        creator: Joi.string().min(24).max(24).default('111111111111111111111111'),
+                        project: Joi.string().min(24).max(24).default('222222222222222222222222')
                     }
                 } // validate end
             }, // config end
@@ -44,6 +63,16 @@ class ImportRoutes extends BaseRoute {
                     const {
                         id
                     } = request.params
+
+                    let {
+                        title,
+                        permission_read,
+                        permission_write,
+                        completed,
+                        starter_form,
+                        creator,
+                        project
+                    } = request.payload
 
                     // Check if Last Form Is Correct and then make import
                     // Get Flow Object
@@ -72,13 +101,13 @@ class ImportRoutes extends BaseRoute {
 
                     // Delete _id, __v, createdAt, updatedAt
                     const import_flow = {
-                        title: dados_flow.title,
-                        permission_read: dados_flow.permission_read,
-                        permission_write: dados_flow.permission_write,
-                        completed: dados_flow.completed,
+                        title: title,
+                        permission_read: permission_read,
+                        permission_write: permission_write,
+                        completed: completed,
                         starter_form: dados_flow.starter_form,
-                        creator: dados_flow.creator,
-                        project: dados_flow.project
+                        creator: creator,
+                        project: project
                     }
 
                     // Create New Flow
@@ -156,7 +185,7 @@ class ImportRoutes extends BaseRoute {
 
                     return {
                         message: 'Import feito com sucesso',
-                        // _id: result._id,
+                        _id: new_flow._id
                         // title: result.title
                     }
 
