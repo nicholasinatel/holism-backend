@@ -62,7 +62,6 @@ class ImportRoutes extends BaseRoute {
                     const {
                         id
                     } = request.params
-
                     let {
                         title,
                         permission_read,
@@ -71,13 +70,13 @@ class ImportRoutes extends BaseRoute {
                         creator,
                         project
                     } = request.payload
-
+                    console.log("request.payload: ", request.payload)
+                    console.log("request.params: ", request.params)
                     // Check if Last Form Is Correct and then make import
                     // Get Flow Object
                     const [dados_flow] = await this.dbFlow.read({
                         '_id': `${id}`
                     }, 0, 1)
-
                     // console.log("check_form: ", check_form)
                     if (dados_flow.starter_form.toString() != 'ffffffffffffffffffffffff') {
                         let count = 0
@@ -96,7 +95,6 @@ class ImportRoutes extends BaseRoute {
                             }
                         } while (stepIdCheck.toString() != 'ffffffffffffffffffffffff')
                     }
-
                     // Delete _id, __v, createdAt, updatedAt
                     const import_flow = {
                         title: title,
@@ -107,10 +105,8 @@ class ImportRoutes extends BaseRoute {
                         creator: creator,
                         project: project
                     }
-
                     // Create New Flow
                     const new_flow = await this.dbFlow.create(import_flow)
-
                     // Get Starter_Form ID from Imported Flow                    
                     // If != FFFFFFFFFFFF
                     if (import_flow.starter_form.toString() != 'ffffffffffffffffffffffff') {
@@ -144,7 +140,6 @@ class ImportRoutes extends BaseRoute {
                             let [dados_nu_form] = await this.dbForm.read({
                                 '_id': `${stepFid}`
                             })
-
                             // Delete _id, __v, createdAt, updatedAt
                             // Watchout for Step_Backward
                             const nu_form_1 = {
@@ -157,10 +152,8 @@ class ImportRoutes extends BaseRoute {
                                 secret: dados_nu_form.secret,
                                 creator: dados_nu_form.creator
                             }
-
                             // Create New Form
                             let nu_form_2 = await this.dbForm.create(nu_form_1)
-
                             // Update Recursive Variables
                             stepFid = nu_form_2.step_forward
                             stepBid = nu_form_2._id
@@ -176,18 +169,13 @@ class ImportRoutes extends BaseRoute {
                             })
                             // Set nuFid to the newest form
                             nuFid = nu_form_2._id
-
                         } while (stepFid.toString() != 'ffffffffffffffffffffffff')
-
                     }
-
                     return {
                         message: 'Import feito com sucesso',
                         _id: new_flow._id
                         // title: result.title
                     }
-
-
                 } catch (error) {
                     console.error('Error at Import', error)
                     return Boom.internal()
