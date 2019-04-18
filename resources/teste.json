@@ -1,0 +1,35 @@
+{
+    "title": "44444",
+    "data": [
+        {
+            "sections": [
+                {
+                    "name": "section_572800",
+                    "label": "",
+                    "clientKey": "section_572800",
+                    "order": 0,
+                    "rows": [
+                        {
+                            "name": "section_572800_row_766722",
+                            "label": "",
+                            "order": 0,
+                            "controls": []
+                        }
+                    ],
+                    "labelPosition": "left",
+                    "isDynamic": false,
+                    "minInstance": 1,
+                    "maxInstance": 0,
+                    "instances": []
+                }
+            ],
+            "layout": "tab",
+            "_uniqueId": 0.417848927789502
+        }
+    ],
+    "creator": "5c9bdf528fc66547eac0a68c",
+    "secret": false,
+    "permission": [
+        "admin"
+    ]
+}

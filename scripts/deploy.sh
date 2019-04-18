@@ -27,6 +27,7 @@ then
             git pull origin master;
             git-crypt unlock MINHA_CHAVE;
             sudo npm install; 
+            sudo npm audit fix;
             sudo npm run prod;
             sudo npm run aws;
         else
@@ -39,6 +40,7 @@ then
             git checkout -t origin/master;
             git-crypt unlock MINHA_CHAVE;
             sudo npm install; 
+            sudo npm audit fix;
             sudo npm run prod;
             sudo npm run aws;
     fi
@@ -53,6 +55,7 @@ else
     git checkout -t origin/master;
     git-crypt unlock MINHA_CHAVE;
     sudo npm install; 
+    sudo npm audit fix;
     sudo npm run prod;
     sudo npm run aws;
 fi
