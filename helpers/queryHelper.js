@@ -18,16 +18,19 @@ function QueryFlow(search, mode, callback) {
             '_id': `${search}`
         } :
         (mode == 2) ? { // findByTitle
-            'title': {
-                $regex: `.*${search}*`,
-                $options: 'i'
-            }
+            'title': `${search}`
         } :
         (mode == 3) ? { // findByCreator
             'creator': `${search}`
         } :
         (mode == 4) ? { // findByProject
             'project': `${search}`
+        } :
+        (mode == 5) ? { // findByTitle
+            'title': {
+                $regex: `.*${search}*`,
+                $options: 'i'
+            }
         } : {} // find-All
 
     return callback(null, query)
@@ -87,17 +90,17 @@ function QueryProject(search, mode, callback) {
             '_id': `${search}`
         } :
         (mode == 2) ? { // findByTitle
-            title: {
+            'title': `${search}`
+        } :
+        (mode == 3) ? { // findByCompleted
+            'completed': `${search}`
+        } : 
+        (mode == 4) ? { // findByTitle
+            'title': {
                 $regex: `.*${search}*`,
                 $options: 'i'
             }
-        } :
-        (mode == 3) ? { // findByCreator
-            'creator': `${search}`
-        } :
-        (mode == 4) ? { // findByCompleted
-            'completed': `${search}`
-        } : {} // findAll
+        } : {} // find-All
 
     return callback(null, query)
 }

@@ -38,9 +38,10 @@ class FlowRoutes extends BaseRoute {
                 >>><br> \
                 #mode = 0 se for realizar query para achar tudo na collection, campo search em branco <br> \
                 #mode = 1 para query por id, colocar id no campo search <br> \
-                #mode = 2 para query por title, colocar title no campo search <br> \
+                #mode = 2 para query por title, colocar title no campo search, NESTE MODO SOH VOLTA VALOR EXATO <br> \
                 #mode = 3 para query de Flows Criados Pelo usuario X, onde X = _id do usuario passado no campo search <br> \
                 #mode = 4 para query de Flows Por PROJECT X, onde X = _id do <b>project</b> passado no campo search <br> \
+                #mode = 5 para query por title, colocar title no campo search, NESTE MODO Volta Titulos Parecidos(Query Com RegEx) <br> \
                 >>>',
                 validate: {
                     headers,
@@ -49,7 +50,7 @@ class FlowRoutes extends BaseRoute {
                         skip: Joi.number().integer().default(0),
                         limit: Joi.number().integer().default(10),
                         search: Joi.allow(),
-                        mode: Joi.number().integer().default(0).min(0).max(4),
+                        mode: Joi.number().integer().default(0).min(0).max(5),
                         username: Joi.string().default('admin')
                     } // query end
                 } // validate end

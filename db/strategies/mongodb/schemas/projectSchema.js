@@ -11,7 +11,7 @@ const projectSchema = new Mongoose.Schema({
     type: Boolean
   },
   creator: {
-    type: Mongoose.Schema.Types.ObjectId,
+    type: String,
     ref: 'authentication'
   }
 }, options)

@@ -3,7 +3,6 @@ const Joi = require('joi')
 const Boom = require('boom')
 
 const QueryHelper = require('./../helpers/queryHelper')
-const DateHandler = require('./../helpers/dateHelper')
 
 const failAction = (request, headers, error) => {
     throw error;
@@ -31,34 +30,36 @@ class ProjectRoutes extends BaseRoute {
                 notes: 'Query com 3 Parametros,<br> \
                 >>><br> \
                 #mode = 0 se for realizar query para achar tudo na collection, campo search em branco <br> \
-                #mode = 1 para query por id, colocar id no campo search <br> \
-                #mode = 2 para query por title, colocar title no campo search <br> \
-                #mode = 3 para query de Projects Criados Pelo usuario X, onde X = _id do usuario passado no campo search <br> \
-                #mode = 4 para query por Project COMPLETED = true or false <br> \
+                #mode = 1 para query por id do project, colocar id no campo search <br> \
+                #mode = 2 para query por title, colocar title no campo search, procura titulo exato <br> \
+                #mode = 3 para query por Project COMPLETED = true or false <br> \
+                #mode = 4 para query por title, colocar title no campo search, procurar titulos parecidos <br> \
                 >>>',
                 validate: {
                     headers,
                     failAction: failAction,
                     query: {
+                        skip: Joi.number().integer().default(0),
+                        limit: Joi.number().integer().default(10),
                         search: Joi.allow(),
-                        mode: Joi.number().integer().default(0).min(0).max(4)
+                        mode: Joi.number().integer().default(0).min(0).max(4),
+                        username: Joi.string().default('admin')
                     } // query end
                 } // validate end
             },
             handler: async (request, headers) => {
                 try {
                     const {
+                        skip,
+                        limit,
                         search,
-                        mode
+                        mode,
+                        username
                     } = request.query
 
                     const query = await QueryHelper.queryProjectSelecter(search, mode)
 
-                    if (mode == 3) {
-                        return this.db.joinRead(query, 'creator')
-                    } else {
-                        return this.db.read(query)
-                    }
+                    return this.db.readPermission(query, skip, limit, username, 'project')
 
                 } catch (error) {
                     console.error('ProjectRoute Server Internal Error: ', error)
@@ -92,7 +93,7 @@ class ProjectRoutes extends BaseRoute {
                     payload: {
                         title: Joi.string().required().min(3).max(100),
                         completed: Joi.bool().default(false),
-                        creator: Joi.string().min(24).max(24).default('000000000000000000000000')
+                        creator: Joi.string().required().min(3).max(100).default('admin')
                     }
                 } // validate end
             }, // config end

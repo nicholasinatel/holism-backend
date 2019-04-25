@@ -103,6 +103,14 @@ class MongoDB extends ICrud {
                     }
                 ]
             }).skip(skip).limit(limit)
+        } else if (type === 'project') {
+            return this._schema.find({
+                $and: [item,
+                    {
+                        creator: username
+                    }
+                ]
+            }).skip(skip).limit(limit)
         }
     }
 
