@@ -136,7 +136,7 @@ class ProjectRoutes extends BaseRoute {
 
     update() {
         return {
-            path: '/project/{id}',
+            path: '/project/{id}/{creator}',
             method: 'PATCH',
             config: {
                 tags: ['api'],
@@ -160,39 +160,41 @@ class ProjectRoutes extends BaseRoute {
                 validate: {
                     headers,
                     params: {
-                        id: Joi.string().required()
+                        id: Joi.string().required(),
+                        creator: Joi.string().required().min(3).max(100).default('admin')
                     },
                     payload: {
                         title: Joi.string().required().min(3).max(100).default("flow teste_update"),
-                        completed: Joi.bool().default(true),
-                        creator: Joi.string().min(24).max(24).default('000000000000000000000000')
+                        completed: Joi.bool().default(true)
                     }
                 } // validate end
             }, // config end
             handler: async (request) => {
                 try {
                     const {
-                        id
+                        id,
+                        creator
                     } = request.params
 
                     const {
                         payload
                     } = request
 
-                    // TimeStamp Get
-                    // const now = await DateHandler.DateGetter()
-                
+                    const query = {
+                        '_id': `${id}`
+                    }
+                    const nuId = await this.db.writePermission(query, 0, 1, creator, 'project')
 
-                    // FORMAT FOR UPDATE
-                    const dadosString = JSON.stringify(payload)
-                    // const dados = {
-                    //     ...JSON.parse(dadosString),
-                    //     ...now
-                    // } // Object Assignment in ECMAScript 2018 https://stackoverflow.com/questions/171251/how-can-i-merge-properties-of-two-javascript-objects-dynamically
-                    const dados = JSON.parse(dadosString)
-                    const result = await this.db.update(id, dados)
+                    if (nuId.length == 0) {
+                        return Boom.unauthorized()
+                    } else {
+                        const dadosString = JSON.stringify(payload)
+                        const dados = JSON.parse(dadosString)
+                        const result = await this.db.update(nuId[0]._id, dados)
 
-                    if (result.nModified !== 1) return Boom.preconditionFailed('ID não encontrado ou arquivo sem modificações')
+                        if (result.nModified !== 1) return Boom.preconditionFailed('ID não encontrado ou arquivo sem modificações')
+                    }
+
 
                     return {
                         message: 'Projeto atualizado com sucesso!'
@@ -208,34 +210,46 @@ class ProjectRoutes extends BaseRoute {
 
     delete() {
         return {
-            path: '/project/{id}',
+            path: '/project/{id}/{creator}',
             method: 'DELETE',
             config: {
                 tags: ['api'],
-                description: 'Deve deletar um Projeto por <b>_id</b>',
-                notes: 'o <b> id </b> deve ser válido, realizar um read no banco antes, passar como <b>String</b>',
+                description: 'Deve deletar um project por <b>_id</b>',
+                notes: 'Parametros: <br>\
+                @id: o <b> id </b> deve ser válido, realizar um read no banco antes, passar como <b>String</b> <br>\
+                @creator: nome do usuário fazendo o delete, este usuáro precisa ser o criador do project !!! <br> \
+                caso o usuario nao seja o creator, retornara erro de nao autorizado',
                 validate: {
                     headers,
                     failAction,
                     params: {
-                        id: Joi.string().min(24).max(24).required()
+                        id: Joi.string().min(24).max(24).required(),
+                        creator: Joi.string().required().min(3).max(100).default('admin')
                     }
                 } // validate end
             }, // config end
             handler: async (request) => {
                 try {
                     const {
-                        id
+                        id,
+                        creator
                     } = request.params
-                    const result = await this.db.delete(id)
 
-                    if (result.n !== 1)
-                        return Boom.preconditionFailed('_ID não encontrado no banco')
-
-                    return {
-                        message: 'Projeto removido com sucesso'
+                    const query = {
+                        '_id': `${id}`
                     }
+                    const nuId = await this.db.writePermission(query, 0, 1, creator, 'project')
+                    if (nuId.length == 0) {
+                        return Boom.unauthorized()
+                    } else {
+                        const result = await this.db.delete(nuId[0]._id)
+                        if (result.n !== 1)
+                            return Boom.preconditionFailed('_ID não encontrado no banco')
 
+                        return {
+                            message: 'Projeto removido com sucesso'
+                        }
+                    }
                 } catch (error) {
                     console.error('Error at Project Delete', error)
                     return Boom.internal()

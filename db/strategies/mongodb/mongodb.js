@@ -67,6 +67,12 @@ class MongoDB extends ICrud {
     }
 
     writePermission(item, skip, limit, username, type) {
+        // console.log('item: ', item)
+        // console.log('skip: ', skip)
+        // console.log('limit: ', limit)
+        // console.log('username: ', username)
+        // console.log('type: ', type)
+
         if(type === 'flow'){
             return this._schema.find({
                 $and: [item,
@@ -80,6 +86,14 @@ class MongoDB extends ICrud {
                 $and: [item,
                     {
                         permission: username
+                    }
+                ]
+            }).skip(skip).limit(limit)
+        } else if(type === 'project'){
+            return this._schema.find({
+                $and: [item,
+                    {
+                        creator: username
                     }
                 ]
             }).skip(skip).limit(limit)
