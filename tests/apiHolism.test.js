@@ -13,6 +13,7 @@ let app = {} // server receiver
 
 // Global Variables
 var global = {
+    username: '',
     userID: 0,
     projectID: 0,
     flowID: 0,
@@ -41,8 +42,9 @@ describe.only('Test Suite Starting Application', function () {
         const statusCode = result.statusCode
         const dados = JSON.parse(result.payload)
         global.userID = dados[0]._id
+        global.username = dados[0].username
     })
-    it('Create Project With UserID', async function () {
+    it('Create Project With Username', async function () {
         const response = await FUNC.project(MOCK, mode, global, app, headers)
         global = response.global
         const status = response.statusCode
@@ -56,7 +58,7 @@ describe.only('Test Suite Starting Application', function () {
         assert.deepEqual(status, 200)
     })
 
-    it('Create Form With UserID AND FlowID and Update FlowFather', async function () {
+    it('Create Form #1 With UserID AND FlowID and Update FlowFather', async function () {
         const response = await FUNC.form1(MOCK, mode, global, app, headers)
         global = response.global
         const status = {

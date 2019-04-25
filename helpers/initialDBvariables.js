@@ -103,12 +103,12 @@ var MOCK = {
     MOCK_PROJECT: {
         title: 'Mindfullness_Mocha_NAO_DELETAR_NEM_MODIFICAR',
         completed: false,
-        creator: '111111111111111111111111'
+        creator: 'admin'
     },
     MOCK_FLOW: {
         title: 'Flow de Marketing_Mocha_NAO_DELETAR_NEM_MODIFICAR',
-        permission_read: ['nicholas', 'gui123', 'fifi24'],
-        permission_write: ['nicholas', 'gui123', 'fifi24'],
+        permission_read: ['nicholas', 'gui123', 'admin'],
+        permission_write: ['nicholas', 'gui123', 'admin'],
         completed: false,
         starter_form: '000000000000000000000000',
         creator: '111111111111111111111111',
@@ -120,7 +120,7 @@ var MOCK = {
         step_backward: ["000000000000000000000000"],
         flow: '111111111111111111111111',
         data: FORM_BUILDER_DATA,
-        permission: ['admin', 'gui123', 'fifi24'],
+        permission: ['admin', 'gui123', 'admin'],
         secret: false,
         creator: '111111111111111111111111'
     },
@@ -130,7 +130,7 @@ var MOCK = {
         step_backward: ["000000000000000000000000"],
         flow: '111111111111111111111111',
         data: FORM_BUILDER_DATA,
-        permission: ['admin', 'gui123', 'fifi24'],
+        permission: ['admin', 'gui123', 'admin'],
         secret: true,
         creator: '111111111111111111111111'
     },

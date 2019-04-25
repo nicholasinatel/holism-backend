@@ -70,9 +70,7 @@ class AuthRoutes extends BaseRoute {
                     } else {
                         return this.db.read(query, skip, limit)
                     }
-                    
-
-
+            
                 } catch (error) {
                     console.error('User List Route Server Internal Error: ', error)
                     return Boom.internal()

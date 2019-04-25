@@ -9,7 +9,7 @@ var DbFuncModule = {
         const array = JSON.parse(result.payload)
         let statusCode = result.statusCode
         if (array.length == 0) {
-            MOCK.MOCK_PROJECT.creator = global.userID
+            MOCK.MOCK_PROJECT.creator = global.username
             const new_project = await app.inject({
                 method: 'POST',
                 headers,
@@ -89,7 +89,7 @@ var DbFuncModule = {
         const father_flow = await app.inject({
             method: 'GET',
             headers,
-            url: `/model_flow?skip=0&limit=1&search=${MOCK.MOCK_FLOW.title}&mode=${mode.title}`
+            url: `/model_flow?skip=0&limit=1&search=${MOCK.MOCK_FLOW.title}&mode=${mode.title}&username=${MOCK.MOCK_USER.username}`
         })
         const [flow_result] = JSON.parse(father_flow.payload)
         delete flow_result.createdAt
@@ -101,7 +101,7 @@ var DbFuncModule = {
         const update_result = await app.inject({
             method: 'PATCH',
             headers,
-            url: `/model_flow/${global.flowID}`,
+            url: `/model_flow/${global.flowID}/${MOCK.MOCK_USER.username}`,
             payload: flow_result
         })
         const update_status = update_result.statusCode
@@ -122,7 +122,7 @@ var DbFuncModule = {
         const result = await app.inject({
             method: 'GET',
             headers,
-            url: `/model_form?skip=0&limit=1&search=${MOCK.MOCK_FORM_2.title}&mode=${mode.title}`
+            url: `/model_form?skip=0&limit=1&search=${MOCK.MOCK_FORM_2.title}&mode=${mode.title}&username=${MOCK.MOCK_USER.username}`
         })
         const array = JSON.parse(result.payload)
         let statusCode = result.statusCode
@@ -146,7 +146,7 @@ var DbFuncModule = {
         const result2update = await app.inject({
             method: 'GET',
             headers,
-            url: `/model_form?skip=0&limit=1&search=${MOCK.MOCK_FORM_1.title}&mode=${mode.title}`
+            url: `/model_form?skip=0&limit=1&search=${MOCK.MOCK_FORM_1.title}&mode=${mode.title}&username=${MOCK.MOCK_USER.username}`
         })
         const [previous_form] = JSON.parse(result2update.payload)
         previous_form.step_forward[0] = global.form2ID
@@ -157,7 +157,7 @@ var DbFuncModule = {
         const update_result = await app.inject({
             method: 'PATCH',
             headers,
-            url: `/model_form/${global.form1ID}`,
+            url: `/model_form/${global.form1ID}/${MOCK.MOCK_USER.username}`,
             payload: previous_form
         })
         const update_previous_form = update_result.statusCode
@@ -205,15 +205,21 @@ var DbFuncModule = {
         const result = await app.inject({
             method: 'GET',
             headers,
-            url: `/model_flow?skip=0&limit=10&search=mocha&mode=2`
+            url: `/model_flow?skip=0&limit=10&search=${MOCK.MOCK_FLOW.title}&mode=${mode.title}&username=${MOCK.MOCK_USER.username}`
         })
         const array = JSON.parse(result.payload)
+        delete array[0].starter_form
+        delete array[0].createdAt
+        delete array[0].updatedAt
+        delete array[0].__v
+        delete array[0]._id
         let statusCode = result.statusCode
-        if (array.length <= 1) {
+        if (array[0].title == MOCK.MOCK_FLOW.title && array.length == 1) {
             const imported = await app.inject({
                 method: 'POST',
                 headers,
-                url: `/import/${global.flowID}`
+                url: `/import/${global.flowID}`,
+                payload: array[0]
             })
             const dados = JSON.parse(imported.payload)
             statusCode = imported.statusCode
