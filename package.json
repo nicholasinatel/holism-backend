@@ -6,6 +6,7 @@
   "scripts": {
     "postinstall": "npm t",
     "local": "cross-env NODE_ENV=dev node src/api.js",
+    "gui": "cross-env NODE_ENV=gui node src/api.js",
     "test": "nyc --reporter=html mocha --exit tests/*.js",
     "test:watch": "mocha tests/*.js -w",
     "dev": "cross-env NODE_ENV=dev npm t",

@@ -18,29 +18,29 @@ sudo apt-get install haveged rng-tools;
 
 if [ -d "holism-backend" ];
 then
-    "Directory Exists"
+    echo "Directory Exists"
     if [ -e holism-backend/.git ];
-        then
-            echo .git;
-            echo "Local Git Repository Already Exists";
-            cd holism-backend;
-            git pull origin master;
-            git-crypt unlock MINHA_CHAVE;
-            sudo npm install; 
-            sudo npm run prod;
-            sudo npm run aws;
-        else
-            echo "Creating Local Git Repository";
-            cp MINHA_CHAVE holism-backend;
-            cd holism-backend;
-            git init;
-            git remote add origin https://github.com/nicholasinatel/holism-backend.git;
-            git fetch;
-            git checkout -t origin/master;
-            git-crypt unlock MINHA_CHAVE;
-            sudo npm install; 
-            sudo npm run prod;
-            sudo npm run aws;
+    then
+        echo .git;
+        echo "Local Git Repository Already Exists";
+        cd holism-backend;
+        git pull origin master;
+        git-crypt unlock MINHA_CHAVE;
+        sudo npm install; 
+        sudo npm run prod;
+        sudo npm run aws;
+    else
+        echo "Creating Local Git Repository";
+        cp MINHA_CHAVE holism-backend;
+        cd holism-backend;
+        git init;
+        git remote add origin https://github.com/nicholasinatel/holism-backend.git;
+        git fetch;
+        git checkout -t origin/master;
+        git-crypt unlock MINHA_CHAVE;
+        sudo npm install; 
+        sudo npm run prod;
+        sudo npm run aws;
     fi
 else
     echo "Creating Backend Deploy Directory and Local Git Repository";
