@@ -87,16 +87,20 @@ class FormRoutes extends BaseRoute {
                 tags: ['api'],
                 description: 'Deve listar FORMS Template',
                 notes: 'Query com 5 Parametros,<br> \
-                skip = Paginação <br> \
-                limit = Limita objetos na resposta <br> \
-                search = parametro do objeto procurado <br> \
-                username = usuario realizando a query (permission_read)<br> \
+                <b>skip</b> = Paginação <br> \
+                <b>limit</b> = Limita objetos na resposta <br> \
+                <b>search</b> = Objeto procurado <br> \
+                <b>username</b> = usuario realizando a query (permission_read) <br> \
+                <b> Inserir automaticamente o username do creator no permission_read no front-end </b> <br> \
                 <b> Somente Serão Mostrados Forms que o usuário está no array de permission_read </b> <br> \
                 >>><br> \
-                #mode = 0 se for realizar query para achar tudo na collection, campo search em branco <br> \
-                #mode = 1 para query por id, colocar id no campo search <br> \
-                #mode = 2 para query por title, colocar title no campo search <br> \
-                #mode = 3 para query por Forms de X Flow, colocar _id do Flow no campo search <br> \
+                > mode = 0 | Query para achar tudo na collection, Campo search em branco, <b>username obrigatório</b> <br> \
+                > mode = 1 | Query por <b>id</b>, Campo Search: Inserir id do Form, <b>username obrigatório</b> <br> \
+                > mode = 2 | Query por <b>title</b>, Campo Search: Inserir title do Form, <b>Title com Valor APROXIMADO Regex!</b>, <b>username obrigatório</b> <br> \
+                > mode = 3 | Query de <b>FormS</b> Por <b>Flow</b>, Campo Search: Inserir <b>_id do Flow</b>, <b>username obrigatório</b> <br> \
+                > mode = 4 | Query de Single <b>Form Especifico</b> Do <b>Flow Especifico</b>, <br> \
+                <b>username obrigatório</b>, <br> \
+                Formato no Campo Search =         "_id do form"<b>/</b>"_id do flow" <br> \
                 >>><br> \
                 ...',
                 validate: {
@@ -106,7 +110,7 @@ class FormRoutes extends BaseRoute {
                         skip: Joi.number().integer().default(0),
                         limit: Joi.number().integer().default(10),
                         search: Joi.allow(),
-                        mode: Joi.number().integer().default(0).max(3),
+                        mode: Joi.number().integer().default(0).max(4),
                         username: Joi.string().default('admin')
                     } // query end
                 } // validate end
@@ -119,12 +123,14 @@ class FormRoutes extends BaseRoute {
                         search,
                         mode,
                         username
-                    } = request.query
+                    } = request.query   
 
                     const query = await QueryHelper.queryFormSelecter(search, mode)
 
                     if (mode == 3) {
                         return this.db.joinRead(query, 'flow', username, 'form')
+                    } else if (mode == 4) {
+                        return this.db.joinRead(query, 'flow', username, 'form-4')
                     } else {
                         return this.db.readPermission(query, skip, limit, username, 'form')
                     }
@@ -171,7 +177,7 @@ class FormRoutes extends BaseRoute {
                         data: Joi.allow().default(CREATE_DEFAULT.data),
                         permission: Joi.array().min(1).items(Joi.string()).default(['admin', 'gui123', 'fifi24']),
                         secret: Joi.boolean().default(false),
-                        creator: Joi.string().min(24).max(24).default('111111111111111111111111'),
+                        creator: Joi.string().min(1).default('admin'),
                         completed: Joi.boolean().default(false)
                     }
                 } // validate end
@@ -189,7 +195,6 @@ class FormRoutes extends BaseRoute {
                         creator,
                         completed
                     } = request.payload
-                    console.log("request.payload: ", request.payload)
 
                     const result = await this.db.create({
                         title,
@@ -271,7 +276,7 @@ class FormRoutes extends BaseRoute {
                         data: Joi.allow().default(CREATE_DEFAULT.data),
                         permission: Joi.array().min(1).items(Joi.string()).default(['admin', 'gui123', 'fifi24']),
                         secret: Joi.boolean().default(false),
-                        creator: Joi.string().min(24).max(24).default('111111111111111111111111'),
+                        creator: Joi.string().min(1).default('admin'),
                         completed: Joi.boolean().default(false)
                     }
                 } // validate end

@@ -38,7 +38,7 @@ var DbFuncModule = {
         const array = JSON.parse(result.payload)
         let statusCode = result.statusCode
         if (array.length == 0) {
-            MOCK.MOCK_FLOW.creator = global.userID
+            MOCK.MOCK_FLOW.creator = global.username
             MOCK.MOCK_FLOW.project = global.projectID
             const new_flow = await app.inject({
                 method: 'POST',
@@ -70,7 +70,7 @@ var DbFuncModule = {
         let statusCode = result.statusCode
         // Create Form1
         if (array.length == 0) {
-            MOCK.MOCK_FORM_1.creator = global.userID
+            MOCK.MOCK_FORM_1.creator = global.username
             MOCK.MOCK_FORM_1.flow = global.flowID
             const new_form = await app.inject({
                 method: 'POST',
@@ -127,7 +127,7 @@ var DbFuncModule = {
         const array = JSON.parse(result.payload)
         let statusCode = result.statusCode
         if (array.length == 0) {
-            MOCK.MOCK_FORM_2.creator = global.userID
+            MOCK.MOCK_FORM_2.creator = global.username
             MOCK.MOCK_FORM_2.flow = global.flowID
             MOCK.MOCK_FORM_2.step_backward[0] = global.form1ID
             const new_form = await app.inject({
@@ -182,7 +182,7 @@ var DbFuncModule = {
         let statusCode = result.statusCode
         if (array.length == 0) {
             MOCK.MOCK_RESPONSE_1.model_form = global.form1ID
-            MOCK.MOCK_RESPONSE_1.user = global.userID
+            MOCK.MOCK_RESPONSE_1.user = global.username
             const new_response = await app.inject({
                 method: 'POST',
                 headers,

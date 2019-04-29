@@ -23,7 +23,7 @@ const modelFlowSchema = new Mongoose.Schema({
     ref: 'modelForm'
   },
   creator: {
-    type: Mongoose.Schema.Types.ObjectId,
+    type: String,
     ref: 'authentication',
     required: true
   }, 

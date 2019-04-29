@@ -20,13 +20,10 @@ function QueryFlow(search, mode, callback) {
         (mode == 2) ? { // findByTitle
             'title': `${search}`
         } :
-        (mode == 3) ? { // findByCreator
-            'creator': `${search}`
-        } :
-        (mode == 4) ? { // findByProject
+        (mode == 3) ? { // findByProject
             'project': `${search}`
         } :
-        (mode == 5) ? { // findByTitle
+        (mode == 4) ? { // findByTitle
             'title': {
                 $regex: `.*${search}*`,
                 $options: 'i'
@@ -50,6 +47,10 @@ function QueryForm(search, mode, callback) {
         } :
         (mode == 3) ? { // findByFlow
             'flow': `${search}`
+        } :
+        (mode == 4) ? { // find form_id and flow_id
+            '_id': `${search.substring(0, search.indexOf("/"))}`,
+            'flow': `${search.split('/')[1]}`
         } : {} // find-All
 
     return callback(null, query)
@@ -63,19 +64,28 @@ function QueryResponse(search, mode, callback) {
             '_id': `${search}`
         }
     } else if (mode == 2) {
-        query = [
-            {'flow': `${search}`},
-            {join: 'flow'}
+        query = [{
+                'flow': `${search}`
+            },
+            {
+                join: 'flow'
+            }
         ]
     } else if (mode == 3) {
-        query = [
-            {'form': `${search}`},
-            {join: 'form'}
+        query = [{
+                'form': `${search}`
+            },
+            {
+                join: 'form'
+            }
         ]
     } else if (mode == 4) {
-        query = [
-            {'user': `${search}`},
-            {join: 'user'}
+        query = [{
+                'user': `${search}`
+            },
+            {
+                join: 'user'
+            }
         ]
     } else {
         query = {}
@@ -94,7 +104,7 @@ function QueryProject(search, mode, callback) {
         } :
         (mode == 3) ? { // findByCompleted
             'completed': `${search}`
-        } : 
+        } :
         (mode == 4) ? { // findByTitle
             'title': {
                 $regex: `.*${search}*`,

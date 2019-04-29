@@ -51,7 +51,7 @@ class ImportRoutes extends BaseRoute {
                         permission_read: Joi.array().min(1).items(Joi.string()).default(['admin', 'gui123', 'fifi24']),
                         permission_write: Joi.array().min(1).items(Joi.string()).default(['admin', 'gui123', 'fifi24']),
                         completed: Joi.bool().default(false),
-                        creator: Joi.string().min(24).max(24).default('111111111111111111111111'),
+                        creator: Joi.string().min(1).default('admin'),
                         project: Joi.string().min(24).max(24).default('222222222222222222222222')
                     }
                 } // validate end
@@ -70,8 +70,6 @@ class ImportRoutes extends BaseRoute {
                         creator,
                         project
                     } = request.payload
-                    console.log("request.payload: ", request.payload)
-                    console.log("request.params: ", request.params)
                     // Check if Last Form Is Correct and then make import
                     // Get Flow Object
                     const [dados_flow] = await this.dbFlow.read({
@@ -123,7 +121,8 @@ class ImportRoutes extends BaseRoute {
                             data: dados_starter_form.data,
                             permission: dados_starter_form.permission,
                             secret: dados_starter_form.secret,
-                            creator: dados_starter_form.creator
+                            creator: dados_starter_form.creator,
+                            completed: dados_starter_form.completed
                         }
                         // Create New Starter_Form
                         let new_form = await this.dbForm.create(starter_form)
@@ -150,7 +149,8 @@ class ImportRoutes extends BaseRoute {
                                 data: dados_nu_form.data,
                                 permission: dados_nu_form.permission,
                                 secret: dados_nu_form.secret,
-                                creator: dados_nu_form.creator
+                                creator: dados_nu_form.creator,
+                                completed: dados_nu_form.completed
                             }
                             // Create New Form
                             let nu_form_2 = await this.dbForm.create(nu_form_1)

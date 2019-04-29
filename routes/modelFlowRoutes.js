@@ -30,18 +30,18 @@ class FlowRoutes extends BaseRoute {
                 tags: ['api'],
                 description: 'Deve listar Flows na Collection, por ID || title || retorna todos',
                 notes: 'Query com 5 Parâmetros,<br> \
-                skip = Paginação <br> \
-                limit = Limita objetos na resposta <br> \
-                search = parametro do objeto procurado <br> \
-                username = usuario realizando a query (permission_read)<br> \
+                <b>skip</b> = Paginação <br> \
+                <b>limit</b> = Limita objetos na resposta <br> \
+                <b>search</b> = Objeto procurado <br> \
+                <b>username</b> = usuario realizando a query (permission_read) <br> \
+                <b> Inserir automaticamente o username do creator no permission_read no front-end </b> <br> \
                 <b> Somente Serão Mostrados Fluxos que o usuário está no array de permission_read </b> <br> \
                 >>><br> \
-                #mode = 0 se for realizar query para achar tudo na collection, campo search em branco <br> \
-                #mode = 1 para query por id, colocar id no campo search <br> \
-                #mode = 2 para query por title, colocar title no campo search, NESTE MODO SOH VOLTA VALOR EXATO <br> \
-                #mode = 3 para query de Flows Criados Pelo usuario X, onde X = _id do usuario passado no campo search <br> \
-                #mode = 4 para query de Flows Por PROJECT X, onde X = _id do <b>project</b> passado no campo search <br> \
-                #mode = 5 para query por title, colocar title no campo search, NESTE MODO Volta Titulos Parecidos(Query Com RegEx) <br> \
+                > mode = 0 | Query para achar tudo na collection, Campo search em branco, <b>username obrigatório</b> <br> \
+                > mode = 1 | Query por <b>id</b>, Campo Search: Inserir id do Flow, <b>username obrigatório</b> <br> \
+                > mode = 2 | Query por <b>title</b>, Campo Search: Inserir title do Flow, <b>Title com Valor Exato!!</b>, <b>username obrigatório</b> <br> \
+                > mode = 3 | Query de Flows Por <b>Project</b>, Campo Search: Inserir <b>_id do project</b>, <b>username obrigatório</b> <br> \
+                > mode = 4 | Query por title, Campo Search: Inserir title do Flow, <b>Title com Valor APROXIMADO! Regex Feature</b>, <b>username obrigatório</b> <br> \
                 >>>',
                 validate: {
                     headers,
@@ -50,7 +50,7 @@ class FlowRoutes extends BaseRoute {
                         skip: Joi.number().integer().default(0),
                         limit: Joi.number().integer().default(10),
                         search: Joi.allow(),
-                        mode: Joi.number().integer().default(0).min(0).max(5),
+                        mode: Joi.number().integer().default(0).min(0).max(4),
                         username: Joi.string().default('admin')
                     } // query end
                 } // validate end
@@ -68,9 +68,7 @@ class FlowRoutes extends BaseRoute {
                     const query = await QueryHelper.queryFlowSelecter(search, mode)
 
                     if (mode == 3) {
-                        return this.db.joinRead(query, 'creator', username)
-                    } else if (mode == 4) {
-                        return this.db.joinRead(query, 'project', username)
+                        return this.db.joinRead(query, 'project', username, 'flow')
                     } else {
                         return this.db.readPermission(query, skip, limit, username, 'flow')
                     }
@@ -113,7 +111,7 @@ class FlowRoutes extends BaseRoute {
                         permission_write: Joi.array().min(1).items(Joi.string()).default(['admin', 'gui123', 'fifi24']),
                         completed: Joi.bool().default(false),
                         starter_form: Joi.string().min(24).max(24).default('000000000000000000000000'),
-                        creator: Joi.string().min(24).max(24).default('111111111111111111111111'),
+                        creator: Joi.string().min(1).default('admin'),
                         project: Joi.string().min(24).max(24).default('222222222222222222222222')
                     }
                 } // validate end
@@ -195,7 +193,7 @@ class FlowRoutes extends BaseRoute {
                         permission_write: Joi.array().min(1).items(Joi.string()).default(['admin', 'gui123', 'fifi24', 'nicholas']),
                         completed: Joi.bool().default(true),
                         starter_form: Joi.string().min(24).max(24).default('000000000000000000000000'),
-                        creator: Joi.string().min(24).max(24).default('111111111111111111111111'),
+                        creator: Joi.string().min(1).default('admin'),
                         project: Joi.string().min(24).max(24).default('222222222222222222222222')
                     }
                 } // validate end

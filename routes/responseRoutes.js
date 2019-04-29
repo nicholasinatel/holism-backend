@@ -8,7 +8,7 @@ const failAction = (request, headers, error) => {
 
 const CREATE_DEFAULT = {
     "model_form":"111111111111111111111111",
-    "user": "111111111111111111111111",
+    "user": "admin",
     "data": [{
         "sections": [{
             "name": "section_188114",
@@ -137,7 +137,7 @@ class ResponseRoutes extends BaseRoute {
                     headers,
                     payload: {
                         model_form: Joi.string().min(24).max(24).default(CREATE_DEFAULT.model_form),
-                        user: Joi.string().min(24).max(24).default(CREATE_DEFAULT.user),
+                        user: Joi.string().min(1).default(CREATE_DEFAULT.user),
                         data: Joi.allow().default(CREATE_DEFAULT.data)
                     }
                 } // validate end
@@ -208,7 +208,7 @@ class ResponseRoutes extends BaseRoute {
                     },
                     payload: {
                         model_form: Joi.string().min(24).max(24).default(CREATE_DEFAULT.model_form),
-                        user: Joi.string().min(24).max(24).default(CREATE_DEFAULT.user),
+                        user: Joi.string().min(1).default(CREATE_DEFAULT.user),
                         data: Joi.allow().default(CREATE_DEFAULT.data)
                     }
                 } // validate end

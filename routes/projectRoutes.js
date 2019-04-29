@@ -27,13 +27,18 @@ class ProjectRoutes extends BaseRoute {
             config: {
                 tags: ['api'],
                 description: 'Deve listar Projects do Usuario',
-                notes: 'Query com 3 Parametros,<br> \
+                notes: 'Query com 5 Parametros,<br> \
+                <b>skip</b> = Paginação <br> \
+                <b>limit</b> = Limita objetos na resposta <br> \
+                <b>search</b> = Objeto procurado <br> \
+                <b>username</b> = User realizando a query <br> \
+                <b> Somente Serão Mostrados Projects que o usuário criou </b> <br> \
                 >>><br> \
-                #mode = 0 se for realizar query para achar tudo na collection, campo search em branco <br> \
-                #mode = 1 para query por id do project, colocar id no campo search <br> \
-                #mode = 2 para query por title, colocar title no campo search, procura titulo exato <br> \
-                #mode = 3 para query por Project COMPLETED = true or false <br> \
-                #mode = 4 para query por title, colocar title no campo search, procurar titulos parecidos <br> \
+                > mode = 0 | Query para achar tudo na collection, Campo search em branco, <b>username obrigatório</b> <br> \
+                > mode = 1 | Query por <b>id</b>, Campo Search: Inserir id do Project, <b>username obrigatório</b> <br> \
+                > mode = 2 | Query por <b>title</b>, Campo Search: Inserir title do Project, <b>Title com Valor EXATO</b>, <b>username obrigatório</b> <br> \
+                > mode = 3 | Query por Project COMPLETED = true or false <br> \
+                > mode = 4 | Query por <b>title</b>, Campo Search: Inserir title do Project, <b>Title com Valor APROXIMADO Regex!</b>, <b>username obrigatório</b> <br> \
                 >>>',
                 validate: {
                     headers,
@@ -93,7 +98,7 @@ class ProjectRoutes extends BaseRoute {
                     payload: {
                         title: Joi.string().required().min(3).max(100),
                         completed: Joi.bool().default(false),
-                        creator: Joi.string().required().min(3).max(100).default('admin')
+                        creator: Joi.string().required().min(1).max(100).default('admin')
                     }
                 } // validate end
             }, // config end
@@ -149,7 +154,7 @@ class ProjectRoutes extends BaseRoute {
                 &nbsp title: "flow teste_update",<br>\
                 &nbsp completed: true,<br>\
                 &nbsp flow: "faca77777cacacaf5f511111",<br>\
-                &nbsp creator: "5c4775423ce1b91f5c344f60"<br>\
+                &nbsp creator: "admin"<br>\
                 }<br>\
                 >>><br>\
                 Antes do objeto ser enviado ele deve ser convertido em string: <br>\
@@ -161,7 +166,7 @@ class ProjectRoutes extends BaseRoute {
                     headers,
                     params: {
                         id: Joi.string().required(),
-                        creator: Joi.string().required().min(3).max(100).default('admin')
+                        creator: Joi.string().required().min(1).max(100).default('admin')
                     },
                     payload: {
                         title: Joi.string().required().min(3).max(100).default("flow teste_update"),

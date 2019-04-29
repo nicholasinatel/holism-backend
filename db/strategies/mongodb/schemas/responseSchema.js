@@ -9,7 +9,7 @@ const responseSchema = new Mongoose.Schema({
     required: true
   },
   user: { // Response Form Target
-    type: Mongoose.Schema.Types.ObjectId,
+    type: String,
     ref: 'authentication',
     required: true
   },

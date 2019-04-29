@@ -67,13 +67,7 @@ class MongoDB extends ICrud {
     }
 
     writePermission(item, skip, limit, username, type) {
-        // console.log('item: ', item)
-        // console.log('skip: ', skip)
-        // console.log('limit: ', limit)
-        // console.log('username: ', username)
-        // console.log('type: ', type)
-
-        if(type === 'flow'){
+        if (type === 'flow') {
             return this._schema.find({
                 $and: [item,
                     {
@@ -81,7 +75,7 @@ class MongoDB extends ICrud {
                     }
                 ]
             }).skip(skip).limit(limit)
-        } else if(type === 'form'){
+        } else if (type === 'form') {
             return this._schema.find({
                 $and: [item,
                     {
@@ -89,7 +83,7 @@ class MongoDB extends ICrud {
                     }
                 ]
             }).skip(skip).limit(limit)
-        } else if(type === 'project'){
+        } else if (type === 'project') {
             return this._schema.find({
                 $and: [item,
                     {
@@ -137,15 +131,23 @@ class MongoDB extends ICrud {
                     }
                 ]
             }).populate(join, '-password')
-        } else if (type === 'flow') {
+        } else if (type == 'form-4') {
+            console.log("entrou")
             return this._schema.find({
-                $and: [item,
+                $and: [{
+                        _id: item._id
+                    },
                     {
-                        permission_read: username
+                        permission: username
+                    },
+                    {
+                        flow: item.flow
                     }
                 ]
             }).populate(join, '-password')
-            // https://stackoverflow.com/questions/12096262/how-to-protect-the-password-field-in-mongoose-mongodb-so-it-wont-return-in-a-qu
+// https://stackoverflow.com/questions/12096262/how-to-protect-the-password-field-in-mongoose-mongodb-so-it-wont-return-in-a-qu
+        } else if (type === 'flow') {
+            return this._schema.find(item).populate(join, '-password')
         }
     }
 

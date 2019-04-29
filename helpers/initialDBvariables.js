@@ -111,7 +111,7 @@ var MOCK = {
         permission_write: ['nicholas', 'gui123', 'admin'],
         completed: false,
         starter_form: '000000000000000000000000',
-        creator: '111111111111111111111111',
+        creator: 'admin',
         project: '111111111111111111111111'
     },
     MOCK_FORM_1: {
@@ -122,7 +122,8 @@ var MOCK = {
         data: FORM_BUILDER_DATA,
         permission: ['admin', 'gui123', 'admin'],
         secret: false,
-        creator: '111111111111111111111111'
+        creator: 'admin',
+        completed: false
     },
     MOCK_FORM_2: {
         title: "Form Professores_Mocha_NAO_DELETAR_NEM_MODIFICAR",
@@ -132,11 +133,12 @@ var MOCK = {
         data: FORM_BUILDER_DATA,
         permission: ['admin', 'gui123', 'admin'],
         secret: true,
-        creator: '111111111111111111111111'
+        creator: 'admin',
+        completed: false
     },
     MOCK_RESPONSE_1: {
         model_form: "111111111111111111111111",
-        user: "111111111111111111111111",
+        user: "admin",
         data: RESPONSE_1
     }
 }
