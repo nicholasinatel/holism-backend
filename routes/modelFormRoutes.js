@@ -68,7 +68,9 @@ const CREATE_DEFAULT = {
         "layout": "tab",
         "_uniqueId": 0.8719504664016076
     }],
-    "permission": ['admin', 'gui123', 'fifi24']
+    "secret": false,
+    "permission": ['admin', 'gui123', 'fifi24'],
+    "completed": false
 }
 
 //queryString = http://localhost:5000/model_form_list?skip=0&limit=10&nome=flash
@@ -146,6 +148,7 @@ class FormRoutes extends BaseRoute {
                 --> step_forward: Se EXISTIR, o FORM Posterior, <br>\
                 --> step_backward: Se EXISTIR, o FORM Anterior, <br>\
                 --> flow: correspode ao <b>Flow pai do Form</b> <br>\
+                --> completed: Verdadeirou Ou Falso <br>\
                 --> data: [{}] Array de objetos do Form-Builder<br>\
                 --> data: [{}] Array de Strings de quem pode responder o form<br>\
                 >>><br>\
@@ -168,7 +171,8 @@ class FormRoutes extends BaseRoute {
                         data: Joi.allow().default(CREATE_DEFAULT.data),
                         permission: Joi.array().min(1).items(Joi.string()).default(['admin', 'gui123', 'fifi24']),
                         secret: Joi.boolean().default(false),
-                        creator: Joi.string().min(24).max(24).default('111111111111111111111111')
+                        creator: Joi.string().min(24).max(24).default('111111111111111111111111'),
+                        completed: Joi.boolean().default(false)
                     }
                 } // validate end
             }, // config end
@@ -182,8 +186,10 @@ class FormRoutes extends BaseRoute {
                         data,
                         permission,
                         secret,
-                        creator
+                        creator,
+                        completed
                     } = request.payload
+                    console.log("request.payload: ", request.payload)
 
                     const result = await this.db.create({
                         title,
@@ -193,7 +199,8 @@ class FormRoutes extends BaseRoute {
                         data,
                         permission,
                         secret,
-                        creator
+                        creator,
+                        completed
                     })
 
                     return {
@@ -232,6 +239,7 @@ class FormRoutes extends BaseRoute {
                 &nbsp flow: "faca77777cacacaf5f511111"<br>\
                 &nbsp data: Um Array de Objetos Gigantesco do Form-Builder! <br>\
                 &nbsp permission: Um Array de Strings de quem pode RESPONDER o form <br>\
+                &nbsp completed: true ou false <br>\
                 }<br>\
                 >>><br>\
                 Antes do objeto ser enviado ele deve ser convertido em string: <br>\
@@ -263,7 +271,8 @@ class FormRoutes extends BaseRoute {
                         data: Joi.allow().default(CREATE_DEFAULT.data),
                         permission: Joi.array().min(1).items(Joi.string()).default(['admin', 'gui123', 'fifi24']),
                         secret: Joi.boolean().default(false),
-                        creator: Joi.string().min(24).max(24).default('111111111111111111111111')
+                        creator: Joi.string().min(24).max(24).default('111111111111111111111111'),
+                        completed: Joi.boolean().default(false)
                     }
                 } // validate end
             }, // config end

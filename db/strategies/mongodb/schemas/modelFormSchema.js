@@ -81,6 +81,10 @@ const modelFormSchema = new Mongoose.Schema({
         type: Mongoose.Schema.Types.ObjectId,
         ref: 'authentication',
         required: true
+    },
+    completed: {
+        type: Boolean,
+        required: true
     }
 }, options)
 
