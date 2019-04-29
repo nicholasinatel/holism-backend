@@ -123,7 +123,8 @@ var MOCK = {
         permission: ['admin', 'gui123', 'admin'],
         secret: false,
         creator: 'admin',
-        completed: false
+        completed: false,
+        mode: 0
     },
     MOCK_FORM_2: {
         title: "Form Professores_Mocha_NAO_DELETAR_NEM_MODIFICAR",
@@ -134,7 +135,8 @@ var MOCK = {
         permission: ['admin', 'gui123', 'admin'],
         secret: true,
         creator: 'admin',
-        completed: false
+        completed: false,
+        mode: 0 
     },
     MOCK_RESPONSE_1: {
         model_form: "111111111111111111111111",

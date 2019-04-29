@@ -3,7 +3,6 @@ const Joi = require('joi')
 const Boom = require('boom')
 
 const QueryHelper = require('./../helpers/queryHelper')
-// const DateHandler = require('./../helpers/dateHelper')
 
 const failAction = (request, headers, error) => {
     throw error;
@@ -123,7 +122,7 @@ class FormRoutes extends BaseRoute {
                         search,
                         mode,
                         username
-                    } = request.query   
+                    } = request.query
 
                     const query = await QueryHelper.queryFormSelecter(search, mode)
 
@@ -142,21 +141,28 @@ class FormRoutes extends BaseRoute {
         } // list return end
     } //list end
 
+    // Create Last Form
+    // params: id do ultimo form
+    // payload: normal
+
+    // Create Middle Form
+    // params: id do step_forward
+    //       : id do step_backward 
     create() {
         return {
-            path: '/model_form',
+            path: '/model_form/{backward_id}/{forward_id}',
             method: 'POST',
             config: {
                 tags: ['api'],
                 description: 'Deve criar Forms',
                 notes: 'Os valores sugeridos estão determinados como default.<br>\
                 >>><br>\
-                --> step_forward: Se EXISTIR, o FORM Posterior, <br>\
-                --> step_backward: Se EXISTIR, o FORM Anterior, <br>\
-                --> flow: correspode ao <b>Flow pai do Form</b> <br>\
-                --> completed: Verdadeirou Ou Falso <br>\
-                --> data: [{}] Array de objetos do Form-Builder<br>\
-                --> data: [{}] Array de Strings de quem pode responder o form<br>\
+                > step_forward: Se EXISTIR, o FORM Posterior, <br>\
+                > step_backward: Se EXISTIR, o FORM Anterior, <br>\
+                > flow: correspode ao <b>Flow pai do Form</b> <br>\
+                > completed: Verdadeirou Ou Falso <br>\
+                > data: [{}] Array de objetos do Form-Builder<br>\
+                > data: [{}] Array de Strings de quem pode responder o form<br>\
                 >>><br>\
                 <b>Importante:</b> <br>\
                 Em data.sections.rows.controls.<b>componentType</b><br>\
@@ -169,7 +175,12 @@ class FormRoutes extends BaseRoute {
                 validate: {
                     failAction,
                     headers,
+                    params: {
+                        forward_id: Joi.string().min(24).max(24).default('ffffffffffffffffffffffff'),
+                        backward_id: Joi.string().min(24).max(24).default('000000000000000000000000')
+                    },
                     payload: {
+                        mode: Joi.number().integer().default(0).max(2),
                         title: Joi.string().required().min(3).max(100),
                         step_forward: Joi.array().min(1).items(Joi.string()).default(['ffffffffffffffffffffffff']),
                         step_backward: Joi.array().min(1).items(Joi.string()).default(['000000000000000000000000']),
@@ -193,27 +204,73 @@ class FormRoutes extends BaseRoute {
                         permission,
                         secret,
                         creator,
-                        completed
+                        completed,
+                        mode
                     } = request.payload
 
-                    const result = await this.db.create({
-                        title,
-                        step_forward,
-                        step_backward,
-                        flow,
-                        data,
-                        permission,
-                        secret,
-                        creator,
-                        completed
-                    })
+                    if (mode == 0) {
+                        const result = await this.db.create({
+                            title,
+                            step_forward,
+                            step_backward,
+                            flow,
+                            data,
+                            permission,
+                            secret,
+                            creator,
+                            completed
+                        })
 
-                    return {
-                        message: 'Form criado com sucesso',
-                        _id: result._id
+                        return {
+                            message: 'Form criado com sucesso',
+                            _id: result._id
+                        }
+                    } else if (mode == 1) {
+                        const {backward_id} = request.params
+
+                        const result = await this.db.create({
+                            title,
+                            step_forward,
+                            step_backward: backward_id,
+                            flow,
+                            data,
+                            permission,
+                            secret,
+                            creator,
+                            completed
+                        })
+
+                        const update_result = await this.db.update(backward_id, {step_forward: result._id})
+
+                        return {
+                            message: 'Form criado com sucesso',
+                            _id: result._id
+                        }
+
+                    } else if (mode == 2) {
+                        const {backward_id} = request.params
+                        console.log("backward_id: ", backward_id)
+                        const {forward_id} = request.params
+                        console.log("forward_id: ", forward_id)
+                        const result = await this.db.create({
+                            title,
+                            step_forward: forward_id,
+                            step_backward: backward_id,
+                            flow,
+                            data,
+                            permission,
+                            secret,
+                            creator,
+                            completed
+                        })
+                        const update_result1 = await this.db.update(backward_id, {step_forward: result._id})
+                        const update_result2 = await this.db.update(forward_id, {step_backward: result._id})
+                        
+                        return {
+                            message: 'Form criado com sucesso',
+                            _id: result._id
+                        }
                     }
-
-
                 } catch (error) {
                     console.error('Error at create', error)
                     return Boom.internal()
@@ -296,7 +353,7 @@ class FormRoutes extends BaseRoute {
                         '_id': `${id}`
                     }
                     const nuId = await this.db.writePermission(query, 0, 1, username, 'form')
-                    if(nuId.length == 0){
+                    if (nuId.length == 0) {
                         return Boom.unauthorized()
                     } else {
                         // FORMAT FOR UPDATE
@@ -306,7 +363,7 @@ class FormRoutes extends BaseRoute {
                         if (result.nModified !== 1) return Boom.preconditionFailed('ID não encontrado ou arquivo sem modificações')
                         return {
                             message: 'Form atualizado com sucesso'
-                        }      
+                        }
                     }
                 } catch (error) {
                     console.error('Error at Form Update', error)
@@ -346,15 +403,15 @@ class FormRoutes extends BaseRoute {
                         '_id': `${id}`
                     }
                     const nuId = await this.db.writePermission(query, 0, 1, username, 'form')
-                    if(nuId.length == 0){
+                    if (nuId.length == 0) {
                         return Boom.unauthorized()
                     } else {
-                        const result = await this.db.delete(id)    
+                        const result = await this.db.delete(id)
                         if (result.n !== 1)
-                            return Boom.preconditionFailed('ID nao encontrado no banco')                        
+                            return Boom.preconditionFailed('ID nao encontrado no banco')
                         return {
                             message: 'Form removido com sucesso'
-                        }                        
+                        }
                     }
                 } catch (error) {
                     console.error('Error at Form Delete', error)
@@ -363,6 +420,6 @@ class FormRoutes extends BaseRoute {
             }
         } // return delete end
     } // delete end
-}
+}   
 
 module.exports = FormRoutes

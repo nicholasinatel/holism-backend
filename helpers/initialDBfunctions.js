@@ -75,11 +75,13 @@ var DbFuncModule = {
             const new_form = await app.inject({
                 method: 'POST',
                 headers,
-                url: '/model_form',
+                url: '/model_form/ffffffffffffffffffffffff/000000000000000000000000',
                 payload: MOCK.MOCK_FORM_1
             })
             const dados = JSON.parse(new_form.payload)
+            console.log("form1-dados: ", dados)
             global.form1ID = dados._id
+            console.log("form1-global.form1ID: ", global.form1ID)
             statusCode = new_form.statusCode
         } else {
             // Update Global Form1ID
@@ -126,17 +128,20 @@ var DbFuncModule = {
         })
         const array = JSON.parse(result.payload)
         let statusCode = result.statusCode
+        console.log('array: ', array)
         if (array.length == 0) {
+            console.log("global.form1ID: ",global.form1ID)
             MOCK.MOCK_FORM_2.creator = global.username
             MOCK.MOCK_FORM_2.flow = global.flowID
             MOCK.MOCK_FORM_2.step_backward[0] = global.form1ID
             const new_form = await app.inject({
                 method: 'POST',
                 headers,
-                url: '/model_form',
+                url: '/model_form/ffffffffffffffffffffffff/000000000000000000000000',
                 payload: MOCK.MOCK_FORM_2
             })
             const dados = JSON.parse(new_form.payload)
+            console.log("dados; ", dados)
             global.form2ID = dados._id
             statusCode = new_form.statusCode
         } else {
