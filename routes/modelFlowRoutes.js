@@ -93,7 +93,7 @@ class FlowRoutes extends BaseRoute {
                 os valores sugeridos estão determinados como default.<br>\
                 Os valores Default podem ser substituídos, seguindo o padrão.<br>\
                 >>><br>\
-                --> title: Título único.<br>\
+                --> title: Título<br>\
                 --> permission_read: um número de 0 a 3 para os níveis de acesso de cada usuário.<br>\
                 --> permission_write: um array que pode conter <b>personas</b> e <b>usuários</b>, ver default para exemplo.<br>\
                 --> starter_form: correspode ao <b>primeiro form do flow</b>, será sempre adicionado quando o mesmo,<br>\

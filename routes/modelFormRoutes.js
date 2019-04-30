@@ -150,20 +150,32 @@ class FormRoutes extends BaseRoute {
     //       : id do step_backward 
     create() {
         return {
-            path: '/model_form/{backward_id}/{forward_id}',
+            path: '/model_form/{mode}',
             method: 'POST',
             config: {
                 tags: ['api'],
                 description: 'Deve criar Forms',
-                notes: 'Os valores sugeridos estão determinados como default.<br>\
-                >>><br>\
-                > step_forward: Se EXISTIR, o FORM Posterior, <br>\
-                > step_backward: Se EXISTIR, o FORM Anterior, <br>\
-                > flow: correspode ao <b>Flow pai do Form</b> <br>\
-                > completed: Verdadeirou Ou Falso <br>\
-                > data: [{}] Array de objetos do Form-Builder<br>\
-                > data: [{}] Array de Strings de quem pode responder o form<br>\
-                >>><br>\
+                notes: 'Os valores sugeridos estão determinados como default no body->Modelo->Example Value.<br>\
+                ------------------------------------------------------------------------------------------------------------------------<br>\
+                > mode <br>\
+                3 modos para criação de forms, modo passado sempre na url como inteiro <br>\
+                <b>O update</b> de Flow Father e step_forward e step_backward <b>é feito automaticamente</b><br> \
+                > mode: <b>0</b>| Criar o <b>primeiro form</b> da lista<br>\
+                > mode: <b>1</b>| Criar o <b>ultimo form</b> da lista<br>\
+                > mode: <b>2</b>| Criar um <b>form no meio</b> da lista <br>\
+                ------------------------------------------------------------------------------------------------------------------------<br>\
+                >>> <b>step_backward</b>: id do form anterior, utilizado nos modes 1 e 2, id em string válido<br>\
+                >>> <b>step_forward</b>: id do form posterior, utilizado somente no mode 2, id em string válido<br>\
+                Quando algum step_forward ID ou step_backward ID for irrelevante na operação como no mode: 0, \
+                passar o valor determinado no default example <br>\
+                > <b>title</b>: Título <br>\
+                > <b>flow</b>: correspode ao <b>Flow pai do Form</b> <br>\
+                > <b>data</b>: [{}] Array de objetos do Form-Builder<br>\
+                > <b>secret</b>: <b>true</b> Or <b>false</b> <br>\
+                > <b>creator</b>: <b>username</b> do criador <br>\
+                > <b>permission</b>: Array de strings com usernameS e roleS de <b>quem pode responder o form</b> <br>\
+                > <b>completed</b>: <b>true</b> Or <b>false</b> <br>\
+                ------------------------------------------------------------------------------------------------------------------------<br>\
                 <b>Importante:</b> <br>\
                 Em data.sections.rows.controls.<b>componentType</b><br>\
                 O equivalente no objeto do Form-Builder é <b>type</b><br>\
@@ -176,14 +188,12 @@ class FormRoutes extends BaseRoute {
                     failAction,
                     headers,
                     params: {
-                        forward_id: Joi.string().min(24).max(24).default('ffffffffffffffffffffffff'),
-                        backward_id: Joi.string().min(24).max(24).default('000000000000000000000000')
+                        mode: Joi.number().integer().default(0).min(0).max(2)
                     },
                     payload: {
-                        mode: Joi.number().integer().default(0).max(2),
                         title: Joi.string().required().min(3).max(100),
-                        step_forward: Joi.array().min(1).items(Joi.string()).default(['ffffffffffffffffffffffff']),
-                        step_backward: Joi.array().min(1).items(Joi.string()).default(['000000000000000000000000']),
+                        step_forward: Joi.string().min(24).max(24).default('ffffffffffffffffffffffff'),
+                        step_backward: Joi.string().min(24).max(24).default('000000000000000000000000'),
                         flow: Joi.string().min(24).max(24).default('111111111111111111111111'),
                         data: Joi.allow().default(CREATE_DEFAULT.data),
                         permission: Joi.array().min(1).items(Joi.string()).default(['admin', 'gui123', 'fifi24']),
@@ -204,10 +214,11 @@ class FormRoutes extends BaseRoute {
                         permission,
                         secret,
                         creator,
-                        completed,
-                        mode
+                        completed
                     } = request.payload
 
+                    const {mode} = request.params 
+                    console.log("mode: ", mode)
                     if (mode == 0) {
                         const result = await this.db.create({
                             title,
@@ -226,12 +237,10 @@ class FormRoutes extends BaseRoute {
                             _id: result._id
                         }
                     } else if (mode == 1) {
-                        const {backward_id} = request.params
-
                         const result = await this.db.create({
                             title,
                             step_forward,
-                            step_backward: backward_id,
+                            step_backward,
                             flow,
                             data,
                             permission,
@@ -240,7 +249,7 @@ class FormRoutes extends BaseRoute {
                             completed
                         })
 
-                        const update_result = await this.db.update(backward_id, {step_forward: result._id})
+                        const update_result = await this.db.update(step_backward, {step_forward: result._id})
 
                         return {
                             message: 'Form criado com sucesso',
@@ -248,14 +257,10 @@ class FormRoutes extends BaseRoute {
                         }
 
                     } else if (mode == 2) {
-                        const {backward_id} = request.params
-                        console.log("backward_id: ", backward_id)
-                        const {forward_id} = request.params
-                        console.log("forward_id: ", forward_id)
                         const result = await this.db.create({
                             title,
-                            step_forward: forward_id,
-                            step_backward: backward_id,
+                            step_forward,
+                            step_backward,
                             flow,
                             data,
                             permission,
@@ -263,8 +268,8 @@ class FormRoutes extends BaseRoute {
                             creator,
                             completed
                         })
-                        const update_result1 = await this.db.update(backward_id, {step_forward: result._id})
-                        const update_result2 = await this.db.update(forward_id, {step_backward: result._id})
+                        const update_result1 = await this.db.update(step_backward, {step_forward: result._id})
+                        const update_result2 = await this.db.update(step_forward, {step_backward: result._id})
                         
                         return {
                             message: 'Form criado com sucesso',

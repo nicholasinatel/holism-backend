@@ -16,6 +16,7 @@ ok(env == "prod" || env == "dev" || env == "gui", "error at env, ou dev ou prod,
 // configPath pega o arquivo no diretorio independente do local onde rodar o projeto
 // contanto que seja DENTRO DA PASTA SRC
 const configPath = join(__dirname, './../config', `.env.${env}`)
+console.log("env: ", env)
 config({
     path: configPath // Ejeta configuracao - Injeta os valores no ambiente
 })
