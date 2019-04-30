@@ -18,9 +18,10 @@ const headers = Joi.object({
 
 //queryString = http://localhost:5000/model_flow_list?skip=0&limit=10&nome=flash
 class FlowRoutes extends BaseRoute {
-    constructor(db) {
+    constructor(db, dbForm) {
         super()
         this.db = db
+        this.dbForm = dbForm
     }
     list() {
         return {
@@ -266,6 +267,17 @@ class FlowRoutes extends BaseRoute {
                     if (nuId.length == 0) {
                         return Boom.unauthorized()
                     } else {
+                        const queryForm = {
+                            'flow': `${id}`
+                        }
+                        const forms = await this.dbForm.joinRead(queryForm, 'flow', username, 'form')
+
+                        if(forms.length > 0){
+                            for(let i in forms) {
+                                await this.dbForm.delete(forms[i]._id)
+                            };
+                        }
+
                         const result = await this.db.delete(nuId[0]._id)    
                         if (result.n !== 1)
                             return Boom.preconditionFailed('ID nao encontrado no banco')    

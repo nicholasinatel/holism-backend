@@ -74,9 +74,10 @@ const CREATE_DEFAULT = {
 
 //queryString = http://localhost:5000/model_form_list?skip=0&limit=10&nome=flash
 class FormRoutes extends BaseRoute {
-    constructor(db) {
+    constructor(db, dbResp) {
         super()
         this.db = db
+        this.dbResp = dbResp
     }
     list() {
         return {
@@ -86,22 +87,22 @@ class FormRoutes extends BaseRoute {
                 tags: ['api'],
                 description: 'Deve listar FORMS Template',
                 notes: 'Query com 5 Parametros,<br> \
-                <b>skip</b> = Paginação <br> \
-                <b>limit</b> = Limita objetos na resposta <br> \
-                <b>search</b> = Objeto procurado <br> \
-                <b>username</b> = usuario realizando a query (permission_read) <br> \
+                ------------------------------------------------------------------------------------------------------------------------<br>\
+                > <b>skip</b>: Paginação <br> \
+                > <b>limit</b>: Limita objetos na resposta <br> \
+                > <b>search</b>: Objeto procurado <b>(Varia de acordo com o mode, ver abaixo)</b><br> \
+                > <b>username</b>: usuario realizando a query (permission_read) <br> \
                 <b> Inserir automaticamente o username do creator no permission_read no front-end </b> <br> \
                 <b> Somente Serão Mostrados Forms que o usuário está no array de permission_read </b> <br> \
-                >>><br> \
-                > mode = 0 | Query para achar tudo na collection, Campo search em branco, <b>username obrigatório</b> <br> \
-                > mode = 1 | Query por <b>id</b>, Campo Search: Inserir id do Form, <b>username obrigatório</b> <br> \
-                > mode = 2 | Query por <b>title</b>, Campo Search: Inserir title do Form, <b>Title com Valor APROXIMADO Regex!</b>, <b>username obrigatório</b> <br> \
-                > mode = 3 | Query de <b>FormS</b> Por <b>Flow</b>, Campo Search: Inserir <b>_id do Flow</b>, <b>username obrigatório</b> <br> \
-                > mode = 4 | Query de Single <b>Form Especifico</b> Do <b>Flow Especifico</b>, <br> \
-                <b>username obrigatório</b>, <br> \
-                Formato no Campo Search =         "_id do form"<b>/</b>"_id do flow" <br> \
-                >>><br> \
-                ...',
+                ------------------------------------------------------------------------------------------------------------------------<br>\
+                <b>username obrigatório em todas as GET REQUESTS</b><br>\
+                > mode = 0 | Query para achar tudo na collection, Campo search em branco<br> \
+                > mode = 1 | Query por <b>id</b>, Campo Search: Inserir id do Form<br> \
+                > mode = 2 | Query por <b>title</b>, Campo Search: Inserir title do Form, <b>Title com Valor APROXIMADO Regex!</b><br> \
+                > mode = 3 | Query de <b>FormS</b> Por <b>Flow</b>, Campo Search: Inserir <b>_id do Flow</b><br> \
+                > mode = 4 | Query de Single <b>Form Especifico</b> Do <b>Flow Especifico</b> Ver abaixo Formato Correto!! <br> \
+                .............. <b>Formato no Campo Search = "_id do form"<b>/</b>"_id do flow"</b> <br> \
+                ------------------------------------------------------------------------------------------------------------------------<br>',
                 validate: {
                     headers,
                     failAction: failAction,
@@ -127,6 +128,7 @@ class FormRoutes extends BaseRoute {
                     const query = await QueryHelper.queryFormSelecter(search, mode)
 
                     if (mode == 3) {
+                        console.log('query: ', query)
                         return this.db.joinRead(query, 'flow', username, 'form')
                     } else if (mode == 4) {
                         return this.db.joinRead(query, 'flow', username, 'form-4')
@@ -157,12 +159,12 @@ class FormRoutes extends BaseRoute {
                 description: 'Deve criar Forms',
                 notes: 'Os valores sugeridos estão determinados como default no body->Modelo->Example Value.<br>\
                 ------------------------------------------------------------------------------------------------------------------------<br>\
-                > mode <br>\
+                @ <b>mode</b> <br>\
                 3 modos para criação de forms, modo passado sempre na url como inteiro <br>\
                 <b>O update</b> de Flow Father e step_forward e step_backward <b>é feito automaticamente</b><br> \
-                > mode: <b>0</b>| Criar o <b>primeiro form</b> da lista<br>\
-                > mode: <b>1</b>| Criar o <b>ultimo form</b> da lista<br>\
-                > mode: <b>2</b>| Criar um <b>form no meio</b> da lista <br>\
+                @ mode: <b>0</b>| Criar o <b>primeiro form</b> da lista<br>\
+                @ mode: <b>1</b>| Criar o <b>ultimo form</b> da lista<br>\
+                @ mode: <b>2</b>| Criar um <b>form no meio</b> da lista <br>\
                 ------------------------------------------------------------------------------------------------------------------------<br>\
                 >>> <b>step_backward</b>: id do form anterior, utilizado nos modes 1 e 2, id em string válido<br>\
                 >>> <b>step_forward</b>: id do form posterior, utilizado somente no mode 2, id em string válido<br>\
@@ -216,9 +218,9 @@ class FormRoutes extends BaseRoute {
                         creator,
                         completed
                     } = request.payload
-
+                    
                     const {mode} = request.params 
-                    console.log("mode: ", mode)
+
                     if (mode == 0) {
                         const result = await this.db.create({
                             title,
@@ -293,30 +295,28 @@ class FormRoutes extends BaseRoute {
                 description: 'Deve atualizar um Form por <b>_id</b>',
                 notes: 'Para o update preciso que mande o objeto <b>id</b> do form em string.<br>\
                 neste caso, deve ser um <b>objeto id válido</b>, <b>(i.e existente no banco)</b>, utilize um que tenha retornado pelo read no banco.<br> \
+                ------------------------------------------------------------------------------------------------------------------------<br>\
                 Params: <br>\
-                @id: id do flow para ser feito o Update <br>\
-                @username: nome do usuário fazendo update, este usuáro precisa estar na lista de permission !!!<br>\
-                Segue exemplo com um objeto para update válido, é o mesmo no Example Value, porém em <b>formato de objeto</b>: <br> \
-                >>><br>\
-                var MOCK_FORM_UPDATE = {<br>\
-                &nbsp title: "form teste_update",<br>\
-                &nbsp step_forward: 0,<br>\
-                &nbsp step_backward: ["admin", "gui123", "fifi24", "nicholas"],<br>\
-                &nbsp completed: true,<br>\
-                &nbsp flow: "faca77777cacacaf5f511111"<br>\
-                &nbsp data: Um Array de Objetos Gigantesco do Form-Builder! <br>\
-                &nbsp permission: Um Array de Strings de quem pode RESPONDER o form <br>\
-                &nbsp completed: true ou false <br>\
-                }<br>\
-                >>><br>\
+                @<b>id</b>: id do flow para ser feito o Update <br>\
+                @<b>username</b>: nome do usuário fazendo update, este usuáro precisa estar na lista de permission !!!<br>\
+                ------------------------------------------------------------------------------------------------------------------------<br>\
+                Os valores sugeridos estão determinados como default no body->Modelo->Example Value.<br>\
                 Antes do objeto ser enviado ele deve ser convertido em string: <br>\
                 <b>e.g(JSON.stringify(MOCK_FORM_UPDATE))</b><br>\
-                <b>Importante-1:</b> <br>\
-                >>><br>\
-                Passar atributo: <b>readonly</b> = <b>true</b><br>\
-                Todos os responses nao podem ser mais editados, essa vai ser a principal maneira de identifica-los.<br>\
-                >>>Ler abaixo!!!<br>\
-                <b>Importante-2:</b> <br>\
+                ------------------------------------------------------------------------------------------------------------------------<br>\
+                >>> <b>step_backward</b>: id do form anterior, utilizado nos modes 1 e 2, id em string válido<br>\
+                >>> <b>step_forward</b>: id do form posterior, utilizado somente no mode 2, id em string válido<br>\
+                Quando algum step_forward ID ou step_backward ID for irrelevante na operação como no mode: 0, \
+                passar o valor determinado no default example <br>\
+                > <b>title</b>: Título <br>\
+                > <b>flow</b>: correspode ao <b>Flow pai do Form</b> <br>\
+                > <b>data</b>: [{}] Array de objetos do Form-Builder<br>\
+                > <b>secret</b>: <b>true</b> Or <b>false</b> <br>\
+                > <b>creator</b>: <b>username</b> do criador <br>\
+                > <b>permission</b>: Array de strings com usernameS e roleS de <b>quem pode responder o form</b> <br>\
+                > <b>completed</b>: <b>true</b> Or <b>false</b> <br>\
+                ------------------------------------------------------------------------------------------------------------------------<br>\
+                <b>Importante:</b> <br>\
                 Em data.sections.rows.controls.<b>componentType</b><br>\
                 O equivalente no objeto do Form-Builder é <b>type</b><br>\
                 No entanto, a palavra type é reservada e não posso salvá-la no objeto.<br>\
@@ -386,9 +386,9 @@ class FormRoutes extends BaseRoute {
                 tags: ['api'],
                 description: 'Deve deletar um form por <b>_id</b>',
                 notes: 'Parametros: <br>\
-                @id: o <b> id </b> deve ser válido, realizar um read no banco antes, passar como <b>String</b> <br>\
-                @username: nome do usuário fazendo o delete, este usuáro precisa estar na lista de permission_write !!! <br> \
-                caso o usuario nao esteja na lista correta, retornara erro de nao autorizado',
+                @<b>id</b>: o <b> id </b> deve ser válido, realizar um read no banco antes, passar como <b>String</b> <br>\
+                @<b>username</b>: nome do usuário fazendo o delete, este usuáro precisa estar na lista de <b>permission_write no Flow Pai</b> <br> \
+                caso o usuario não esteja na lista correta, retornará erro de não autorizado',
                 validate: {
                     headers,
                     failAction,
@@ -411,6 +411,17 @@ class FormRoutes extends BaseRoute {
                     if (nuId.length == 0) {
                         return Boom.unauthorized()
                     } else {
+                        const queryResp = {
+                            model_form: `${id}`
+                        }
+                        const responses = await this.dbResp.read(queryResp)
+
+                        if(responses.length > 0){
+                            for(let i in responses) {
+                                await this.dbResp.delete(responses[i]._id)
+                            };
+                        }
+                        
                         const result = await this.db.delete(id)
                         if (result.n !== 1)
                             return Boom.preconditionFailed('ID nao encontrado no banco')
