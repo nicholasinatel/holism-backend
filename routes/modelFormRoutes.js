@@ -74,10 +74,11 @@ const CREATE_DEFAULT = {
 
 //queryString = http://localhost:5000/model_form_list?skip=0&limit=10&nome=flash
 class FormRoutes extends BaseRoute {
-    constructor(db, dbResp) {
+    constructor(db, dbResp, dbFlow) {
         super()
         this.db = db
         this.dbResp = dbResp
+        this.dbFlow = dbFlow
     }
     list() {
         return {
@@ -232,7 +233,9 @@ class FormRoutes extends BaseRoute {
                             secret,
                             creator,
                             completed
-                        })
+                        });
+
+                        await this.dbFlow.update(flow, {starter_form: result._id});
 
                         return {
                             message: 'Form criado com sucesso',
