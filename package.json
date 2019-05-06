@@ -1,8 +1,8 @@
 {
   "name": "holismo_backend",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Backend desenvolvido por Nicholas Lobo, Filipe Campos como Consultor",
-  "main": "index.js",
+  "main": "src/api.js",
   "scripts": {
     "postinstall": "npm t",
     "local": "cross-env NODE_ENV=dev node src/api.js",

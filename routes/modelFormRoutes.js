@@ -163,6 +163,7 @@ class FormRoutes extends BaseRoute {
                 @ <b>mode</b> <br>\
                 3 modos para criação de forms, modo passado sempre na url como inteiro <br>\
                 <b>O update</b> de Flow Father e step_forward e step_backward <b>é feito automaticamente</b><br> \
+                Utilizar os modos somente para as ações descritas a seguir: <br>\
                 @ mode: <b>0</b>| Criar o <b>primeiro form</b> da lista<br>\
                 @ mode: <b>1</b>| Criar o <b>ultimo form</b> da lista<br>\
                 @ mode: <b>2</b>| Criar um <b>form no meio</b> da lista <br>\
