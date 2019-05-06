@@ -7,13 +7,6 @@ const STATUS = {
     3: 'Desconectando'
 }
 
-const dbOption = {
-    local: 'mongodb://nicholas:123456@192.168.99.100:27017/herois',
-    aws: 'mongodb://172.31.5.155:27017/holismo'
-}
-
-const database = dbOption.local
-
 // Classes concretas que implementam as funcoes de fato
 class MongoDB extends ICrud {
     constructor(connection, schema) {

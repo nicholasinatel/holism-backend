@@ -12,7 +12,7 @@ const {
 } = require('assert')
 
 const env = process.env.NODE_ENV || "dev" // setar ambiente - se nao passou nada SETA ambiente de dev
-ok(env == "prod" || env == "dev", "error at env, ou dev ou prod, utilize heroku config:set NODE_ENV=AMBIENTE_DESEJADO") // testar ambiente prod ou dev
+ok(env == "prod" || env == "dev" || env == "heroku", "error at env, ou dev ou prod, utilize heroku config:set NODE_ENV=AMBIENTE_DESEJADO") // testar ambiente prod ou dev
 // configPath pega o arquivo no diretorio independente do local onde rodar o projeto
 // contanto que seja DENTRO DA PASTA SRC
 const configPath = join(__dirname, './../config', `.env.${env}`)
