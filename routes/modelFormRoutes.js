@@ -87,14 +87,14 @@ class FormRoutes extends BaseRoute {
             config: {
                 tags: ['api'],
                 description: 'Deve listar FORMS Template',
-                notes: 'Query com 5 Parametros,<br> \
+                notes: 'Query com 5 Parâmetros,<br> \
                 ------------------------------------------------------------------------------------------------------------------------<br>\
                 > <b>skip</b>: Paginação <br> \
                 > <b>limit</b>: Limita objetos na resposta <br> \
                 > <b>search</b>: Objeto procurado <b>(Varia de acordo com o mode, ver abaixo)</b><br> \
                 > <b>username</b>: usuario realizando a query (permission_read) <br> \
                 <b> Inserir automaticamente o username do creator no permission_read no front-end </b> <br> \
-                <b> Somente Serão Mostrados Forms que o usuário está no array de permission_read </b> <br> \
+                <b> Somente Serão Mostrados Forms que o usuário está no array de permission_read do Fluxo </b> <br> \
                 ------------------------------------------------------------------------------------------------------------------------<br>\
                 <b>username obrigatório em todas as GET REQUESTS</b><br>\
                 > mode = 0 | Query para achar tudo na collection, Campo search em branco<br> \
@@ -220,8 +220,10 @@ class FormRoutes extends BaseRoute {
                         creator,
                         completed
                     } = request.payload
-                    
-                    const {mode} = request.params 
+
+                    const {
+                        mode
+                    } = request.params
 
                     if (mode == 0) {
                         const result = await this.db.create({
@@ -236,7 +238,9 @@ class FormRoutes extends BaseRoute {
                             completed
                         });
 
-                        await this.dbFlow.update(flow, {starter_form: result._id});
+                        await this.dbFlow.update(flow, {
+                            starter_form: result._id
+                        });
 
                         return {
                             message: 'Form criado com sucesso',
@@ -255,7 +259,9 @@ class FormRoutes extends BaseRoute {
                             completed
                         })
 
-                        const update_result = await this.db.update(step_backward, {step_forward: result._id})
+                        const update_result = await this.db.update(step_backward, {
+                            step_forward: result._id
+                        })
 
                         return {
                             message: 'Form criado com sucesso',
@@ -274,9 +280,13 @@ class FormRoutes extends BaseRoute {
                             creator,
                             completed
                         })
-                        const update_result1 = await this.db.update(step_backward, {step_forward: result._id})
-                        const update_result2 = await this.db.update(step_forward, {step_backward: result._id})
-                        
+                        const update_result1 = await this.db.update(step_backward, {
+                            step_forward: result._id
+                        })
+                        const update_result2 = await this.db.update(step_forward, {
+                            step_backward: result._id
+                        })
+
                         return {
                             message: 'Form criado com sucesso',
                             _id: result._id
@@ -392,12 +402,14 @@ class FormRoutes extends BaseRoute {
                 notes: 'Parametros: <br>\
                 @<b>id</b>: o <b> id </b> deve ser válido, realizar um read no banco antes, passar como <b>String</b> <br>\
                 @<b>username</b>: nome do usuário fazendo o delete, este usuáro precisa estar na lista de <b>permission_write no Flow Pai</b> <br> \
-                caso o usuario não esteja na lista correta, retornará erro de não autorizado',
+                caso o usuario não esteja na lista correta(permission_write do flow pai nesse caso), retornará erro de não autorizado<br>\
+                ------------------------------------------------------------------------------------------------------------------------<br>\
+                Deleta o FORM e TODAS as RESPONSES filhas.',
                 validate: {
                     headers,
                     failAction,
                     params: {
-                        id: Joi.string().required(),
+                        id: Joi.string().min(24).max(24).required(),
                         username: Joi.string().required()
                     }
                 } // validate end
@@ -412,20 +424,52 @@ class FormRoutes extends BaseRoute {
                         '_id': `${id}`
                     }
                     const nuId = await this.db.writePermission(query, 0, 1, username, 'form')
+
                     if (nuId.length == 0) {
                         return Boom.unauthorized()
                     } else {
+                        if (nuId[0].step_backward[0] != '000000000000000000000000' && nuId[0].step_forward[0] == 'ffffffffffffffffffffffff') {
+                            // update step_backward - Last Form COndition
+                            console.log("Last Form COndition Delete");
+                            await this.db.update(nuId[0].step_backward[0], {
+                                step_forward: 'ffffffffffffffffffffffff'
+                            });
+                        } else if (nuId[0].step_forward[0] != 'ffffffffffffffffffffffff' && nuId[0].step_backward[0] == '000000000000000000000000') {
+                            // update step_forward - First Form Condition
+                            console.log("First Form Condition Delete");
+                            await this.db.update(nuId[0].step_forward[0], {
+                                step_backward: '000000000000000000000000'
+                            });
+                            await this.dbFlow.update(nuId[0].flow, {
+                                starter_form: nuId[0].step_forward
+                            });
+                        } else if(nuId[0].step_forward[0] == 'ffffffffffffffffffffffff' && nuId[0].step_backward[0] == '000000000000000000000000'){
+                            // single form condition
+                            console.log("Single Form Condition Delete");
+                            await this.dbFlow.update(nuId[0].flow, {
+                                starter_form: '000000000000000000000000'
+                            });
+                        } else if (nuId[0].step_forward[0] != 'ffffffffffffffffffffffff' && nuId[0].step_backward[0] != '000000000000000000000000') {
+                            // update both - Mid Form Condition
+                            console.log("Mid Form Condition Delete");
+                            await this.db.update(nuId[0].step_forward[0], {
+                                step_backward: nuId[0].step_backward[0]
+                            });
+                            await this.db.update(nuId[0].step_backward[0], {
+                                step_forward: nuId[0].step_forward[0]
+                            });
+                        }
                         const queryResp = {
                             model_form: `${id}`
                         }
                         const responses = await this.dbResp.read(queryResp)
 
-                        if(responses.length > 0){
-                            for(let i in responses) {
+                        if (responses.length > 0) {
+                            for (let i in responses) {
                                 await this.dbResp.delete(responses[i]._id)
                             };
                         }
-                        
+
                         const result = await this.db.delete(id)
                         if (result.n !== 1)
                             return Boom.preconditionFailed('ID nao encontrado no banco')
@@ -440,6 +484,6 @@ class FormRoutes extends BaseRoute {
             }
         } // return delete end
     } // delete end
-}   
+}
 
 module.exports = FormRoutes

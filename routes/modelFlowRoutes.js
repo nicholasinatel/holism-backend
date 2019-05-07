@@ -29,21 +29,24 @@ class FlowRoutes extends BaseRoute {
             method: 'GET',
             config: {
                 tags: ['api'],
-                description: 'Deve listar Flows na Collection, por ID || title || retorna todos',
+                description: 'Deve listar Flows',
                 notes: 'Query com 5 Parâmetros,<br> \
+                ------------------------------------------------------------------------------------------------------------------------<br>\
                 <b>skip</b> = Paginação <br> \
                 <b>limit</b> = Limita objetos na resposta <br> \
                 <b>search</b> = Objeto procurado <br> \
                 <b>username</b> = usuario realizando a query (permission_read) <br> \
                 <b> Inserir automaticamente o username do creator no permission_read no front-end </b> <br> \
-                <b> Somente Serão Mostrados Fluxos que o usuário está no array de permission_read </b> <br> \
-                >>><br> \
-                > mode = 0 | Query para achar tudo na collection, Campo search em branco, <b>username obrigatório</b> <br> \
-                > mode = 1 | Query por <b>id</b>, Campo Search: Inserir id do Flow, <b>username obrigatório</b> <br> \
-                > mode = 2 | Query por <b>title</b>, Campo Search: Inserir title do Flow, <b>Title com Valor Exato!!</b>, <b>username obrigatório</b> <br> \
-                > mode = 3 | Query de Flows Por <b>Project</b>, Campo Search: Inserir <b>_id do project</b>, <b>username obrigatório</b> <br> \
-                > mode = 4 | Query por title, Campo Search: Inserir title do Flow, <b>Title com Valor APROXIMADO! Regex Feature</b>, <b>username obrigatório</b> <br> \
-                >>>',
+                <b> Somente Serão Mostrados Fluxos que o usuário está no array de permission_read do Fluxo </b> <br> \
+                ------------------------------------------------------------------------------------------------------------------------<br>\
+                <b>username obrigatório em todas as GET REQUESTS</b><br>\
+                > mode = 0 | Query para achar tudo na collection, Campo search em branco<br> \
+                > mode = 1 | Query por <b>id</b>, Campo Search: Inserir id do Flow<br> \
+                > mode = 2 | Query por <b>title</b>, Campo Search: Inserir title do Flow, <b>Title com Valor Exato!!</b><br> \
+                > mode = 3 | Query de Flows Por <b>Project</b>, Campo Search: Inserir <b>_id do project</b><br> \
+                > mode = 4 | Query por title, Campo Search: Inserir title do Flow, <b>Title com Valor APROXIMADO! Regex Feature</b><br> \
+                ------------------------------------------------------------------------------------------------------------------------<br>\
+                ',
                 validate: {
                     headers,
                     failAction: failAction,
@@ -90,18 +93,15 @@ class FlowRoutes extends BaseRoute {
             config: {
                 tags: ['api'],
                 description: 'Deve criar Flows',
-                notes: 'Único parâmetro necessário é o <b>Title</b>,<br>\
-                os valores sugeridos estão determinados como default.<br>\
-                Os valores Default podem ser substituídos, seguindo o padrão.<br>\
-                >>><br>\
-                --> title: Título<br>\
-                --> permission_read: um número de 0 a 3 para os níveis de acesso de cada usuário.<br>\
-                --> permission_write: um array que pode conter <b>personas</b> e <b>usuários</b>, ver default para exemplo.<br>\
-                --> starter_form: correspode ao <b>primeiro form do flow</b>, será sempre adicionado quando o mesmo,<br>\
-                for criado, utilizando um <b>update</b> após o <b>create form</b>.<br>\
-                --> creator: corresponde ao usuário que está criando o flow<br>\
-                --> project: corresponde ao projeto pai do flow <br>\
-                >>><br>\
+                notes: 'Valores sugeridos estão determinados como default.<br>\
+                ------------------------------------------------------------------------------------------------------------------------<br>\
+                > <b>title</b>: Título<br>\
+                > <b>permission_read</b>: um array que pode conter <b>personas</b> e <b>usuários</b>, ver default para exemplo.<br>\
+                > <b>permission_write</b>: um array que pode conter <b>personas</b> e <b>usuários</b>, ver default para exemplo.<br>\
+                > <b>starter_form</b>: correspode ao <b>primeiro form do flow</b>, será adicionado quando o mesmo for criado no criar de rotas para o form<br>\
+                > <b>creator</b>: corresponde ao usuário que está criando o flow<br>\
+                > <b>project</b>: corresponde ao projeto pai do flow<br>\
+                ------------------------------------------------------------------------------------------------------------------------<br>\
                 Salvar <b>id retornado</b> após criação com sucesso em alguma variável pois será útil em breve.<br>',
                 validate: {
                     failAction,
@@ -162,21 +162,19 @@ class FlowRoutes extends BaseRoute {
                 description: 'Deve atualizar um Flow por <b>_id</b>',
                 notes: 'Para o update preciso que mande o objeto <b>id</b> do form em string.<br>\
                 neste caso, deve ser um <b>objeto id válido</b>, <b>(i.e existente no banco)</b>, utilize um que tenha retornado pelo read no banco.<br> \
+                ------------------------------------------------------------------------------------------------------------------------<br>\
                 Params: <br>\
-                @id: id do flow para ser feito o Update <br>\
-                @username: nome do usuário fazendo update, este usuáro precisa estar na lista de permission_write !!!<br>\
-                caso o usuario nao esteja na lista correta, retornara erro de nao autorizado<br> \
-                Segue exemplo com um objeto para update válido, é o mesmo no Example Value, porém em <b>formato de objeto</b>: <br> \
-                >>><br>\
-                var MOCK_FLOW_UPDATE = {<br>\
-                &nbsp title: "flow teste_update",<br>\
-                &nbsp permission_read: 0,<br>\
-                &nbsp permission_write: ["admin", "gui123", "fifi24", "nicholas"],<br>\
-                &nbsp completed: true,<br>\
-                &nbsp starter_form: "faca77777cacacaf5f511111",<br>\
-                &nbsp creator: "5c4775423ce1b91f5c344f60"<br>\
-                }<br>\
-                >>><br>\
+                @<b>id</b>: id do flow para ser feito o Update <br>\
+                @<b>username</b>: nome do usuário fazendo update, este usuáro precisa estar na lista de permission_write !<br>\
+                caso o usuario nao esteja na lista correta, retornara erro de não autorizado<br> \
+                ------------------------------------------------------------------------------------------------------------------------<br>\
+                > <b>title</b>: Título<br>\
+                > <b>permission_read</b>: um array que pode conter <b>personas</b> e <b>usuários</b>, ver default para exemplo.<br>\
+                > <b>permission_write</b>: um array que pode conter <b>personas</b> e <b>usuários</b>, ver default para exemplo.<br>\
+                > <b>starter_form</b>: correspode ao <b>primeiro form do flow</b>, será adicionado quando o mesmo for criado no criar de rotas para o form<br>\
+                > <b>creator</b>: corresponde ao usuário que está criando o flow<br>\
+                > <b>project</b>: corresponde ao projeto pai do flow<br>\
+                ------------------------------------------------------------------------------------------------------------------------<br>\
                 Antes do objeto ser enviado ele deve ser convertido em string: <br>\
                 <b>e.g(JSON.stringify(MOCK_FLOW_UPDATE))</b><br>\
                 <b>i.e</b> significa isto é (vem do latin, os gringos usam muito) <br>\
@@ -243,8 +241,10 @@ class FlowRoutes extends BaseRoute {
                 description: 'Deve deletar um flow por <b>_id</b>',
                 notes: 'Parametros: <br>\
                 @id: o <b> id </b> deve ser válido, realizar um read no banco antes, passar como <b>String</b> <br>\
-                @username: nome do usuário fazendo o delete, este usuáro precisa estar na lista de permission_write !!! <br> \
-                caso o usuario nao esteja na lista correta, retornara erro de nao autorizado',
+                @username: nome do usuário fazendo o delete, este usuáro precisa estar na lista de permission_write!<br> \
+                caso o usuario nao esteja na lista correta(permission_write), retornará erro de não autorizado<br>\
+                ------------------------------------------------------------------------------------------------------------------------<br>\
+                Deleta o Fluxo e TODOS os FORMS filhos.',
                 validate: {
                     headers,
                     failAction,
