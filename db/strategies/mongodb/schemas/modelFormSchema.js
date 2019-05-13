@@ -55,7 +55,7 @@ const modelFormSchema = new Mongoose.Schema({
                     timeFormat: String,
                     isMultiple: Boolean,
                     isAjax: Boolean,
-                    dataOptions: [Mongoose.Schema.Types.Mixed], // Check Later if it is a Real String
+                    dataOptions: [Mongoose.Schema.Types.Mixed], // OK
                     ajaxDataUrl: String,
                     isChecked: Boolean
                 }]
@@ -64,7 +64,7 @@ const modelFormSchema = new Mongoose.Schema({
             isDynamic: Boolean,
             minInstance: Number,
             maxInstance: Number,
-            instances: [String] // Check Later if it is a Real a String
+            instances: [Mongoose.Schema.Types.Mixed] // OK
         }],
         layout: String,
         _uniqueId: Number // From Form Builder

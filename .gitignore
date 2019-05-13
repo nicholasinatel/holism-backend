@@ -1,6 +1,5 @@
 node_modules/
 coverage/
 .nyc_output/
-objects/
+utilities/
 MINHA_CHAVE
-compare/
