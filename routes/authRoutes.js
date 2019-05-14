@@ -147,12 +147,14 @@ class AuthRoutes extends BaseRoute {
                 > <b>role</b>: <br>\
                 ------------------------------------------------------------------------------------------------------------------------<br>\
                 Roles possíveis: <br>\
-                <b>admin</b> <br>\
-                <b>professor</b> <br>\
+                <b>admin</b> <br>\ 
                 <b>desenvolvedor</b> <br>\
+                <b>gerente</b> <br>\
+                <b>professor</b> <br>\
                 <b>marketing</b> <br>\
                 <b>colaborador</b> <br>\
                 <b>estudante</b> <br>\
+                <b>terceiro</b> <br>\
                 ',
                 validate: {
                     failAction,

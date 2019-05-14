@@ -83,7 +83,11 @@ Para verificar a utilização da API, o server disponibiliza uma documentação 
 * Rota /response
 * Get Request
 * Search: model_form._id
-
+6. Listar Respostas Com Secret (Clickou Ver Respostas)
+* Rota /response
+* Get Request
+* Search: model_form._id
+* QUANDO SECRET = TRUE, RESPONSES VISIVEIS SOMENTE PARA CRIADOR DO FORM E DA RESPONSE
 
 ```
 var OBJETO_1 = [
