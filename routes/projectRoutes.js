@@ -16,9 +16,12 @@ const headers = Joi.object({
 
 //queryString = http://localhost:5000/model_flow_list?skip=0&limit=10&nome=flash
 class ProjectRoutes extends BaseRoute {
-    constructor(db) {
+    constructor(db, dbFlow, dbForm, dbResp) {
         super()
         this.db = db
+        this.dbFlow = dbFlow
+        this.dbForm = dbForm
+        this.dbResp = dbResp
     }
     list() {
         return {
@@ -243,10 +246,54 @@ class ProjectRoutes extends BaseRoute {
                     const query = {
                         '_id': `${id}`
                     }
+
                     const nuId = await this.db.writePermission(query, 0, 1, creator, 'project')
+
                     if (nuId.length == 0) {
                         return Boom.unauthorized()
                     } else {
+                        /**
+                         * TODO Get All Flows 2 Delete
+                         */
+                        const queryFlow = {
+                            'project': `${nuId[0]._id}`
+                        };
+                        const flows = await this.dbFlow.joinRead(queryFlow, 'project', creator, 'flow');
+                        let flowArrayIDs = [];
+
+                        if (flows.length > 0) {
+                            for (let i in flows) {
+                                flowArrayIDs.push(flows[i]._id);
+                                await this.dbFlow.delete(flows[i]._id);
+                            }
+                        }
+                        /**
+                         * TODO Delete Forms && Responses
+                         */
+                        if (flowArrayIDs.length > 0) {
+                            for (let i in flowArrayIDs) {
+                                let forms = await this.dbForm.read({
+                                    flow: flowArrayIDs[i]
+                                });
+                                if (forms.length > 0) {
+                                    for (let j in forms) {
+                                        let responses = await this.dbResp.read({
+                                            model_form: forms[j]._id
+                                        });
+                                        if (responses.length > 0) {
+                                            for (let z in responses) {
+                                                await this.dbResp.delete(responses[z]._id);
+                                            }
+                                        }
+                                        await this.dbForm.delete(forms[j]._id)
+                                    }
+                                }
+                            };
+                        }
+
+                        /**
+                         * TODO Delete Project
+                         */
                         const result = await this.db.delete(nuId[0]._id)
                         if (result.n !== 1)
                             return Boom.preconditionFailed('_ID não encontrado no banco')
