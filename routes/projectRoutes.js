@@ -223,10 +223,13 @@ class ProjectRoutes extends BaseRoute {
             config: {
                 tags: ['api'],
                 description: 'Deve deletar um project por <b>_id</b>',
-                notes: 'Parâmetros: <br>\
+                notes: 'Deleta Project, Todos os Fluxos, Forms e Responses do Project Deletado: <br>\
+                Parâmetros:<br>\
                 @<b>id</b>: o <b>id</b> deve ser válido, realizar um read no banco antes, passar como <b>String</b> <br>\
                 @<b>creator</b>: nome do usuário fazendo o delete, este usuáro precisa ser o criador do project !!! <br> \
-                caso o usuario nao seja o creator, retornara erro de nao autorizado',
+                ------------------------------------------------------------------------------------------------------------------------<br>\
+                Caso o usuário não seja o <b>creator</b>, retorna erro de não autorizado<br>\
+                ',
                 validate: {
                     headers,
                     failAction,
@@ -253,7 +256,8 @@ class ProjectRoutes extends BaseRoute {
                         return Boom.unauthorized()
                     } else {
                         /**
-                         * TODO Get All Flows 2 Delete
+                         * * GET FLOWS
+                         * TODO: Push First Array And Delete
                          */
                         const queryFlow = {
                             'project': `${nuId[0]._id}`
@@ -268,6 +272,7 @@ class ProjectRoutes extends BaseRoute {
                             }
                         }
                         /**
+                         * * GET Forms && Responses
                          * TODO Delete Forms && Responses
                          */
                         if (flowArrayIDs.length > 0) {
@@ -292,7 +297,7 @@ class ProjectRoutes extends BaseRoute {
                         }
 
                         /**
-                         * TODO Delete Project
+                         * TODO Delete THE Project
                          */
                         const result = await this.db.delete(nuId[0]._id)
                         if (result.n !== 1)

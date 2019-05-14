@@ -139,13 +139,27 @@ class AuthRoutes extends BaseRoute {
                 auth: false, //rota nao passa pela autenticacao para poder obter o token
                 tags: ['api'],
                 description: 'Registrar Usuario',
-                notes: 'Retorna Usuário Criado ou Não',
+                notes: 'Retorna StatusCode 200 se criação feita<br>\
+                ------------------------------------------------------------------------------------------------------------------------<br>\
+                Body: <br>\
+                > <b>username</b>: <br>\
+                > <b>password</b>: <br>\
+                > <b>role</b>: <br>\
+                ------------------------------------------------------------------------------------------------------------------------<br>\
+                Roles possíveis: <br>\
+                <b>admin</b> <br>\
+                <b>professor</b> <br>\
+                <b>desenvolvedor</b> <br>\
+                <b>marketing</b> <br>\
+                <b>colaborador</b> <br>\
+                <b>estudante</b> <br>\
+                ',
                 validate: {
                     failAction,
                     payload: {
                         username: Joi.string().required(),
                         password: Joi.string().required(),
-                        role: Joi.array().default(['admin', 'professor', 'dev'])
+                        role: Joi.array().default(['admin', 'professor', 'desenvolvedor']).required()
                     } // payload end
                 } // validate end
             }, // config end

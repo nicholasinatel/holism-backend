@@ -24,22 +24,23 @@ class ImportRoutes extends BaseRoute {
             config: {
                 tags: ['api'],
                 description: 'IMPORT Flow & Forms',
-                notes: 'Único parâmetro necessário é o <b>_id</b> do flow para importar <br>\
-                STEP_FORWARDS dos FORMS precisa estar correto <br>\
-                I.E um linkado no outro sem erros <br>\
+                notes: '<b>Único parâmetro necessário é o _id do Flow para importar</b><br>\
+                Recebe um _id de Flow e Copia o Flow e Forms Filhos em novos objetos no banco de dados<br>\
+                ------------------------------------------------------------------------------------------------------------------------<br>\
+                <b>step_forward e step_backward precisa estar correto</b> <br>\
                 ULTIMO STEP_FORWARD PRECISA SER ffffffffffffffffffffffff <br>\
-                SE NAO FOR VAI DAR PROBLEMA e.g LOOP INFINITO NO SERVER!!!!<br>\
-                Os valores Default podem ser substituídos, seguindo o padrão.<br>\
-                >>><br>\
-                --> title: Título único.<br>\
-                --> permission_read: um número de 0 a 3 para os níveis de acesso de cada usuário.<br>\
-                --> permission_write: um array que pode conter <b>personas</b> e <b>usuários</b>, ver default para exemplo.<br>\
-                --> starter_form: correspode ao <b>primeiro form do flow</b>, será sempre adicionado quando o mesmo,<br>\
-                for criado, utilizando um <b>update</b> após o <b>create form</b>.<br>\
-                --> creator: corresponde ao usuário que está criando o flow<br>\
-                --> project: corresponde ao projeto pai do flow <br>\
-                >>><br>\
-                Salvar <b>id retornado</b> após criação com sucesso em alguma variável pois será útil em breve.<br>....',
+                PRIMEIRO STEP_BACKWARD PRECISA SER 000000000000000000000000 <br>\
+                SE ESTIVER ERRADO TEREMOS UM LOOP INFINITO NO SERVER!<br>\
+                ------------------------------------------------------------------------------------------------------------------------<br>\
+                Body <br>\
+                > <b>title</b>: <br>\
+                > <b>permission_read</b>: <br>\
+                > <b>permission_write</b>: <br>\
+                > <b>starter_form</b>: <br>\
+                > <b>creator</b>: <br>\
+                > <b>project</b>: <br>\
+                ------------------------------------------------------------------------------------------------------------------------<br>\
+                ',
                 validate: {
                     failAction,
                     headers,

@@ -428,15 +428,23 @@ class FormRoutes extends BaseRoute {
                     if (nuId.length == 0) {
                         return Boom.unauthorized()
                     } else {
+                        /**
+                         * * CHECK CONDITIONS FOR AUTOMATIC FORM DELETION
+                         */
                         if (nuId[0].step_backward[0] != '000000000000000000000000' && nuId[0].step_forward[0] == 'ffffffffffffffffffffffff') {
-                            // update step_backward - Last Form COndition
-                            console.log("Last Form COndition Delete");
+                            /**
+                             * * Last Form Condition
+                             * TODO: UPDATE step_backward
+                             */
                             await this.db.update(nuId[0].step_backward[0], {
                                 step_forward: 'ffffffffffffffffffffffff'
                             });
                         } else if (nuId[0].step_forward[0] != 'ffffffffffffffffffffffff' && nuId[0].step_backward[0] == '000000000000000000000000') {
-                            // update step_forward - First Form Condition
-                            console.log("First Form Condition Delete");
+                            /**
+                             * * First Form Condition
+                             * TODO: UPDATE step_forward
+                             * TODO: UPDATE starter_form from FLOW
+                             */
                             await this.db.update(nuId[0].step_forward[0], {
                                 step_backward: '000000000000000000000000'
                             });
@@ -444,14 +452,19 @@ class FormRoutes extends BaseRoute {
                                 starter_form: nuId[0].step_forward
                             });
                         } else if(nuId[0].step_forward[0] == 'ffffffffffffffffffffffff' && nuId[0].step_backward[0] == '000000000000000000000000'){
-                            // single form condition
-                            console.log("Single Form Condition Delete");
+                            /**
+                             * * Single Form Condition
+                             * TODO: UPDATE starter_form from FLOW
+                             */
                             await this.dbFlow.update(nuId[0].flow, {
                                 starter_form: '000000000000000000000000'
                             });
                         } else if (nuId[0].step_forward[0] != 'ffffffffffffffffffffffff' && nuId[0].step_backward[0] != '000000000000000000000000') {
-                            // update both - Mid Form Condition
-                            console.log("Mid Form Condition Delete");
+                            /**
+                             * * Middle Form Condition
+                             * TODO: UPDATE step_backward
+                             * TODO: UPDATE step_forward
+                             */
                             await this.db.update(nuId[0].step_forward[0], {
                                 step_backward: nuId[0].step_backward[0]
                             });

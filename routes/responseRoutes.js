@@ -77,10 +77,10 @@ class ResponseRoutes extends BaseRoute {
                 tags: ['api'],
                 description: 'Deve listar Response de um Determinado Model Form',
                 notes: 'Fornecer somente o _id do <b>model_form</b> em que o response existe.<br> \
-                >>><br> \
+                ------------------------------------------------------------------------------------------------------------------------<br>\
                 Retorna: Responses filhos do form.<br> \
-                Form em questão. <br> \
-                >>><br> \
+                & Form em questão. <br> \
+                ------------------------------------------------------------------------------------------------------------------------<br>\
                 ...',
                 validate: {
                     headers,
@@ -117,21 +117,24 @@ class ResponseRoutes extends BaseRoute {
             config: {
                 tags: ['api'],
                 description: 'Deve criar Responses vinculadas ao Form',
-                notes: 'Os valores sugeridos estão determinados como default.<br>\
+                notes: 'Os valores sugeridos estão determinados como default no body->Modelo->Example Value.<br>\
                 Enviar dado direto do data vindo do Form Builder.<br>\
+                ------------------------------------------------------------------------------------------------------------------------<br>\
                 <b>Importante-1:</b> <br>\
-                >>><br>\
+                ------------------------------------------------------------------------------------------------------------------------<br>\
                 Passar atributo: <b>readonly</b> = <b>true</b><br>\
                 Todos os responses nao podem ser mais editados, essa vai ser a principal maneira de identifica-los.<br>\
-                >>>Ler abaixo!!!<br>\
+                ------------------------------------------------------------------------------------------------------------------------<br>\
                 <b>Importante-2:</b> <br>\
                 Em data.sections.rows.controls.<b>componentType</b><br>\
                 O equivalente no objeto do Form-Builder é <b>type</b><br>\
                 No entanto, a palavra type é reservada e não posso salvá-la no objeto.<br>\
-                Então modificar o objeto antes de enviar, exemplo: <br>\
-                OBJETO_CORRETO.data.sections.rows.controls.<b>componentType</b> = OBJETO_ORIGINAL.data.sections.rows.controls.<b>componentType</b><br> \
+                Modificar o objeto antes de enviar <br>\
+                exemplo: <br>\
+                OBJETO_CORRETO.data.sections.rows.controls.<b>componentType</b> = OBJETO_ORIGINAL.data.sections.rows.controls.<b>componentType</b><br>\
                 Realizar o processo inverso quando receber os objetos.<br>\
-                Salvar <b>id retornado</b> após criação com sucesso em alguma variável pois será útil em breve. <br>',
+                Salvar <b>id retornado</b> após criação com sucesso em alguma variável pois será útil em breve. <br>\
+                ',
                 validate: {
                     failAction,
                     headers,
@@ -188,11 +191,10 @@ class ResponseRoutes extends BaseRoute {
                 notes: 'Necessário objeto <b>id válido</b>.<br>\
                 Exemplo Válido No Default <br> \
                 <b>Importante-1:</b> <br>\
-                >>><br>\
+                ------------------------------------------------------------------------------------------------------------------------<br>\
                 Passar atributo: <b>readonly</b> = <b>true</b><br>\
                 Todos os responses nao podem ser mais editados, essa vai ser a principal maneira de identifica-los.<br>\
-                >>>Ler abaixo!!!<br>\
-                >>><br>\
+                ------------------------------------------------------------------------------------------------------------------------<br>\
                 <b>Importante-2:</b> <br>\
                 Em data.sections.rows.controls.<b>componentType</b><br>\
                 O equivalente no objeto do Form-Builder é <b>type</b><br>\
