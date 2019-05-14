@@ -18,10 +18,11 @@ const headers = Joi.object({
 
 //queryString = http://localhost:5000/model_flow_list?skip=0&limit=10&nome=flash
 class FlowRoutes extends BaseRoute {
-    constructor(db, dbForm) {
+    constructor(db, dbForm, dbResp) {
         super()
         this.db = db
         this.dbForm = dbForm
+        this.dbResp = dbResp
     }
     list() {
         return {
@@ -260,6 +261,7 @@ class FlowRoutes extends BaseRoute {
                         id,
                         username
                     } = request.params
+
                     const query = { // findByID
                         '_id': `${id}`
                     }
@@ -267,20 +269,62 @@ class FlowRoutes extends BaseRoute {
                     if (nuId.length == 0) {
                         return Boom.unauthorized()
                     } else {
+                        /**
+                         * * Form 
+                         * ! Delete Variables 
+                         */
                         const queryForm = {
                             'flow': `${id}`
                         }
+
                         const forms = await this.dbForm.joinRead(queryForm, 'flow', username, 'form')
 
-                        if(forms.length > 0){
-                            for(let i in forms) {
-                                await this.dbForm.delete(forms[i]._id)
+                        let formArrayIDs = [];
+
+                        /**
+                         * TODO Delete Forms
+                         * ! Save forms _ids
+                         */
+                        if (forms.length > 0) {
+                            for (let i in forms) {
+                                formArrayIDs.push(forms[i]._id);
+                                await this.dbForm.delete(forms[i]._id);
                             };
                         }
 
-                        const result = await this.db.delete(nuId[0]._id)    
+                        /**
+                         * * Response 
+                         * ? Iterate throw formArrayIDs looking Responses and Pushing to array
+                         * ! Delete Variables 
+                         */
+                        let respArrayIDs = [];
+
+                        if (formArrayIDs.length > 0) {
+                            for (let i in formArrayIDs) {
+                                let respQueryResult = await this.dbResp.read({
+                                    model_form: formArrayIDs[i]
+                                });
+                                if (respQueryResult.length > 0)
+                                    for (let j in respQueryResult) {
+                                        respArrayIDs.push(respQueryResult[j]._id)
+                                    }
+                            }
+                        }
+                        /**
+                         * TODO Delete Responses from previous array
+                         */
+                        if (respArrayIDs.length > 0) {
+                            for (let i in respArrayIDs) {
+                                await this.dbResp.delete(respArrayIDs[i]);
+                            }
+                        }
+
+                        /**
+                         * TODO Delete Flows
+                         */
+                        const result = await this.db.delete(nuId[0]._id)
                         if (result.n !== 1)
-                            return Boom.preconditionFailed('ID nao encontrado no banco')    
+                            return Boom.preconditionFailed('ID nao encontrado no banco')
                         return {
                             message: 'Fluxo removido com sucesso'
                         }

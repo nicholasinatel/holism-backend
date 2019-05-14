@@ -168,10 +168,10 @@ async function main() {
             ? Juntando os 2 Arrays das instancias - REST SPREAD do JS ou Separacao
             ? .methods herdados da classe baseRoute.js 
         */
-        ...mapRoutes(new FlowRoute(contextFlow, contextForm), FlowRoute.methods()),
+        ...mapRoutes(new FlowRoute(contextFlow, contextForm, contextResponse), FlowRoute.methods()),
         ...mapRoutes(new FormRoute(contextForm, contextResponse, contextFlow), FormRoute.methods()),
         ...mapRoutes(new ResponseRoute(contextResponse), ResponseRoute.methods()),
-        ...mapRoutes(new ProjectRoute(contextProject), ProjectRoute.methods()),
+        ...mapRoutes(new ProjectRoute(contextProject, contextFlow, contextForm, contextResponse), ProjectRoute.methods()),
         ...mapRoutes(new ImportRoute(contextFlow, contextForm), ImportRoute.methods()),
         ...mapRoutes(new UtilRoute(), UtilRoute.methods()),
         ...mapRoutes(new AuthRoute(JWT_SECRET, contextAuth), AuthRoute.methods())

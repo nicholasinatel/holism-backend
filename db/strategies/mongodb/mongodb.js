@@ -132,7 +132,6 @@ class MongoDB extends ICrud {
                 ]
             }).populate(join, '-password')
         } else if (type == 'form-4') {
-            console.log("entrou")
             return this._schema.find({
                 $and: [{
                         _id: item._id
@@ -145,10 +144,10 @@ class MongoDB extends ICrud {
                     }
                 ]
             }).populate(join, '-password')
-// https://stackoverflow.com/questions/12096262/how-to-protect-the-password-field-in-mongoose-mongodb-so-it-wont-return-in-a-qu
         } else if (type === 'flow') {
             return this._schema.find(item).populate(join, '-password')
         }
+        // https://stackoverflow.com/questions/12096262/how-to-protect-the-password-field-in-mongoose-mongodb-so-it-wont-return-in-a-qu
     }
 
     fieldRead(item, skip, limit, select) {

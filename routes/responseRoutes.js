@@ -78,7 +78,7 @@ class ResponseRoutes extends BaseRoute {
                 description: 'Deve listar Response de um Determinado Model Form',
                 notes: 'Fornecer somente o _id do <b>model_form</b> em que o response existe.<br> \
                 >>><br> \
-                Retorna: Components filhos do form.<br> \
+                Retorna: Responses filhos do form.<br> \
                 Form em questão. <br> \
                 >>><br> \
                 ...',
@@ -264,6 +264,7 @@ class ResponseRoutes extends BaseRoute {
                     const {
                         id
                     } = request.params
+
                     const result = await this.db.delete(id)
 
                     if (result.n !== 1)
