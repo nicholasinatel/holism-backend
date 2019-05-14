@@ -399,7 +399,7 @@ class FormRoutes extends BaseRoute {
             config: {
                 tags: ['api'],
                 description: 'Deve deletar um form por <b>_id</b>',
-                notes: 'Parametros: <br>\
+                notes: 'Parâmetros: <br>\
                 @<b>id</b>: o <b> id </b> deve ser válido, realizar um read no banco antes, passar como <b>String</b> <br>\
                 @<b>username</b>: nome do usuário fazendo o delete, este usuáro precisa estar na lista de <b>permission_write no Flow Pai</b> <br> \
                 caso o usuario não esteja na lista correta(permission_write do flow pai nesse caso), retornará erro de não autorizado<br>\

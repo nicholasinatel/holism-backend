@@ -27,19 +27,21 @@ class ProjectRoutes extends BaseRoute {
             config: {
                 tags: ['api'],
                 description: 'Deve listar Projects do Usuario',
-                notes: 'Query com 5 Parametros,<br> \
-                <b>skip</b> = Paginação <br> \
-                <b>limit</b> = Limita objetos na resposta <br> \
-                <b>search</b> = Objeto procurado <br> \
-                <b>username</b> = User realizando a query <br> \
+                notes: 'Query com 5 Parâmetros,<br> \
+                ------------------------------------------------------------------------------------------------------------------------<br>\
+                > <b>skip</b>: Paginação <br> \
+                > <b>limit</b>: Limita objetos na resposta <br> \
+                > <b>search</b>: Objeto procurado <b>(Varia de acordo com o mode, ver abaixo)</b><br> \
+                > <b>username</b>: usuario realizando a query (creator) <br> \
                 <b> Somente Serão Mostrados Projects que o usuário criou </b> <br> \
-                >>><br> \
+                ------------------------------------------------------------------------------------------------------------------------<br>\
                 > mode = 0 | Query para achar tudo na collection, Campo search em branco, <b>username obrigatório</b> <br> \
                 > mode = 1 | Query por <b>id</b>, Campo Search: Inserir id do Project, <b>username obrigatório</b> <br> \
                 > mode = 2 | Query por <b>title</b>, Campo Search: Inserir title do Project, <b>Title com Valor EXATO</b>, <b>username obrigatório</b> <br> \
                 > mode = 3 | Query por Project COMPLETED = true or false <br> \
                 > mode = 4 | Query por <b>title</b>, Campo Search: Inserir title do Project, <b>Title com Valor APROXIMADO Regex!</b>, <b>username obrigatório</b> <br> \
-                >>>',
+                ------------------------------------------------------------------------------------------------------------------------<br>\
+                ',
                 validate: {
                     headers,
                     failAction: failAction,
@@ -83,15 +85,13 @@ class ProjectRoutes extends BaseRoute {
             config: {
                 tags: ['api'],
                 description: 'Deve criar Projetos',
-                notes: 'Único parâmetro <b>required</b> é o <b>Title</b>,<br>\
-                os valores sugeridos estão determinados como default.<br>\
-                Os valores Default podem ser substituídos, seguindo o padrão.<br>\
-                >>><br>\
-                --> title: Título único.<br>\
-                --> completed: false ou true <br>\
-                --> creator: corresponde ao usuário _ID que está criando o project.<br>\
-                >>><br>\
-                Salvar <b>id retornado</b> após criação com sucesso em alguma variável pois será útil.<br>',
+                notes: 'Os valores sugeridos estão determinados como default no body->Modelo->Example Value.<br>\
+                ------------------------------------------------------------------------------------------------------------------------<br>\
+                > <b>title</b>: Título único.<br>\
+                > <b>completed</b>: false ou true <br>\
+                > <b>creator</b>: corresponde ao usuário _ID que está criando o project.<br>\
+                ------------------------------------------------------------------------------------------------------------------------<br>\
+                Salvar <b>id retornado</b> após criação com sucesso em alguma variável pois será usado na query de Flow.<br>',
                 validate: {
                     failAction,
                     headers,
@@ -149,14 +149,14 @@ class ProjectRoutes extends BaseRoute {
                 notes: 'Para o update preciso que mande o objeto <b>_id</b> do <b>project</b> em string.<br>\
                 neste caso, deve ser um <b>objeto id válido</b>, <b>(i.e existente no banco)</b>, utilize um que tenha retornado pelo read no banco.<br> \
                 Segue exemplo com um objeto para update válido, é o mesmo no Example Value, porém em <b>formato de objeto!!!</b>: <br> \
-                >>><br>\
+                ------------------------------------------------------------------------------------------------------------------------<br>\
                 var MOCK_PROJECT_UPDATE = {<br>\
                 &nbsp title: "flow teste_update",<br>\
                 &nbsp completed: true,<br>\
                 &nbsp flow: "faca77777cacacaf5f511111",<br>\
                 &nbsp creator: "admin"<br>\
                 }<br>\
-                >>><br>\
+                ------------------------------------------------------------------------------------------------------------------------<br>\
                 Antes do objeto ser enviado ele deve ser convertido em string: <br>\
                 <b>e.g(JSON.stringify(MOCK_PROJECT_UPDATE))</b><br>\
                 <b>i.e</b> significa isto é (vem do latin, os gringos usam muito) <br>\
@@ -220,9 +220,9 @@ class ProjectRoutes extends BaseRoute {
             config: {
                 tags: ['api'],
                 description: 'Deve deletar um project por <b>_id</b>',
-                notes: 'Parametros: <br>\
-                @id: o <b> id </b> deve ser válido, realizar um read no banco antes, passar como <b>String</b> <br>\
-                @creator: nome do usuário fazendo o delete, este usuáro precisa ser o criador do project !!! <br> \
+                notes: 'Parâmetros: <br>\
+                @<b>id</b>: o <b>id</b> deve ser válido, realizar um read no banco antes, passar como <b>String</b> <br>\
+                @<b>creator</b>: nome do usuário fazendo o delete, este usuáro precisa ser o criador do project !!! <br> \
                 caso o usuario nao seja o creator, retornara erro de nao autorizado',
                 validate: {
                     headers,
