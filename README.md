@@ -215,4 +215,4 @@ Após execução dos testes navegar até **localhost:PORT/coverage**.
 Após execução dos testes e com o server online navegar até **18.231.115.112:PORT/coverage**.
 
 ## Funcionamento Interno da API
-![ERD](resources/ERD_HolismoSchemas.jpeg)
+![ERD](utilities/ERD_HolismoSchemas.jpeg)

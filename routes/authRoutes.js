@@ -147,7 +147,7 @@ class AuthRoutes extends BaseRoute {
                 > <b>role</b>: <br>\
                 ------------------------------------------------------------------------------------------------------------------------<br>\
                 Roles possíveis: <br>\
-                <b>admin</b> <br>\ 
+                <b>admin</b> <br>\
                 <b>desenvolvedor</b> <br>\
                 <b>gerente</b> <br>\
                 <b>professor</b> <br>\
