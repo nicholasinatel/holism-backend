@@ -83,7 +83,7 @@ class ImportRoutes extends BaseRoute {
                         let [check_form] = await this.dbForm.read({
                             '_id': `${stepIdCheck}`
                         })
-                        do {                            
+                        do {
                             [check_form] = await this.dbForm.read({
                                 '_id': `${stepIdCheck}`
                             })
@@ -129,48 +129,52 @@ class ImportRoutes extends BaseRoute {
                         let new_form = await this.dbForm.create(starter_form)
                         // Update New Flow
                         new_flow.starter_form = new_form._id
-                        const new_flow_update = await this.dbFlow.update(new_flow._id, new_flow)
+                        await this.dbFlow.update(new_flow._id, new_flow)
                         // Get step_forward ID from Starter_Form
                         // If != FFFFFFFFFFFF
                         let nuFid = new_form._id
                         let stepFid = new_form.step_forward
                         let stepBid = new_form._id
-                        do {
-                            // Get Form Object
-                            let [dados_nu_form] = await this.dbForm.read({
-                                '_id': `${stepFid}`
-                            })
-                            // Delete _id, __v, createdAt, updatedAt
-                            // Watchout for Step_Backward
-                            const nu_form_1 = {
-                                title: dados_nu_form.title,
-                                step_forward: dados_nu_form.step_forward,
-                                step_backward: stepBid, // Atualiza Agora
-                                flow: new_flow._id, //
-                                data: dados_nu_form.data,
-                                permission: dados_nu_form.permission,
-                                secret: dados_nu_form.secret,
-                                creator: dados_nu_form.creator,
-                                completed: dados_nu_form.completed
-                            }
-                            // Create New Form
-                            let nu_form_2 = await this.dbForm.create(nu_form_1)
-                            // Update Recursive Variables
-                            stepFid = nu_form_2.step_forward
-                            stepBid = nu_form_2._id
 
-                            // Get Previous Form Object
-                            let [dados_old_form] = await this.dbForm.read({
-                                '_id': `${nuFid}`
-                            })
-                            // Update Previous Form
-                            nuFid = dados_old_form._id
-                            let old_update = await this.dbForm.update(nuFid, {
-                                step_forward: nu_form_2._id
-                            })
-                            // Set nuFid to the newest form
-                            nuFid = nu_form_2._id
-                        } while (stepFid.toString() != 'ffffffffffffffffffffffff')
+                        do {
+                            if (stepFid[0] != 'ffffffffffffffffffffffff') {
+                                // Get Form Object
+                                let [dados_nu_form] = await this.dbForm.read({
+                                    '_id': `${stepFid}`
+                                })
+
+                                // Delete _id, __v, createdAt, updatedAt
+                                // Watchout for Step_Backward
+                                const nu_form_1 = {
+                                    title: dados_nu_form.title,
+                                    step_forward: dados_nu_form.step_forward,
+                                    step_backward: stepBid, // Atualiza Agora
+                                    flow: new_flow._id, //
+                                    data: dados_nu_form.data,
+                                    permission: dados_nu_form.permission,
+                                    secret: dados_nu_form.secret,
+                                    creator: dados_nu_form.creator,
+                                    completed: dados_nu_form.completed
+                                }
+                                // Create New Form
+                                let nu_form_2 = await this.dbForm.create(nu_form_1)
+                                // Update Recursive Variables
+                                stepFid = nu_form_2.step_forward
+                                stepBid = nu_form_2._id
+
+                                // Get Previous Form Object
+                                let [dados_old_form] = await this.dbForm.read({
+                                    '_id': `${nuFid}`
+                                })
+                                // Update Previous Form
+                                nuFid = dados_old_form._id
+                                let old_update = await this.dbForm.update(nuFid, {
+                                    step_forward: nu_form_2._id
+                                })
+                                // Set nuFid to the newest form
+                                nuFid = nu_form_2._id
+                            }
+                        } while (stepFid.toString() != 'ffffffffffffffffffffffff' || stepFid == undefined)
                     }
                     return {
                         message: 'Import feito com sucesso',
