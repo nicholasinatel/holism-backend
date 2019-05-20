@@ -97,50 +97,50 @@ var RESPONSE_1 = [{
 var MOCK = {
     // DB Variables
     MOCK_USER: {
-        username: 'admin',
-        password: '123456'
+        username: 'nicholas',
+        password: '123'
     },
     MOCK_PROJECT: {
-        title: 'Mindfullness_Mocha_NAO_DELETAR_NEM_MODIFICAR',
+        title: 'Node.js & ECMAS6 para iniciantes',
         completed: false,
-        creator: 'admin'
+        creator: 'nicholas'
     },
     MOCK_FLOW: {
-        title: 'Flow de Marketing_Mocha_NAO_DELETAR_NEM_MODIFICAR',
+        title: 'Flow de Ementa',
         permission_read: ['nicholas', 'gui123', 'admin'],
         permission_write: ['nicholas', 'gui123', 'admin'],
         completed: false,
         starter_form: '000000000000000000000000',
-        creator: 'admin',
+        creator: 'nicholas',
         project: '111111111111111111111111'
     },
     MOCK_FORM_1: {
-        title: "From Entrada De Dados_Mocha_NAO_DELETAR_NEM_MODIFICAR",
+        title: "Form Modulo 1",
         step_forward: ["ffffffffffffffffffffffff"],
         step_backward: ["000000000000000000000000"],
         flow: '111111111111111111111111',
         data: FORM_BUILDER_DATA,
-        permission: ['admin', 'gui123', 'admin'],
+        permission: ['admin', 'gui123', 'nicholas'],
         secret: false,
-        creator: 'admin',
+        creator: 'nicholas',
         completed: false,
         mode: 0
     },
     MOCK_FORM_2: {
-        title: "Form Professores_Mocha_NAO_DELETAR_NEM_MODIFICAR",
+        title: "Form Modulo 2",
         step_forward: ["ffffffffffffffffffffffff"],
         step_backward: ["000000000000000000000000"],
         flow: '111111111111111111111111',
         data: FORM_BUILDER_DATA,
-        permission: ['admin', 'gui123', 'admin'],
+        permission: ['admin', 'gui123', 'nicholas'],
         secret: true,
-        creator: 'admin',
+        creator: 'nicholas',
         completed: false,
         mode: 0 
     },
     MOCK_RESPONSE_1: {
         model_form: "111111111111111111111111",
-        user: "admin",
+        user: "nicholas",
         data: RESPONSE_1
     }
 }

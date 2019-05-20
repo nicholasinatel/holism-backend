@@ -37,7 +37,7 @@ describe.only('Test Suite Starting Application', function () {
         const result = await app.inject({
             method: 'GET',
             headers,
-            url: `/login?skip=0&limit=1&search=admin&mode=1`
+            url: `/login?skip=0&limit=1&search=nicholas&mode=1`
         })
         const statusCode = result.statusCode
         const dados = JSON.parse(result.payload)
