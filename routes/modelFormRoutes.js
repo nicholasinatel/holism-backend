@@ -244,7 +244,8 @@ class FormRoutes extends BaseRoute {
 
                         return {
                             message: 'Form criado com sucesso',
-                            _id: result._id
+                            _id: result._id,
+                            title: result.title
                         }
                     } else if (mode == 1) {
                         const result = await this.db.create({
@@ -265,7 +266,8 @@ class FormRoutes extends BaseRoute {
 
                         return {
                             message: 'Form criado com sucesso',
-                            _id: result._id
+                            _id: result._id,
+                            title: result.title
                         }
 
                     } else if (mode == 2) {
@@ -289,7 +291,8 @@ class FormRoutes extends BaseRoute {
 
                         return {
                             message: 'Form criado com sucesso',
-                            _id: result._id
+                            _id: result._id,
+                            title: result.title
                         }
                     }
                 } catch (error) {

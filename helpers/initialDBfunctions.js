@@ -60,14 +60,18 @@ var DbFuncModule = {
     },
     // Create & Verify Form1 Async Function
     form1: async function (MOCK, mode, global, app, headers) {
+        console.log("global at form1 global: ", global);
+        console.log("&username=${global.username}", `&username=${global.username}`);
+        
         // Check Form1 Existence
         const result = await app.inject({
             method: 'GET',
             headers,
-            url: `/model_form?skip=0&limit=1&search=${MOCK.MOCK_FORM_1.title}&mode=${mode.title}&username=${global.username}`
+            url: `/model_form?skip=0&limit=1&search=${MOCK.MOCK_FORM_1.title}&mode=${mode.title}&username='nicholas'`
         })
         const array = JSON.parse(result.payload)
         let statusCode = result.statusCode
+        console.log("array at form1: ", form1);
         // Create Form1
         if (array.length == 0) {
             MOCK.MOCK_FORM_1.creator = global.username

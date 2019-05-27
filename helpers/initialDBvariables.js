@@ -101,7 +101,7 @@ var MOCK = {
         password: '123'
     },
     MOCK_PROJECT: {
-        title: 'Node.js & ECMAS6 para iniciantes',
+        title: 'Node.js and ECMAScript 6 para iniciantes',
         completed: false,
         creator: 'nicholas'
     },
