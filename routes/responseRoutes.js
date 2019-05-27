@@ -169,7 +169,8 @@ class ResponseRoutes extends BaseRoute {
 
                     return {
                         message: 'Response criado com sucesso',
-                        _id: result._id
+                        _id: result._id,
+                        user: result.user
                     }
                     // }
 
