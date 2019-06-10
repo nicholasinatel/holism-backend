@@ -32,7 +32,7 @@ const env = process.env.NODE_ENV || "dev";
 /* 
     * Teste 
 */
-ok(env == "prod" || env == "dev" || env == "gui", "error at env, heroku config:set NODE_ENV=AMBIENTE_DESEJADO");
+ok(env == "prod" || env == "dev" || env == "gui" || env == "heroku", "error at env, heroku config:set NODE_ENV=AMBIENTE_DESEJADO");
 
 /*
     * configPath 
@@ -138,7 +138,7 @@ async function main() {
     app.auth.strategy('jwt', 'jwt', {
         key: JWT_SECRET,
         // options:{
-        //     expiresIn: 20
+        //     expiresIn: 120
         // },
         validate: async (dado, request) => {
             const [result] = await contextAuth.read({

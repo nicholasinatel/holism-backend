@@ -18,6 +18,9 @@ const modelFlowSchema = new Mongoose.Schema({
   completed: {
     type: Boolean
   },
+  tempoCompleto: {
+    type: Date
+  },
   starter_form: {
     type: Mongoose.Schema.Types.ObjectId,
     ref: 'modelForm'

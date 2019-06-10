@@ -97,7 +97,7 @@ var RESPONSE_1 = [{
 var MOCK = {
     // DB Variables
     MOCK_USER: {
-        username: 'nicholas',
+        username: "nicholas",
         password: '123'
     },
     MOCK_PROJECT: {
@@ -112,7 +112,8 @@ var MOCK = {
         completed: false,
         starter_form: '000000000000000000000000',
         creator: 'nicholas',
-        project: '111111111111111111111111'
+        project: '111111111111111111111111',
+        tempoCompleto: "2002-12-08 22:00:00.000"
     },
     MOCK_FORM_1: {
         title: "Form Modulo 1",
@@ -122,9 +123,10 @@ var MOCK = {
         data: FORM_BUILDER_DATA,
         permission: ['admin', 'gui123', 'nicholas'],
         secret: false,
-        creator: 'nicholas',
-        completed: false,
-        mode: 0
+        creator: "nicholas",
+        status: 0,
+        tempoEstimado: "2002-12-08 22:00:00.000",
+        tempoUtilizado: "2002-12-08 22:00:00.000"
     },
     MOCK_FORM_2: {
         title: "Form Modulo 2",
@@ -135,8 +137,9 @@ var MOCK = {
         permission: ['admin', 'gui123', 'nicholas'],
         secret: true,
         creator: 'nicholas',
-        completed: false,
-        mode: 0 
+        status: 0,
+        tempoEstimado: "2002-12-08 22:00:00.000",
+        tempoUtilizado: "2002-12-08 22:00:00.000"
     },
     MOCK_RESPONSE_1: {
         model_form: "111111111111111111111111",

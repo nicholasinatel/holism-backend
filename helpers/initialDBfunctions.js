@@ -60,22 +60,21 @@ var DbFuncModule = {
     },
     // Create & Verify Form1 Async Function
     form1: async function (MOCK, mode, global, app, headers) {
-        console.log("global at form1 global: ", global);
-        console.log("&username=${global.username}", `&username=${global.username}`);
-        
+       
         // Check Form1 Existence
         const result = await app.inject({
             method: 'GET',
             headers,
-            url: `/model_form?skip=0&limit=1&search=${MOCK.MOCK_FORM_1.title}&mode=${mode.title}&username='nicholas'`
+            url: `/model_form?skip=0&limit=1&search=${MOCK.MOCK_FORM_1.title}&mode=${mode.title}&username=${global.username}`
         })
         const array = JSON.parse(result.payload)
         let statusCode = result.statusCode
-        console.log("array at form1: ", form1);
+        
         // Create Form1
         if (array.length == 0) {
             MOCK.MOCK_FORM_1.creator = global.username
             MOCK.MOCK_FORM_1.flow = global.flowID
+
             const new_form = await app.inject({
                 method: 'POST',
                 headers,
@@ -83,19 +82,17 @@ var DbFuncModule = {
                 payload: MOCK.MOCK_FORM_1
             })
             const dados = JSON.parse(new_form.payload)
-            console.log("form1-dados: ", dados)
             global.form1ID = dados._id
-            console.log("form1-global.form1ID: ", global.form1ID)
             statusCode = new_form.statusCode
         } else {
             // Update Global Form1ID
-            global.form1ID = array[0]._id
+            global.form1ID = array[0]._id;
         }
-        // Get Father Flow 2 Update
+        // Get Father Flow To Update
         const father_flow = await app.inject({
             method: 'GET',
             headers,
-            url: `/model_flow?skip=0&limit=1&search=${MOCK.MOCK_FLOW.title}&mode=${mode.title}&username=${MOCK.MOCK_USER.username}&username=${global.username}`
+            url: `/model_flow?skip=0&limit=1&search=${MOCK.MOCK_FLOW.title}&mode=${mode.title}&username=${global.username}`
         })
         const [flow_result] = JSON.parse(father_flow.payload)
         delete flow_result.createdAt
@@ -128,13 +125,12 @@ var DbFuncModule = {
         const result = await app.inject({
             method: 'GET',
             headers,
-            url: `/model_form?skip=0&limit=1&search=${MOCK.MOCK_FORM_2.title}&mode=${mode.title}&username=${MOCK.MOCK_USER.username}&username=${global.username}`
+            url: `/model_form?skip=0&limit=1&search=${global.flowID}&mode=3&username=${global.username}`
         })
         const array = JSON.parse(result.payload)
         let statusCode = result.statusCode
-        console.log('array: ', array)
-        if (array.length == 0) {
-            console.log("global.form1ID: ",global.form1ID)
+
+        if (array.length == 1) {
             MOCK.MOCK_FORM_2.creator = global.username
             MOCK.MOCK_FORM_2.flow = global.flowID
             MOCK.MOCK_FORM_2.step_backward[0] = global.form1ID
@@ -145,17 +141,16 @@ var DbFuncModule = {
                 payload: MOCK.MOCK_FORM_2
             })
             const dados = JSON.parse(new_form.payload)
-            console.log("dados; ", dados)
             global.form2ID = dados._id
             statusCode = new_form.statusCode
         } else {
-            global.form2ID = array[0]._id
+            global.form2ID = array[1]._id
         }
         // Update step_forward previous_form
         const result2update = await app.inject({
             method: 'GET',
             headers,
-            url: `/model_form?skip=0&limit=1&search=${MOCK.MOCK_FORM_1.title}&mode=${mode.title}&username=${MOCK.MOCK_USER.username}&username=${global.username}`
+            url: `/model_form?skip=0&limit=1&search=${MOCK.MOCK_FORM_1.title}&mode=${mode.title}&username=${global.username}`
         })
         const [previous_form] = JSON.parse(result2update.payload)
         previous_form.step_forward[0] = global.form2ID
@@ -214,14 +209,16 @@ var DbFuncModule = {
         const result = await app.inject({
             method: 'GET',
             headers,
-            url: `/model_flow?skip=0&limit=10&search=${MOCK.MOCK_FLOW.title}&mode=${mode.title}&username=${MOCK.MOCK_USER.username}`
+            url: `/model_flow?skip=0&limit=10&search=${MOCK.MOCK_FLOW.title}&mode=${mode.title}&username=${global.username}`
         })
         const array = JSON.parse(result.payload)
+
         delete array[0].starter_form
         delete array[0].createdAt
         delete array[0].updatedAt
         delete array[0].__v
         delete array[0]._id
+
         let statusCode = result.statusCode
         if (array[0].title == MOCK.MOCK_FLOW.title && array.length == 1) {
             const imported = await app.inject({

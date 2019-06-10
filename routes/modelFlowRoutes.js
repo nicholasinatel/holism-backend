@@ -56,7 +56,8 @@ class FlowRoutes extends BaseRoute {
                         limit: Joi.number().integer().default(10),
                         search: Joi.allow(),
                         mode: Joi.number().integer().default(0).min(0).max(4),
-                        username: Joi.string().default('admin')
+                        username: Joi.string().default('admin'),
+                        roles: Joi.array().min(1).items(Joi.string()).default(['dev'])
                     } // query end
                 } // validate end
             },
@@ -67,15 +68,18 @@ class FlowRoutes extends BaseRoute {
                         limit,
                         search,
                         mode,
-                        username
+                        username,
+                        roles
                     } = request.query
 
-                    const query = await QueryHelper.queryFlowSelecter(search, mode)
+                    roles.push(username);
+
+                    const query = await QueryHelper.queryFlowSelecter(search, mode);
 
                     if (mode == 3) {
                         return this.db.joinRead(query, 'project', username, 'flow')
                     } else {
-                        return this.db.readPermission(query, skip, limit, username, 'flow')
+                        return this.db.readPermission(query, skip, limit, roles, 'flow')
                     }
 
                 } catch (error) {
@@ -101,7 +105,8 @@ class FlowRoutes extends BaseRoute {
                 > <b>permission_write</b>: um array que pode conter <b>personas</b> e <b>usuários</b>, ver default para exemplo.<br>\
                 > <b>starter_form</b>: correspode ao <b>primeiro form do flow</b>, será adicionado quando o mesmo for criado no criar de rotas para o form<br>\
                 > <b>creator</b>: corresponde ao usuário que está criando o flow<br>\
-                > <b>project</b>: corresponde ao projeto pai do flow<br>\
+                > <b>project</b>: corresponde ao projeto pai do flow <br>\
+                > <b>tempoCompleto</b>: corresponde ao tempo quando completed = true <br>\
                 ------------------------------------------------------------------------------------------------------------------------<br>\
                 Salvar <b>id retornado</b> após criação com sucesso em alguma variável pois será útil em breve.<br>',
                 validate: {
@@ -114,7 +119,8 @@ class FlowRoutes extends BaseRoute {
                         completed: Joi.bool().default(false),
                         starter_form: Joi.string().min(24).max(24).default('000000000000000000000000'),
                         creator: Joi.string().min(1).default('admin'),
-                        project: Joi.string().min(24).max(24).default('222222222222222222222222')
+                        project: Joi.string().min(24).max(24).default('222222222222222222222222'),
+                        tempoCompleto: Joi.date().default('2002-12-08 22:00:00.000')
                     }
                 } // validate end
             }, // config end
@@ -127,7 +133,8 @@ class FlowRoutes extends BaseRoute {
                         completed,
                         starter_form,
                         creator,
-                        project
+                        project,
+                        tempoCompleto
                     } = request.payload
 
                     const result = await this.db.create({
@@ -137,7 +144,8 @@ class FlowRoutes extends BaseRoute {
                         completed,
                         starter_form,
                         creator,
-                        project
+                        project,
+                        tempoCompleto
                     })
 
                     return {
@@ -156,7 +164,7 @@ class FlowRoutes extends BaseRoute {
 
     update() {
         return {
-            path: '/model_flow/{id}/{username}',
+            path: '/model_flow/{id}/{username}/{roles}',
             method: 'PATCH',
             config: {
                 tags: ['api'],
@@ -174,7 +182,8 @@ class FlowRoutes extends BaseRoute {
                 > <b>permission_write</b>: um array que pode conter <b>personas</b> e <b>usuários</b>, ver default para exemplo.<br>\
                 > <b>starter_form</b>: correspode ao <b>primeiro form do flow</b>, será adicionado quando o mesmo for criado no criar de rotas para o form<br>\
                 > <b>creator</b>: corresponde ao usuário que está criando o flow<br>\
-                > <b>project</b>: corresponde ao projeto pai do flow<br>\
+                > <b>project</b>: corresponde ao projeto pai do flow <br>\
+                > <b>tempoCompleto</b>: corresponde ao tempo quando completed = true <br>\
                 ------------------------------------------------------------------------------------------------------------------------<br>\
                 Antes do objeto ser enviado ele deve ser convertido em string: <br>\
                 <b>e.g(JSON.stringify(MOCK_FLOW_UPDATE))</b><br>\
@@ -185,7 +194,8 @@ class FlowRoutes extends BaseRoute {
                     headers,
                     params: {
                         id: Joi.string().required().min(24).max(24),
-                        username: Joi.string().required()
+                        username: Joi.string().required(),
+                        roles: Joi.array().min(1).items(Joi.string()).default(['dev'])
                     },
                     payload: {
                         title: Joi.string().required().min(3).max(100).default("flow teste_update"),
@@ -194,7 +204,8 @@ class FlowRoutes extends BaseRoute {
                         completed: Joi.bool().default(true),
                         starter_form: Joi.string().min(24).max(24).default('000000000000000000000000'),
                         creator: Joi.string().min(1).default('admin'),
-                        project: Joi.string().min(24).max(24).default('222222222222222222222222')
+                        project: Joi.string().min(24).max(24).default('222222222222222222222222'),
+                        tempoCompleto: Joi.date().default('2002-12-08 22:00:00.000')
                     }
                 } // validate end
             }, // config end
@@ -202,17 +213,24 @@ class FlowRoutes extends BaseRoute {
                 try {
                     const {
                         id,
-                        username
+                        username,
+                        roles
                     } = request.params
 
                     const {
                         payload
                     } = request
 
+                    if(payload.completed) {
+                        payload.tempoCompleto = Date.now();
+                    }
+
+                    roles.push(username);
+
                     const query = { // findByID
                         '_id': `${id}`
                     }
-                    const nuId = await this.db.writePermission(query, 0, 1, username, 'flow')
+                    const nuId = await this.db.writePermission(query, 0, 1, roles, 'flow')
 
                     if (nuId.length == 0) {
                         return Boom.unauthorized()
@@ -235,7 +253,7 @@ class FlowRoutes extends BaseRoute {
 
     delete() {
         return {
-            path: '/model_flow/{id}/{username}',
+            path: '/model_flow/{id}/{username}/{roles}',
             method: 'DELETE',
             config: {
                 tags: ['api'],
@@ -251,7 +269,8 @@ class FlowRoutes extends BaseRoute {
                     failAction,
                     params: {
                         id: Joi.string().min(24).max(24).required(),
-                        username: Joi.string().required()
+                        username: Joi.string().required(),
+                        roles: Joi.array().min(1).items(Joi.string()).default(['dev'])
                     }
                 } // validate end
             }, // config end
@@ -259,13 +278,18 @@ class FlowRoutes extends BaseRoute {
                 try {
                     const {
                         id,
-                        username
-                    } = request.params
+                        username,
+                        roles
+                    } = request.params;
 
                     const query = { // findByID
                         '_id': `${id}`
-                    }
-                    const nuId = await this.db.writePermission(query, 0, 1, username, 'flow')
+                    };
+                    
+                    roles.push(username);
+
+                    const nuId = await this.db.writePermission(query, 0, 1, roles, 'flow');
+
                     if (nuId.length == 0) {
                         return Boom.unauthorized()
                     } else {
@@ -277,7 +301,7 @@ class FlowRoutes extends BaseRoute {
                             'flow': `${id}`
                         }
 
-                        const forms = await this.dbForm.joinRead(queryForm, 'flow', username, 'form')
+                        const forms = await this.dbForm.joinRead(queryForm, 'flow', roles, 'form')
 
                         let formArrayIDs = [];
 

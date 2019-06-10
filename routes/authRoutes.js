@@ -65,12 +65,12 @@ class AuthRoutes extends BaseRoute {
                     // console.log("keyName: ", keyName)
                     // console.log("query: ", query)
                     // https://stackoverflow.com/questions/4260308/getting-the-objects-property-name
-                    if(mode != 3){
+                    if (mode != 3) {
                         return this.db.fieldRead(query, skip, limit, 'username')
                     } else {
                         return this.db.read(query, skip, limit)
                     }
-            
+
                 } catch (error) {
                     console.error('User List Route Server Internal Error: ', error)
                     return Boom.internal()
@@ -131,6 +131,7 @@ class AuthRoutes extends BaseRoute {
             } //  handler end
         } // return end
     } // login end
+
     register() {
         return {
             path: '/register',
@@ -189,6 +190,169 @@ class AuthRoutes extends BaseRoute {
             } // handler end
         } // return end
     } // register end
+
+    updateUser() {
+        return {
+            path: '/register/{id}/{username}/{roles}',
+            method: 'PATCH',
+            config: {
+                tags: ['api'],
+                description: 'Update de usuario',
+                notes: 'Update de usuario <br>\
+                ------------------------------------------------------------------------------------------------------------------------<br>\
+                Parametros: <br>\
+                > <b>id</b>: id do usuario que será modificado <br>\
+                > <b>username</b>: usuario que deseja realizar a modificação<br>\
+                > <b>roles</b>: Array de Roles do Usuario que deseja realizar a modificação <br>\
+                O formato padrão está errado no parâmetro roles, um exemplo correto seria <br>\
+                ["dev"] <br>\
+                <b>Lembrando que para efetuar esta operação, somente será aceito o usuário admin, ou usuários com role de admin</b> <br>\
+                ------------------------------------------------------------------------------------------------------------------------<br>\
+                Body: <br>\
+                > <b>username</b>: <br>\
+                > <b>password</b>: <br>\
+                > <b>role</b>: Array de Roles do Usuario<br>\
+                ------------------------------------------------------------------------------------------------------------------------<br>\
+                Roles possíveis: <br>\
+                <b>admin</b> <br>\
+                <b>desenvolvedor</b> <br>\
+                <b>gerente</b> <br>\
+                <b>professor</b> <br>\
+                <b>marketing</b> <br>\
+                <b>colaborador</b> <br>\
+                <b>estudante</b> <br>\
+                <b>terceiro</b> <br>\
+                ',
+                validate: {
+                    headers,
+                    params: {
+                        id: Joi.string().min(24).max(24).required(),
+                        username: Joi.string().required(),
+                        roles: Joi.array().min(1).items(Joi.string()).default(['dev'])
+                    },
+                    payload: {
+                        username: Joi.string().required().min(1).max(25),
+                        password: Joi.string().required(),
+                        role: Joi.array().min(1).items(Joi.string()).default(['dev'])
+                    }
+                }
+            }, // Config End
+            handler: async (request) => {
+                try {
+                    const {
+                        id,
+                        username,
+                        roles
+                    } = request.params;
+
+                    const {
+                        payload
+                    } = request;
+
+                    let flag = false;
+
+                    roles.forEach(role => {
+                        if (role == 'admin' || username == 'admin')
+                            flag = true;
+                    });
+
+                    if (flag) {
+                        const query = { // findByID
+                            '_id': `${id}`
+                        };
+
+                        const nuId = await this.db.fieldRead(query, 0, 1, 'username');
+                        if (nuId.length == 0) {
+                            return Boom.unauthorized();
+                        } else {
+                            // FORMAT FOR UPDATE
+                            const dadosString = JSON.stringify(payload);
+                            const dados = JSON.parse(dadosString);
+                            const result = await this.db.update(nuId[0]._id, dados);
+                            if (result.nModified !== 1) return Boom.preconditionFailed('ID não encontrado ou arquivo sem modificações');
+                            return {
+                                message: 'Usuario atualizado com sucesso'
+                            }
+                        }
+                    } else {
+                        return Boom.unauthorized();
+                    }
+                } catch (error) {
+                    console.error('Error at User Update', error);
+                    return Boom.internal();
+                }
+            }
+        }
+    } // Update User End
+
+    deleteUser() {
+        return {
+            path: '/register/{id}/{username}/{roles}',
+            method: 'DELETE',
+            config: {
+                tags: ['api'],
+                description: 'Deletar users',
+                notes: 'Parâmetros: <br>\
+                @<b>id</b>: o <b> id </b> deve ser válido, realizar um read no banco antes, passar como <b>String</b> <br>\
+                @<b>username</b>: nome do usuário fazendo o delete<br>\
+                @<b>roles</b>: role do usuário fazendo o delete<br>\
+                ',
+                validate: {
+                    headers,
+                    failAction,
+                    params: {
+                        id: Joi.string().min(24).max(24).required(),
+                        username: Joi.string().required(),
+                        roles: Joi.array().min(1).items(Joi.string()).default(['dev'])
+                    }
+                } //Validate End
+            },
+            handler: async(request) => {
+                try {
+                    const {
+                        id,
+                        username,
+                        roles
+                    } = request.params;
+
+                    const query = { // findByID
+                        '_id': `${id}`
+                    };
+
+                    let flag = false;
+
+                    console.log("roles: ", roles);
+
+                    roles.forEach(role => {
+                        if (role == 'admin' || username == 'admin')
+                            flag = true;
+                    });
+                    if (flag) {
+                        const query = { // findByID
+                            '_id': `${id}`
+                        };
+
+                        const nuId = await this.db.fieldRead(query, 0, 1, 'username');
+                        if (nuId.length == 0) {
+                            return Boom.notFound();
+                        } else {
+                            await this.db.delete(nuId);
+                            return {
+                                message: 'Usuario deletado com sucesso'
+                            };
+                        }
+                    } else {
+                        return Boom.unauthorized();
+                    }
+
+                } catch(error) {
+                    console.error('Error at User Delete', error);
+                    return Boom.internal();
+                }
+            }
+        }
+    }
+
 } // AuthRoutes END
 
 // Quem for usar AuthRoutes precisa saber de todos os metodos

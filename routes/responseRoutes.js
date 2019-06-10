@@ -153,6 +153,8 @@ class ResponseRoutes extends BaseRoute {
                         data
                     } = request.payload
 
+                    console.log("data: ", data);
+
                     // title = title.toLowerCase()
                     // const [titulo] = await this.db.read({
                     //     title: title // Boa pratica sempre colocar minusculo o username

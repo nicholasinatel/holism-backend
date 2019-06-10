@@ -82,9 +82,21 @@ const modelFormSchema = new Mongoose.Schema({
         ref: 'authentication',
         required: true
     },
-    completed: {
-        type: Boolean,
+    /**
+     * * 0 Bloqueado
+     * * 1 Fazendo
+     * * 2 Atrasado
+     * * 3 Completo
+     */
+    status: {
+        type: Number,
         required: true
+    },
+    tempoEstimado: {
+        type: Date
+    },
+    tempoUtilizado: {
+        type: Date
     }
 }, options)
 

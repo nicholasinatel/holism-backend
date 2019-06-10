@@ -53,7 +53,8 @@ class ImportRoutes extends BaseRoute {
                         permission_write: Joi.array().min(1).items(Joi.string()).default(['admin', 'gui123', 'fifi24']),
                         completed: Joi.bool().default(false),
                         creator: Joi.string().min(1).default('admin'),
-                        project: Joi.string().min(24).max(24).default('222222222222222222222222')
+                        project: Joi.string().min(24).max(24).default('222222222222222222222222'),
+                        tempoCompleto: Joi.date().default('2002-12-08 22:00:00.000')
                     }
                 } // validate end
             }, // config end
@@ -69,7 +70,8 @@ class ImportRoutes extends BaseRoute {
                         permission_write,
                         completed,
                         creator,
-                        project
+                        project,
+                        tempoCompleto
                     } = request.payload
                     // Check if Last Form Is Correct and then make import
                     // Get Flow Object
@@ -102,7 +104,8 @@ class ImportRoutes extends BaseRoute {
                         completed: completed,
                         starter_form: dados_flow.starter_form,
                         creator: creator,
-                        project: project
+                        project: project,
+                        tempoCompleto: tempoCompleto
                     }
                     // Create New Flow
                     const new_flow = await this.dbFlow.create(import_flow)
@@ -123,7 +126,9 @@ class ImportRoutes extends BaseRoute {
                             permission: dados_starter_form.permission,
                             secret: dados_starter_form.secret,
                             creator: dados_starter_form.creator,
-                            completed: dados_starter_form.completed
+                            status: dados_starter_form.status,
+                            tempoEstimado: dados_starter_form.tempoEstimado,
+                            tempoUtilizado: dados_starter_form.tempoUtilizado
                         }
                         // Create New Starter_Form
                         let new_form = await this.dbForm.create(starter_form)
@@ -154,7 +159,9 @@ class ImportRoutes extends BaseRoute {
                                     permission: dados_nu_form.permission,
                                     secret: dados_nu_form.secret,
                                     creator: dados_nu_form.creator,
-                                    completed: dados_nu_form.completed
+                                    status: dados_nu_form.status,
+                                    tempoEstimado: dados_nu_form.tempoEstimado,
+                                    tempoUtilizado: dados_nu_form.tempoUtilizado
                                 }
                                 // Create New Form
                                 let nu_form_2 = await this.dbForm.create(nu_form_1)

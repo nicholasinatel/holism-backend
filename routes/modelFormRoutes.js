@@ -112,7 +112,8 @@ class FormRoutes extends BaseRoute {
                         limit: Joi.number().integer().default(10),
                         search: Joi.allow(),
                         mode: Joi.number().integer().default(0).max(4),
-                        username: Joi.string().default('admin')
+                        username: Joi.string().default('admin'),
+                        roles: Joi.array().min(1).items(Joi.string()).default(['dev'])
                     } // query end
                 } // validate end
             },
@@ -123,18 +124,20 @@ class FormRoutes extends BaseRoute {
                         limit,
                         search,
                         mode,
-                        username
+                        username,
+                        roles
                     } = request.query
 
-                    const query = await QueryHelper.queryFormSelecter(search, mode)
+                    roles.push(username);
+
+                    const query = await QueryHelper.queryFormSelecter(search, mode);
 
                     if (mode == 3) {
-                        console.log('query: ', query)
-                        return this.db.joinRead(query, 'flow', username, 'form')
+                        return this.db.joinRead(query, 'flow', roles, 'form')
                     } else if (mode == 4) {
-                        return this.db.joinRead(query, 'flow', username, 'form-4')
+                        return this.db.joinRead(query, 'flow', roles, 'form-4')
                     } else {
-                        return this.db.readPermission(query, skip, limit, username, 'form')
+                        return this.db.readPermission(query, skip, limit, roles, 'form')
                     }
                 } catch (error) {
                     console.error('Server Internal Error: ', error)
@@ -178,7 +181,13 @@ class FormRoutes extends BaseRoute {
                 > <b>secret</b>: <b>true</b> Or <b>false</b> <br>\
                 > <b>creator</b>: <b>username</b> do criador <br>\
                 > <b>permission</b>: Array de strings com usernameS e roleS de <b>quem pode responder o form</b> <br>\
-                > <b>completed</b>: <b>true</b> Or <b>false</b> <br>\
+                > <b>status</b>:  <br>\
+                0: Bloqueado <br>\
+                1: Fazendo <br>\
+                2: Atrasado <br>\
+                3: Feito <br>\
+                > <b>tempoEstimado</b>: Data e Hora para termino do form <br>\
+                > <b>tempoUtilizado</b>: Data e Hora em que o form foi marcado como status = feito <br>\
                 ------------------------------------------------------------------------------------------------------------------------<br>\
                 <b>Importante:</b> <br>\
                 Em data.sections.rows.controls.<b>componentType</b><br>\
@@ -196,14 +205,16 @@ class FormRoutes extends BaseRoute {
                     },
                     payload: {
                         title: Joi.string().required().min(3).max(100),
-                        step_forward: Joi.string().min(24).max(24).default('ffffffffffffffffffffffff'),
-                        step_backward: Joi.string().min(24).max(24).default('000000000000000000000000'),
+                        step_forward: Joi.array().min(1).items(Joi.string()).default(['ffffffffffffffffffffffff']),                                                    
+                        step_backward: Joi.array().min(1).items(Joi.string()).default(['000000000000000000000000']),
                         flow: Joi.string().min(24).max(24).default('111111111111111111111111'),
                         data: Joi.allow().default(CREATE_DEFAULT.data),
                         permission: Joi.array().min(1).items(Joi.string()).default(['admin', 'gui123', 'fifi24']),
                         secret: Joi.boolean().default(false),
                         creator: Joi.string().min(1).default('admin'),
-                        completed: Joi.boolean().default(false)
+                        status: Joi.number().integer().max(3).min(0).default(0), /*  */
+                        tempoEstimado: Joi.date().default('2002-12-08 22:00:00.000'),
+                        tempoUtilizado: Joi.date().default('2002-12-08 22:00:00.000')
                     }
                 } // validate end
             }, // config end
@@ -218,8 +229,16 @@ class FormRoutes extends BaseRoute {
                         permission,
                         secret,
                         creator,
-                        completed
+                        status,
+                        tempoEstimado,
+                        tempoUtilizado
                     } = request.payload
+
+                    // console.log("request.payload: ", request.payload);
+
+                    if(status == 3){
+                        tempoUtilizado = Date.now('pt-BR');
+                    }
 
                     const {
                         mode
@@ -235,7 +254,9 @@ class FormRoutes extends BaseRoute {
                             permission,
                             secret,
                             creator,
-                            completed
+                            status,
+                            tempoEstimado,
+                            tempoUtilizado                        
                         });
 
                         await this.dbFlow.update(flow, {
@@ -257,7 +278,9 @@ class FormRoutes extends BaseRoute {
                             permission,
                             secret,
                             creator,
-                            completed
+                            status,
+                            tempoEstimado,
+                            tempoUtilizado    
                         })
 
                         const update_result = await this.db.update(step_backward, {
@@ -280,7 +303,9 @@ class FormRoutes extends BaseRoute {
                             permission,
                             secret,
                             creator,
-                            completed
+                            status,
+                            tempoEstimado,
+                            tempoUtilizado    
                         })
                         const update_result1 = await this.db.update(step_backward, {
                             step_forward: result._id
@@ -305,7 +330,7 @@ class FormRoutes extends BaseRoute {
 
     update() {
         return {
-            path: '/model_form/{id}/{username}',
+            path: '/model_form/{id}/{username}/{roles}',
             method: 'PATCH',
             config: {
                 tags: ['api'],
@@ -331,7 +356,13 @@ class FormRoutes extends BaseRoute {
                 > <b>secret</b>: <b>true</b> Or <b>false</b> <br>\
                 > <b>creator</b>: <b>username</b> do criador <br>\
                 > <b>permission</b>: Array de strings com usernameS e roleS de <b>quem pode responder o form</b> <br>\
-                > <b>completed</b>: <b>true</b> Or <b>false</b> <br>\
+                > <b>status</b>:  <br>\
+                0: Nao pode fazer ainda <br>\
+                1: Esperando para ser feito <br>\
+                2: Atrasado <br>\
+                3: Feito <br>\
+                > <b>tempoEstimado</b>: Data e Hora para termino do form <br>\
+                > <b>tempoUtilizado</b>: Data e Hora em que o form foi marcado como status = feito <br>\
                 ------------------------------------------------------------------------------------------------------------------------<br>\
                 <b>Importante:</b> <br>\
                 Em data.sections.rows.controls.<b>componentType</b><br>\
@@ -344,11 +375,12 @@ class FormRoutes extends BaseRoute {
                 validate: {
                     headers,
                     params: {
-                        id: Joi.string().required(),
-                        username: Joi.string().required()
+                        id: Joi.string().min(24).max(24).required(),
+                        username: Joi.string().required(),
+                        roles: Joi.array().min(1).items(Joi.string()).default(['dev'])
                     },
                     payload: {
-                        title: Joi.string().required().min(3).max(100),
+                        title: Joi.string().required().min(3).max(25),
                         step_forward: Joi.array().min(1).items(Joi.string()).default(['ffffffffffffffffffffffff']),
                         step_backward: Joi.array().min(1).items(Joi.string()).default(['000000000000000000000000']),
                         flow: Joi.string().min(24).max(24).default('111111111111111111111111'),
@@ -356,7 +388,9 @@ class FormRoutes extends BaseRoute {
                         permission: Joi.array().min(1).items(Joi.string()).default(['admin', 'gui123', 'fifi24']),
                         secret: Joi.boolean().default(false),
                         creator: Joi.string().min(1).default('admin'),
-                        completed: Joi.boolean().default(false)
+                        status: Joi.number().integer().max(3).min(0).default(0),
+                        tempoEstimado: Joi.date().default('2002-12-08 22:00:00.000'),
+                        tempoUtilizado: Joi.date().default('2002-12-08 22:00:00.000')
                     }
                 } // validate end
             }, // config end
@@ -364,32 +398,43 @@ class FormRoutes extends BaseRoute {
                 try {
                     const {
                         id,
-                        username
-                    } = request.params
+                        username,
+                        roles
+                    } = request.params;
 
                     const {
                         payload
-                    } = request
+                    } = request;
+
+                    if(payload.status === 3) {
+                        payload.tempoUtilizado = Date.now();
+                    }
+
+                    roles.push(username);
 
                     const query = { // findByID
                         '_id': `${id}`
-                    }
-                    const nuId = await this.db.writePermission(query, 0, 1, username, 'form')
+                    };
+
+                    const nuId = await this.db.writePermission(query, 0, 1, roles, 'form');
+                    
                     if (nuId.length == 0) {
-                        return Boom.unauthorized()
+                        return Boom.unauthorized();
                     } else {
                         // FORMAT FOR UPDATE
-                        const dadosString = JSON.stringify(payload)
-                        const dados = JSON.parse(dadosString)
-                        const result = await this.db.update(nuId[0]._id, dados)
-                        if (result.nModified !== 1) return Boom.preconditionFailed('ID não encontrado ou arquivo sem modificações')
+                        const dadosString = JSON.stringify(payload);
+                        const dados = JSON.parse(dadosString);
+                        const result = await this.db.update(nuId[0]._id, dados);
+                        
+                        if (result.nModified !== 1) return Boom.preconditionFailed('ID não encontrado ou arquivo sem modificações');
+                        
                         return {
                             message: 'Form atualizado com sucesso'
-                        }
+                        };
                     }
                 } catch (error) {
-                    console.error('Error at Form Update', error)
-                    return Boom.internal()
+                    console.error('Error at Form Update', error);
+                    return Boom.internal();
                 }
             }
         }
@@ -397,7 +442,7 @@ class FormRoutes extends BaseRoute {
 
     delete() {
         return {
-            path: '/model_form/{id}/{username}',
+            path: '/model_form/{id}/{username}/{roles}',
             method: 'DELETE',
             config: {
                 tags: ['api'],
@@ -413,7 +458,8 @@ class FormRoutes extends BaseRoute {
                     failAction,
                     params: {
                         id: Joi.string().min(24).max(24).required(),
-                        username: Joi.string().required()
+                        username: Joi.string().required(),
+                        roles: Joi.array().min(1).items(Joi.string()).default(['dev'])
                     }
                 } // validate end
             }, // config end
@@ -421,12 +467,17 @@ class FormRoutes extends BaseRoute {
                 try {
                     const {
                         id,
-                        username
-                    } = request.params
+                        username,
+                        roles
+                    } = request.params;
+
                     const query = { // findByID
                         '_id': `${id}`
-                    }
-                    const nuId = await this.db.writePermission(query, 0, 1, username, 'form')
+                    };
+
+                    roles.push(username);
+
+                    const nuId = await this.db.writePermission(query, 0, 1, roles, 'form');
 
                     if (nuId.length == 0) {
                         return Boom.unauthorized()
@@ -491,7 +542,7 @@ class FormRoutes extends BaseRoute {
                             return Boom.preconditionFailed('ID nao encontrado no banco')
                         return {
                             message: 'Form removido com sucesso'
-                        }
+                        };
                     }
                 } catch (error) {
                     console.error('Error at Form Delete', error)

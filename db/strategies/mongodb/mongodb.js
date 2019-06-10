@@ -66,12 +66,12 @@ class MongoDB extends ICrud {
         return this._schema.find(item).skip(skip).limit(limit)
     }
 
-    writePermission(item, skip, limit, username, type) {
+    writePermission(item, skip, limit, roles, type) {
         if (type === 'flow') {
             return this._schema.find({
                 $and: [item,
                     {
-                        permission_write: username
+                        permission_write: {$in: roles}
                     }
                 ]
             }).skip(skip).limit(limit)
@@ -79,7 +79,7 @@ class MongoDB extends ICrud {
             return this._schema.find({
                 $and: [item,
                     {
-                        permission: username
+                        permission: {$in: roles}
                     }
                 ]
             }).skip(skip).limit(limit)
@@ -87,19 +87,19 @@ class MongoDB extends ICrud {
             return this._schema.find({
                 $and: [item,
                     {
-                        creator: username
+                        creator: roles
                     }
                 ]
             }).skip(skip).limit(limit)
         }
-
     }
-    readPermission(item, skip, limit, username, type) {
+
+    readPermission(item, skip, limit, roles, type) {
         if (type === 'form') {
             return this._schema.find({
                 $and: [item,
                     {
-                        permission: username
+                        permission: {$in: roles}
                     }
                 ]
             }).skip(skip).limit(limit)
@@ -107,7 +107,7 @@ class MongoDB extends ICrud {
             return this._schema.find({
                 $and: [item,
                     {
-                        permission_read: username
+                        permission_read: {$in: roles}
                     }
                 ]
             }).skip(skip).limit(limit)
@@ -115,19 +115,19 @@ class MongoDB extends ICrud {
             return this._schema.find({
                 $and: [item,
                     {
-                        creator: username
+                        creator: roles
                     }
                 ]
             }).skip(skip).limit(limit)
         }
     }
 
-    joinRead(item, join, username, type) {
+    joinRead(item, join, roles, type) {
         if (type === 'form') {
             return this._schema.find({
                 $and: [item,
                     {
-                        permission: username
+                        permission: {$in: roles}
                     }
                 ]
             }).populate(join, '-password')
@@ -137,7 +137,7 @@ class MongoDB extends ICrud {
                         _id: item._id
                     },
                     {
-                        permission: username
+                        permission: {$in: roles}
                     },
                     {
                         flow: item.flow

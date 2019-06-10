@@ -13,7 +13,7 @@ let app = {} // server receiver
 
 // Global Variables
 var global = {
-    username: '',
+    username: "",
     userID: 0,
     projectID: 0,
     flowID: 0,
