@@ -66,7 +66,7 @@ class AuthRoutes extends BaseRoute {
                     // console.log("query: ", query)
                     // https://stackoverflow.com/questions/4260308/getting-the-objects-property-name
                     if (mode != 3) {
-                        return this.db.fieldRead(query, skip, limit, 'username')
+                        return this.db.fieldRead(query, skip, limit, 'username + role')
                     } else {
                         return this.db.read(query, skip, limit)
                     }

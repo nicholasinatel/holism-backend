@@ -205,7 +205,7 @@ class FlowRoutes extends BaseRoute {
                         starter_form: Joi.string().min(24).max(24).default('000000000000000000000000'),
                         creator: Joi.string().min(1).default('admin'),
                         project: Joi.string().min(24).max(24).default('222222222222222222222222'),
-                        tempoCompleto: Joi.date().default('2002-12-08 22:00:00.000')
+                        tempoCompleto: Joi.date().default('2002-12-08')
                     }
                 } // validate end
             }, // config end

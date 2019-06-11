@@ -187,6 +187,7 @@ class FormRoutes extends BaseRoute {
                 2: Atrasado <br>\
                 3: Feito <br>\
                 > <b>tempoEstimado</b>: Data e Hora para termino do form <br>\
+                > <b>tempoInicial</b>: Data e Hora para termino do form <br>\
                 > <b>tempoUtilizado</b>: Data e Hora em que o form foi marcado como status = feito <br>\
                 ------------------------------------------------------------------------------------------------------------------------<br>\
                 <b>Importante:</b> <br>\
@@ -212,9 +213,10 @@ class FormRoutes extends BaseRoute {
                         permission: Joi.array().min(1).items(Joi.string()).default(['admin', 'gui123', 'fifi24']),
                         secret: Joi.boolean().default(false),
                         creator: Joi.string().min(1).default('admin'),
-                        status: Joi.number().integer().max(3).min(0).default(0), /*  */
-                        tempoEstimado: Joi.date().default('2002-12-08 22:00:00.000'),
-                        tempoUtilizado: Joi.date().default('2002-12-08 22:00:00.000')
+                        status: Joi.number().integer().max(3).min(0).default(0), 
+                        tempoEstimado: Joi.date().default('2002-12-08'),
+                        tempoInicial: Joi.date().default('2002-12-08'),
+                        tempoUtilizado: Joi.date().default('2002-12-08')
                     }
                 } // validate end
             }, // config end
@@ -231,6 +233,7 @@ class FormRoutes extends BaseRoute {
                         creator,
                         status,
                         tempoEstimado,
+                        tempoInicial,
                         tempoUtilizado
                     } = request.payload
 
@@ -238,7 +241,8 @@ class FormRoutes extends BaseRoute {
 
                     if(status == 3){
                         tempoUtilizado = Date.now('pt-BR');
-                    }
+                    } 
+                    
 
                     const {
                         mode
@@ -256,12 +260,16 @@ class FormRoutes extends BaseRoute {
                             creator,
                             status,
                             tempoEstimado,
-                            tempoUtilizado                        
+                            tempoInicial,
+                            tempoUtilizado
                         });
 
                         await this.dbFlow.update(flow, {
                             starter_form: result._id
                         });
+
+                        if(status === 1)
+                            await this.db.update(result._id, {tempoInicial: result.createdAt});
 
                         return {
                             message: 'Form criado com sucesso',
@@ -307,10 +315,10 @@ class FormRoutes extends BaseRoute {
                             tempoEstimado,
                             tempoUtilizado    
                         })
-                        const update_result1 = await this.db.update(step_backward, {
+                        await this.db.update(step_backward, {
                             step_forward: result._id
                         })
-                        const update_result2 = await this.db.update(step_forward, {
+                        await this.db.update(step_forward, {
                             step_backward: result._id
                         })
 
@@ -362,6 +370,7 @@ class FormRoutes extends BaseRoute {
                 2: Atrasado <br>\
                 3: Feito <br>\
                 > <b>tempoEstimado</b>: Data e Hora para termino do form <br>\
+                > <b>tempoInicial</b>: Data e Hora para termino do form <br>\
                 > <b>tempoUtilizado</b>: Data e Hora em que o form foi marcado como status = feito <br>\
                 ------------------------------------------------------------------------------------------------------------------------<br>\
                 <b>Importante:</b> <br>\
@@ -389,8 +398,9 @@ class FormRoutes extends BaseRoute {
                         secret: Joi.boolean().default(false),
                         creator: Joi.string().min(1).default('admin'),
                         status: Joi.number().integer().max(3).min(0).default(0),
-                        tempoEstimado: Joi.date().default('2002-12-08 22:00:00.000'),
-                        tempoUtilizado: Joi.date().default('2002-12-08 22:00:00.000')
+                        tempoEstimado: Joi.date().default('2002-12-08'),
+                        tempoInicial: Joi.date().default('2002-12-08'),
+                        tempoUtilizado: Joi.date().default('2002-12-08')
                     }
                 } // validate end
             }, // config end
@@ -406,9 +416,7 @@ class FormRoutes extends BaseRoute {
                         payload
                     } = request;
 
-                    if(payload.status === 3) {
-                        payload.tempoUtilizado = Date.now();
-                    }
+                    
 
                     roles.push(username);
 
@@ -417,6 +425,16 @@ class FormRoutes extends BaseRoute {
                     };
 
                     const nuId = await this.db.writePermission(query, 0, 1, roles, 'form');
+
+                    if(nuId[0].status == 0 && payload.status == 1){
+                        payload.tempoInicial = Date.now('pt-BR');
+                    }
+
+
+                    if(payload.status === 3 && nuId[0].status != 3) {
+                        payload.tempoUtilizado = Date.now('pt-BR');
+                    }
+                    
                     
                     if (nuId.length == 0) {
                         return Boom.unauthorized();

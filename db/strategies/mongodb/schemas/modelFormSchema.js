@@ -95,6 +95,9 @@ const modelFormSchema = new Mongoose.Schema({
     tempoEstimado: {
         type: Date
     },
+    tempoInicial: {
+        type: Date
+    },
     tempoUtilizado: {
         type: Date
     }
