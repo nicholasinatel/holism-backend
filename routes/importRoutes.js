@@ -1,6 +1,7 @@
-const BaseRoute = require('./base/baseRoute')
-const Joi = require('joi')
-const Boom = require('boom')
+const BaseRoute = require('./base/baseRoute');
+const Help = require('../helpers/importHelper');
+const Joi = require('joi');
+const Boom = require('boom');
 const failAction = (request, headers, error) => {
     throw error;
 }
@@ -19,7 +20,7 @@ class ImportRoutes extends BaseRoute {
     }
     import() {
         return {
-            path: '/import/{id}',
+            path: '/import/{id}/{username}/{roles}',
             method: 'POST',
             config: {
                 tags: ['api'],
@@ -45,7 +46,9 @@ class ImportRoutes extends BaseRoute {
                     failAction,
                     headers,
                     params: {
-                        id: Joi.string().required()
+                        id: Joi.string().required(),
+                        username: Joi.string().required(),
+                        roles: Joi.array().min(1).items(Joi.string()).default(['dev'])
                     },
                     payload: {
                         title: Joi.string().required().min(3).max(100),
@@ -62,7 +65,9 @@ class ImportRoutes extends BaseRoute {
                 try {
                     // Read Flow Id
                     const {
-                        id
+                        id,
+                        username,
+                        roles
                     } = request.params
                     let {
                         title,
@@ -73,18 +78,24 @@ class ImportRoutes extends BaseRoute {
                         project,
                         tempoCompleto
                     } = request.payload
-                    // Check if Last Form Is Correct and then make import
-                    // Get Flow Object
+
+                    roles.push(username);
+
+                    const help = new Help();
+                    /**
+                     *  * Check if Last Form Is Correct and then make import
+                     *  ! Get Flow Object
+                     */
                     const [dados_flow] = await this.dbFlow.read({
                         '_id': `${id}`
                     }, 0, 1)
                     // console.log("check_form: ", check_form)
                     if (dados_flow.starter_form.toString() != 'ffffffffffffffffffffffff') {
-                        let count = 0
-                        let stepIdCheck = dados_flow.starter_form
+                        let count = 0;
+                        let stepIdCheck = dados_flow.starter_form;
                         let [check_form] = await this.dbForm.read({
                             '_id': `${stepIdCheck}`
-                        })
+                        });
                         do {
                             [check_form] = await this.dbForm.read({
                                 '_id': `${stepIdCheck}`
@@ -92,55 +103,54 @@ class ImportRoutes extends BaseRoute {
                             stepIdCheck = check_form.step_forward
                             count++
                             if (count > 99) {
-                                throw error
+                                throw error;
                             }
                         } while (stepIdCheck.toString() != 'ffffffffffffffffffffffff')
                     }
-                    // Delete _id, __v, createdAt, updatedAt
-                    const import_flow = {
-                        title: title,
-                        permission_read: permission_read,
-                        permission_write: permission_write,
-                        completed: completed,
-                        starter_form: dados_flow.starter_form,
-                        creator: creator,
-                        project: project,
-                        tempoCompleto: tempoCompleto
-                    }
-                    // Create New Flow
+                    
+                    /**
+                     * ! Delete _id, __v, createdAt, updatedAt
+                     * ! Create New Flow
+                     */
+                    const import_flow = help.delFlowDirty(request.payload, dados_flow.starter_form);
                     const new_flow = await this.dbFlow.create(import_flow)
+
                     // Get Starter_Form ID from Imported Flow                    
-                    // If != FFFFFFFFFFFF
                     if (import_flow.starter_form.toString() != 'ffffffffffffffffffffffff') {
                         // Get Form Object
                         const [dados_starter_form] = await this.dbForm.read({
                             '_id': `${import_flow.starter_form}`
                         })
-                        // Delete _id, __v, createdAt, updatedAt
-                        const starter_form = {
-                            title: dados_starter_form.title,
-                            step_forward: dados_starter_form.step_forward,
-                            step_backward: dados_starter_form.step_backward,
-                            flow: new_flow._id, //
-                            data: dados_starter_form.data,
-                            permission: dados_starter_form.permission,
-                            secret: dados_starter_form.secret,
-                            creator: dados_starter_form.creator,
-                            status: dados_starter_form.status,
-                            tempoEstimado: dados_starter_form.tempoEstimado,
-                            tempoUtilizado: dados_starter_form.tempoUtilizado
-                        }
-                        // Create New Starter_Form
-                        let new_form = await this.dbForm.create(starter_form)
-                        // Update New Flow
+
+                        /**
+                         * * Check Roles Vs Permission in starter form
+                         * ? https://stackoverflow.com/questions/12433604/how-can-i-find-matching-values-in-two-arrays
+                         */
+                        let ok = help.compareArrays(dados_starter_form.permission, roles);
+
+                        /**
+                         * ! Delete _id, __v, createdAt, updatedAt
+                         * ! Create New Starter_Form
+                         * ! Update New Flow
+                         */                        
+                        const starter_form = help.delFormDirty(dados_starter_form, new_flow._id);                        
+                        let new_form = await this.dbForm.create(starter_form)                        
                         new_flow.starter_form = new_form._id
                         await this.dbFlow.update(new_flow._id, new_flow)
-                        // Get step_forward ID from Starter_Form
-                        // If != FFFFFFFFFFFF
+
+                        /**
+                         * * Get Initial
+                         * ! step_forward 
+                         * ! ID from Starter_Form
+                         * ! step_backward
+                         */                   
                         let nuFid = new_form._id
                         let stepFid = new_form.step_forward
                         let stepBid = new_form._id
 
+                        /**
+                         * * Loop To Import All Remaining Forms
+                         */
                         do {
                             if (stepFid[0] != 'ffffffffffffffffffffffff') {
                                 // Get Form Object
@@ -161,6 +171,7 @@ class ImportRoutes extends BaseRoute {
                                     creator: dados_nu_form.creator,
                                     status: dados_nu_form.status,
                                     tempoEstimado: dados_nu_form.tempoEstimado,
+                                    tempoInicial: dados_starter_form.tempoInicial,
                                     tempoUtilizado: dados_nu_form.tempoUtilizado
                                 }
                                 // Create New Form
