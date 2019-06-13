@@ -83,7 +83,7 @@ class ImportRoutes extends BaseRoute {
 
                     const help = new Help();
                     /**
-                     *  * Check if Last Form Is Correct and then make import
+                     *  * Check if Starter Form Is Correct and then make import
                      *  ! Get Flow Object
                      */
                     const [dados_flow] = await this.dbFlow.read({
@@ -107,7 +107,7 @@ class ImportRoutes extends BaseRoute {
                             }
                         } while (stepIdCheck.toString() != 'ffffffffffffffffffffffff')
                     }
-                    
+
                     /**
                      * ! Delete _id, __v, createdAt, updatedAt
                      * ! Create New Flow
@@ -117,82 +117,218 @@ class ImportRoutes extends BaseRoute {
 
                     // Get Starter_Form ID from Imported Flow                    
                     if (import_flow.starter_form.toString() != 'ffffffffffffffffffffffff') {
-                        // Get Form Object
-                        const [dados_starter_form] = await this.dbForm.read({
+                        // Get 1st Form Object
+                        let [dados_starter_form] = await this.dbForm.read({
                             '_id': `${import_flow.starter_form}`
                         })
 
                         /**
                          * * Check Roles Vs Permission in starter form
-                         * ? https://stackoverflow.com/questions/12433604/how-can-i-find-matching-values-in-two-arrays
                          */
                         let ok = help.compareArrays(dados_starter_form.permission, roles);
 
-                        /**
-                         * ! Delete _id, __v, createdAt, updatedAt
-                         * ! Create New Starter_Form
-                         * ! Update New Flow
-                         */                        
-                        const starter_form = help.delFormDirty(dados_starter_form, new_flow._id);                        
-                        let new_form = await this.dbForm.create(starter_form)                        
-                        new_flow.starter_form = new_form._id
-                        await this.dbFlow.update(new_flow._id, new_flow)
+                        console.log("ok: ", ok);
+                        console.log("dados_starter_form.permission: ", dados_starter_form.permission);
+                        console.log("roles: ", roles);
 
-                        /**
-                         * * Get Initial
-                         * ! step_forward 
-                         * ! ID from Starter_Form
-                         * ! step_backward
-                         */                   
-                        let nuFid = new_form._id
-                        let stepFid = new_form.step_forward
-                        let stepBid = new_form._id
 
-                        /**
-                         * * Loop To Import All Remaining Forms
-                         */
-                        do {
-                            if (stepFid[0] != 'ffffffffffffffffffffffff') {
-                                // Get Form Object
-                                let [dados_nu_form] = await this.dbForm.read({
-                                    '_id': `${stepFid}`
-                                })
+                        if (ok) {
+                            /**
+                             * ! Delete _id, __v, createdAt, updatedAt
+                             * ! Create New Starter_Form
+                             * ! Update New Flow
+                             */
+                            const starter_form = help.delFormDirty(dados_starter_form, new_flow._id);
+                            let new_form = await this.dbForm.create(starter_form)
+                            new_flow.starter_form = new_form._id
+                            await this.dbFlow.update(new_flow._id, new_flow)
 
-                                // Delete _id, __v, createdAt, updatedAt
-                                // Watchout for Step_Backward
-                                const nu_form_1 = {
-                                    title: dados_nu_form.title,
-                                    step_forward: dados_nu_form.step_forward,
-                                    step_backward: stepBid, // Atualiza Agora
-                                    flow: new_flow._id, //
-                                    data: dados_nu_form.data,
-                                    permission: dados_nu_form.permission,
-                                    secret: dados_nu_form.secret,
-                                    creator: dados_nu_form.creator,
-                                    status: dados_nu_form.status,
-                                    tempoEstimado: dados_nu_form.tempoEstimado,
-                                    tempoInicial: dados_starter_form.tempoInicial,
-                                    tempoUtilizado: dados_nu_form.tempoUtilizado
+                            /**
+                             * * Get Initial
+                             * ! step_forward 
+                             * ! ID from Starter_Form
+                             * ! step_backward
+                             */
+                            let nuFid = new_form._id
+                            let stepFid = new_form.step_forward
+                            let stepBid = new_form._id
+
+                            do {
+                                /**
+                                 * * Loop To Import All Remaining Forms
+                                 */
+                                if (stepFid[0] != 'ffffffffffffffffffffffff') {
+                                    /**
+                                     * * Get Form Object
+                                     * ! Delete _id, __v, createdAt, updatedAt
+                                     * ! Watchout for Step_Backward
+                                     * * Create nu_form_2
+                                     * ? Update Recursive Variables
+                                     * * Get Previous Form Object
+                                     * ! Update Previous Form
+                                     * TODO: Old Update
+                                     */
+                                    let [dados_nu_form] = await this.dbForm.read({
+                                        '_id': `${stepFid}`
+                                    })
+
+                                    let okLoop = help.compareArrays(dados_nu_form.permission, roles);
+                                    /**
+                                     * * LOOP FOR PERMISSIONS
+                                     * TODO: If not permitted Jump to next form
+                                     */
+                                    while (okLoop == false && dados_nu_form.step_forward != 'ffffffffffffffffffffffff') {
+                                        [dados_nu_form] = await this.dbForm.read({
+                                            '_id': `${dados_nu_form.step_forward}`
+                                        })
+
+                                        stepFid = dados_nu_form.step_forward;
+
+                                        okLoop = help.compareArrays(dados_nu_form.permission, roles);
+                                    }
+
+                                    if (okLoop === false && dados_nu_form.step_forward == 'ffffffffffffffffffffffff') {
+                                        await this.dbForm.update(stepBid, {
+                                            step_forward: 'ffffffffffffffffffffffff'
+                                        });
+                                        stepFid = dados_nu_form.step_forward;
+                                    }
+
+                                    if (okLoop) {
+                                        const nu_form_1 = help.newForm1(dados_nu_form, new_flow._id, stepBid);
+                                        let nu_form_2 = await this.dbForm.create(nu_form_1)
+                                        stepFid = nu_form_2.step_forward
+                                        stepBid = nu_form_2._id
+
+                                        let [dados_old_form] = await this.dbForm.read({
+                                            '_id': `${nuFid}`
+                                        })
+
+                                        nuFid = dados_old_form._id
+
+                                        await this.dbForm.update(nuFid, {
+                                            step_forward: nu_form_2._id
+                                        })
+
+                                        /**
+                                         * * Set nuFid to the newest form 
+                                         */
+                                        nuFid = nu_form_2._id
+                                        okLoop = false;
+                                    }
                                 }
-                                // Create New Form
-                                let nu_form_2 = await this.dbForm.create(nu_form_1)
-                                // Update Recursive Variables
-                                stepFid = nu_form_2.step_forward
-                                stepBid = nu_form_2._id
+                            } while (stepFid.toString() != 'ffffffffffffffffffffffff' || stepFid == undefined)
 
-                                // Get Previous Form Object
-                                let [dados_old_form] = await this.dbForm.read({
-                                    '_id': `${nuFid}`
-                                })
-                                // Update Previous Form
-                                nuFid = dados_old_form._id
-                                let old_update = await this.dbForm.update(nuFid, {
-                                    step_forward: nu_form_2._id
-                                })
-                                // Set nuFid to the newest form
-                                nuFid = nu_form_2._id
+
+                        } else {
+                            /**
+                             * TODO: Go to next form and verify because the 1st is wrong
+                             */
+
+                             console.log("ok 1 falhou - OK");
+                            let [new_dados_starter_form] = await this.dbForm.read({
+                                '_id': `${dados_starter_form.step_forward}`
+                            });
+
+                            /**
+                             * * Check Roles Vs Permission in starter form
+                             * ? https://stackoverflow.com/questions/12433604/how-can-i-find-matching-values-in-two-arrays
+                             */
+                            let ok2 = help.compareArrays(new_dados_starter_form.permission, roles);
+
+                            if (ok2) {
+                                console.log("ok 2 - OK");
+                                /**
+                                 * * Loop To Import All Remaining Forms
+                                 */
+                                /**
+                                 * ! Delete _id, __v, createdAt, updatedAt
+                                 * ! Create New Starter_Form
+                                 * ! Update New Flow
+                                 */
+                                const starter_form = help.delFormDirty(new_dados_starter_form, new_flow._id);
+                                let new_form = await this.dbForm.create(starter_form)
+                                await this.dbForm.update(new_form._id,{step_backward: '000000000000000000000000'});
+                                new_flow.starter_form = new_form._id
+                                await this.dbFlow.update(new_flow._id, new_flow)
+
+                                /**
+                                 * * Get Initial
+                                 * ! step_forward 
+                                 * ! ID from Starter_Form
+                                 * ! step_backward
+                                 */
+                                let nuFid = new_form._id
+                                let stepFid = new_form.step_forward
+                                let stepBid = new_form._id
+
+                                do {
+                                    /**
+                                     * * Loop To Import All Remaining Forms
+                                     */
+                                    if (stepFid[0] != 'ffffffffffffffffffffffff') {
+                                        /**
+                                         * * Get Form Object
+                                         * ! Delete _id, __v, createdAt, updatedAt
+                                         * ! Watchout for Step_Backward
+                                         * * Create nu_form_2
+                                         * ? Update Recursive Variables
+                                         * * Get Previous Form Object
+                                         * ! Update Previous Form
+                                         * TODO: Old Update
+                                         */
+                                        let [dados_nu_form] = await this.dbForm.read({
+                                            '_id': `${stepFid}`
+                                        })
+
+                                        let okLoop = help.compareArrays(dados_nu_form.permission, roles);
+                                        /**
+                                         * * LOOP FOR PERMISSIONS
+                                         * TODO: If not permitted Jump to next form
+                                         */
+                                        while (okLoop == false && dados_nu_form.step_forward != 'ffffffffffffffffffffffff') {
+                                            [dados_nu_form] = await this.dbForm.read({
+                                                '_id': `${dados_nu_form.step_forward}`
+                                            })
+
+                                            stepFid = dados_nu_form.step_forward;
+
+                                            okLoop = help.compareArrays(dados_nu_form.permission, roles);
+                                        }
+
+                                        if (okLoop === false && dados_nu_form.step_forward == 'ffffffffffffffffffffffff') {
+                                            await this.dbForm.update(stepBid, {
+                                                step_forward: 'ffffffffffffffffffffffff'
+                                            });
+                                            stepFid = dados_nu_form.step_forward;
+                                        }
+
+                                        if (okLoop) {
+                                            const nu_form_1 = help.newForm1(dados_nu_form, new_flow._id, stepBid);
+                                            let nu_form_2 = await this.dbForm.create(nu_form_1)
+                                            stepFid = nu_form_2.step_forward
+                                            stepBid = nu_form_2._id
+
+                                            let [dados_old_form] = await this.dbForm.read({
+                                                '_id': `${nuFid}`
+                                            })
+
+                                            nuFid = dados_old_form._id
+
+                                            await this.dbForm.update(nuFid, {
+                                                step_forward: nu_form_2._id
+                                            })
+
+                                            /**
+                                             * * Set nuFid to the newest form 
+                                             */
+                                            nuFid = nu_form_2._id
+                                            okLoop = false;
+                                        }
+                                    }
+                                } while (stepFid.toString() != 'ffffffffffffffffffffffff' || stepFid == undefined)
                             }
-                        } while (stepFid.toString() != 'ffffffffffffffffffffffff' || stepFid == undefined)
+                        }
                     }
                     return {
                         message: 'Import feito com sucesso',
