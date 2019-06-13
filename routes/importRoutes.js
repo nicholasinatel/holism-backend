@@ -89,7 +89,7 @@ class ImportRoutes extends BaseRoute {
                     const [dados_flow] = await this.dbFlow.read({
                         '_id': `${id}`
                     }, 0, 1)
-                    // console.log("check_form: ", check_form)
+                    
                     if (dados_flow.starter_form.toString() != 'ffffffffffffffffffffffff') {
                         let count = 0;
                         let stepIdCheck = dados_flow.starter_form;
@@ -127,9 +127,9 @@ class ImportRoutes extends BaseRoute {
                          */
                         let ok = help.compareArrays(dados_starter_form.permission, roles);
 
-                        console.log("ok: ", ok);
-                        console.log("dados_starter_form.permission: ", dados_starter_form.permission);
-                        console.log("roles: ", roles);
+                        
+                        
+                        
 
 
                         if (ok) {
@@ -225,7 +225,7 @@ class ImportRoutes extends BaseRoute {
                              * TODO: Go to next form and verify because the 1st is wrong
                              */
 
-                             console.log("ok 1 falhou - OK");
+                             
                             let [new_dados_starter_form] = await this.dbForm.read({
                                 '_id': `${dados_starter_form.step_forward}`
                             });
@@ -236,8 +236,15 @@ class ImportRoutes extends BaseRoute {
                              */
                             let ok2 = help.compareArrays(new_dados_starter_form.permission, roles);
 
+                            while (ok2 == false && new_dados_starter_form.step_forward != 'ffffffffffffffffffffffff') {
+                                [new_dados_starter_form] = await this.dbForm.read({
+                                    '_id': new_dados_starter_form.step_forward
+                                });
+                                ok2 = help.compareArrays(new_dados_starter_form.permission, roles);
+                            }
+
                             if (ok2) {
-                                console.log("ok 2 - OK");
+                                
                                 /**
                                  * * Loop To Import All Remaining Forms
                                  */
