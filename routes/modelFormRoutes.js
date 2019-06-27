@@ -206,14 +206,14 @@ class FormRoutes extends BaseRoute {
                     },
                     payload: {
                         title: Joi.string().required().min(3).max(100),
-                        step_forward: Joi.array().min(1).items(Joi.string()).default(['ffffffffffffffffffffffff']),                                                    
+                        step_forward: Joi.array().min(1).items(Joi.string()).default(['ffffffffffffffffffffffff']),
                         step_backward: Joi.array().min(1).items(Joi.string()).default(['000000000000000000000000']),
                         flow: Joi.string().min(24).max(24).default('111111111111111111111111'),
                         data: Joi.allow().default(CREATE_DEFAULT.data),
                         permission: Joi.array().min(1).items(Joi.string()).default(['admin', 'gui123', 'fifi24']),
                         secret: Joi.boolean().default(false),
                         creator: Joi.string().min(1).default('admin'),
-                        status: Joi.number().integer().max(3).min(0).default(0), 
+                        status: Joi.number().integer().max(3).min(0).default(0),
                         tempoEstimado: Joi.date().default('2002-12-08'),
                         tempoInicial: Joi.date().default('2002-12-08'),
                         tempoUtilizado: Joi.date().default('2002-12-08')
@@ -239,10 +239,10 @@ class FormRoutes extends BaseRoute {
 
                     // console.log("request.payload: ", request.payload);
 
-                    if(status == 3){
+                    if (status == 3) {
                         tempoUtilizado = Date.now('pt-BR');
-                    } 
-                    
+                    }
+
 
                     const {
                         mode
@@ -268,8 +268,10 @@ class FormRoutes extends BaseRoute {
                             starter_form: result._id
                         });
 
-                        if(status === 1)
-                            await this.db.update(result._id, {tempoInicial: result.createdAt});
+                        if (status === 1)
+                            await this.db.update(result._id, {
+                                tempoInicial: result.createdAt
+                            });
 
                         return {
                             message: 'Form criado com sucesso',
@@ -288,7 +290,7 @@ class FormRoutes extends BaseRoute {
                             creator,
                             status,
                             tempoEstimado,
-                            tempoUtilizado    
+                            tempoUtilizado
                         })
 
                         const update_result = await this.db.update(step_backward, {
@@ -313,7 +315,7 @@ class FormRoutes extends BaseRoute {
                             creator,
                             status,
                             tempoEstimado,
-                            tempoUtilizado    
+                            tempoUtilizado
                         })
                         await this.db.update(step_backward, {
                             step_forward: result._id
@@ -416,7 +418,7 @@ class FormRoutes extends BaseRoute {
                         payload
                     } = request;
 
-                    
+
 
                     roles.push(username);
 
@@ -426,16 +428,16 @@ class FormRoutes extends BaseRoute {
 
                     const nuId = await this.db.writePermission(query, 0, 1, roles, 'form');
 
-                    if(nuId[0].status == 0 && payload.status == 1){
+                    if (nuId[0].status == 0 && payload.status == 1) {
                         payload.tempoInicial = Date.now('pt-BR');
                     }
 
 
-                    if(payload.status === 3 && nuId[0].status != 3) {
+                    if (payload.status === 3 && nuId[0].status != 3) {
                         payload.tempoUtilizado = Date.now('pt-BR');
                     }
-                    
-                    
+
+
                     if (nuId.length == 0) {
                         return Boom.unauthorized();
                     } else {
@@ -443,9 +445,9 @@ class FormRoutes extends BaseRoute {
                         const dadosString = JSON.stringify(payload);
                         const dados = JSON.parse(dadosString);
                         const result = await this.db.update(nuId[0]._id, dados);
-                        
+
                         if (result.nModified !== 1) return Boom.preconditionFailed('ID não encontrado ou arquivo sem modificações');
-                        
+
                         return {
                             message: 'Form atualizado com sucesso'
                         };
@@ -523,7 +525,7 @@ class FormRoutes extends BaseRoute {
                             await this.dbFlow.update(nuId[0].flow, {
                                 starter_form: nuId[0].step_forward
                             });
-                        } else if(nuId[0].step_forward[0] == 'ffffffffffffffffffffffff' && nuId[0].step_backward[0] == '000000000000000000000000'){
+                        } else if (nuId[0].step_forward[0] == 'ffffffffffffffffffffffff' && nuId[0].step_backward[0] == '000000000000000000000000') {
                             /**
                              * * Single Form Condition
                              * TODO: UPDATE starter_form from FLOW
