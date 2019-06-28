@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 /* eslint-disable no-console */
 /* eslint-disable no-underscore-dangle */
 const Joi = require('joi');
@@ -111,6 +112,7 @@ class ImportRoutes extends BaseRoute {
               stepIdCheck = checkForm.step_forward;
               count += 1;
               if (count > 99) {
+                // eslint-disable-next-line no-undef
                 throw error;
               }
             } while (stepIdCheck.toString() !== 'ffffffffffffffffffffffff');

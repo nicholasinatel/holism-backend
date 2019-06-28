@@ -1,7 +1,9 @@
 module.exports = {
   env: {
     browser: false,
-    es6: true
+    es6: true,
+    node: true,
+    mocha: true
   },
   extends: ['airbnb-base', 'prettier'],
   globals: {
@@ -14,6 +16,7 @@ module.exports = {
   },
   rules: {
     indent: [0, 1],
-    'comma-dangle': ['error', 'only-multiline']
+    'comma-dangle': ['error', 'only-multiline'],
+    'no-underscore-dangle': 'off'
   }
 };
