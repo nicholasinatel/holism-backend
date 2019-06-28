@@ -94,13 +94,7 @@ class ImportRoutes extends BaseRoute {
            *  * Check if Starter Form Is Correct and then make import
            *  ! Get Flow Object
            */
-          const [dadosFlow] = await this.dbFlow.read(
-            {
-              _id: `${id}`
-            },
-            0,
-            1
-          );
+          const [dadosFlow] = await this.dbFlow.read({ _id: `${id}` }, 0, 1);
 
           if (
             dadosFlow.starter_form.toString() !== 'ffffffffffffffffffffffff'
@@ -130,6 +124,7 @@ class ImportRoutes extends BaseRoute {
             request.payload,
             dadosFlow.starter_form
           );
+
           const newFlow = await this.dbFlow.create(importFlow);
 
           // Get Starter_Form ID from Imported Flow
@@ -179,18 +174,18 @@ class ImportRoutes extends BaseRoute {
                    * * Get Form Object
                    * ! Delete _id, __v, createdAt, updatedAt
                    * ! Watchout for Step_Backward
-                   * * Create nuForm2
+                   * * Create newForm2
                    * ? Update Recursive Variables
                    * * Get Previous Form Object
                    * ! Update Previous Form
                    * TODO: Old Update
                    */
-                  let [dadosNuForm] = await this.dbForm.read({
+                  let [dadosNewForm] = await this.dbForm.read({
                     _id: `${stepFid}`
                   });
 
                   let okLoop = help.compareArrays(
-                    dadosNuForm.permission,
+                    dadosNewForm.permission,
                     roles
                   );
                   /**
@@ -199,36 +194,36 @@ class ImportRoutes extends BaseRoute {
                    */
                   while (
                     okLoop === false &&
-                    dadosNuForm.step_forward !== 'ffffffffffffffffffffffff'
+                    dadosNewForm.step_forward !== 'ffffffffffffffffffffffff'
                   ) {
-                    [dadosNuForm] = await this.dbForm.read({
-                      _id: `${dadosNuForm.step_forward}`
+                    [dadosNewForm] = await this.dbForm.read({
+                      _id: `${dadosNewForm.step_forward}`
                     });
 
-                    stepFid = dadosNuForm.step_forward;
+                    stepFid = dadosNewForm.step_forward;
 
-                    okLoop = help.compareArrays(dadosNuForm.permission, roles);
+                    okLoop = help.compareArrays(dadosNewForm.permission, roles);
                   }
 
                   if (
                     okLoop === false &&
-                    dadosNuForm.step_forward === 'ffffffffffffffffffffffff'
+                    dadosNewForm.step_forward === 'ffffffffffffffffffffffff'
                   ) {
                     await this.dbForm.update(stepBid, {
                       step_forward: 'ffffffffffffffffffffffff'
                     });
-                    stepFid = dadosNuForm.step_forward;
+                    stepFid = dadosNewForm.step_forward;
                   }
 
                   if (okLoop) {
-                    const nuForm1 = help.newForm1(
-                      dadosNuForm,
+                    const newForm1 = help.newForm1(
+                      dadosNewForm,
                       newFlow._id,
                       stepBid
                     );
-                    const nuForm2 = await this.dbForm.create(nuForm1);
-                    stepFid = nuForm2.step_forward;
-                    stepBid = nuForm2._id;
+                    const newForm2 = await this.dbForm.create(newForm1);
+                    stepFid = newForm2.step_forward;
+                    stepBid = newForm2._id;
 
                     const [dadosOldForm] = await this.dbForm.read({
                       _id: `${nuFid}`
@@ -237,13 +232,13 @@ class ImportRoutes extends BaseRoute {
                     nuFid = dadosOldForm._id;
 
                     await this.dbForm.update(nuFid, {
-                      step_forward: nuForm2._id
+                      step_forward: newForm2._id
                     });
 
                     /**
                      * * Set nuFid to the newest form
                      */
-                    nuFid = nuForm2._id;
+                    nuFid = newForm2._id;
                     okLoop = false;
                   }
                 }
@@ -318,18 +313,18 @@ class ImportRoutes extends BaseRoute {
                      * * Get Form Object
                      * ! Delete _id, __v, createdAt, updatedAt
                      * ! Watchout for Step_Backward
-                     * * Create nuForm2
+                     * * Create newForm2
                      * ? Update Recursive Variables
                      * * Get Previous Form Object
                      * ! Update Previous Form
                      * TODO: Old Update
                      */
-                    let [dadosNuForm] = await this.dbForm.read({
+                    let [dadosNewForm] = await this.dbForm.read({
                       _id: `${stepFid}`
                     });
 
                     let okLoop = help.compareArrays(
-                      dadosNuForm.permission,
+                      dadosNewForm.permission,
                       roles
                     );
                     /**
@@ -338,39 +333,41 @@ class ImportRoutes extends BaseRoute {
                      */
                     while (
                       okLoop === false &&
-                      dadosNuForm.step_forward !== 'ffffffffffffffffffffffff'
+                      // eslint-disable-next-line eqeqeq
+                      dadosNewForm.step_forward[0] != 'ffffffffffffffffffffffff'
                     ) {
-                      [dadosNuForm] = await this.dbForm.read({
-                        _id: `${dadosNuForm.step_forward}`
+                      [dadosNewForm] = await this.dbForm.read({
+                        _id: `${dadosNewForm.step_forward}`
                       });
 
-                      stepFid = dadosNuForm.step_forward;
+                      stepFid = dadosNewForm.step_forward;
 
                       okLoop = help.compareArrays(
-                        dadosNuForm.permission,
+                        dadosNewForm.permission,
                         roles
                       );
                     }
 
                     if (
                       okLoop === false &&
-                      dadosNuForm.step_forward === 'ffffffffffffffffffffffff'
+                      // eslint-disable-next-line eqeqeq
+                      dadosNewForm.step_forward == 'ffffffffffffffffffffffff'
                     ) {
                       await this.dbForm.update(stepBid, {
                         step_forward: 'ffffffffffffffffffffffff'
                       });
-                      stepFid = dadosNuForm.step_forward;
+                      stepFid = dadosNewForm.step_forward;
                     }
 
                     if (okLoop) {
-                      const nuForm1 = help.newForm1(
-                        dadosNuForm,
+                      const newForm1 = help.newForm1(
+                        dadosNewForm,
                         newFlow._id,
                         stepBid
                       );
-                      const nuForm2 = await this.dbForm.create(nuForm1);
-                      stepFid = nuForm2.step_forward;
-                      stepBid = nuForm2._id;
+                      const newForm2 = await this.dbForm.create(newForm1);
+                      stepFid = newForm2.step_forward;
+                      stepBid = newForm2._id;
 
                       const [dadosOldForm] = await this.dbForm.read({
                         _id: `${nuFid}`
@@ -379,13 +376,13 @@ class ImportRoutes extends BaseRoute {
                       nuFid = dadosOldForm._id;
 
                       await this.dbForm.update(nuFid, {
-                        step_forward: nuForm2._id
+                        step_forward: newForm2._id
                       });
 
                       /**
                        * * Set nuFid to the newest form
                        */
-                      nuFid = nuForm2._id;
+                      nuFid = newForm2._id;
                       okLoop = false;
                     }
                   }
