@@ -1,38 +1,49 @@
-const Mongoose = require('mongoose')
+const Mongoose = require('mongoose');
+
 const options = {
-    timestamps: true
-}
-const modelFormSchema = new Mongoose.Schema({
+  timestamps: true
+};
+const modelFormSchema = new Mongoose.Schema(
+  {
     title: {
-        type: String,
-        required: true
+      type: String,
+      required: true
     },
-    step_forward: [{
+    step_forward: [
+      {
         type: Mongoose.Schema.Types.ObjectId,
         ref: 'modelForm',
         required: true
-    }],
-    step_backward: [{
+      }
+    ],
+    step_backward: [
+      {
         type: Mongoose.Schema.Types.ObjectId,
         ref: 'modelForm',
         required: true
-    }],
-    flow: { // Father Flow
-        type: Mongoose.Schema.Types.ObjectId,
-        ref: 'modelFlow',
-        required: true
+      }
+    ],
+    flow: {
+      // Father Flow
+      type: Mongoose.Schema.Types.ObjectId,
+      ref: 'modelFlow',
+      required: true
     },
-    data: [{
-        sections: [{
+    data: [
+      {
+        sections: [
+          {
             name: String,
             label: String,
             clientKey: String,
             order: Number,
-            rows: [{
+            rows: [
+              {
                 name: String,
                 label: String,
                 order: Number,
-                controls: [{
+                controls: [
+                  {
                     componentType: String, // Mudança
                     name: String,
                     fieldName: String,
@@ -58,29 +69,35 @@ const modelFormSchema = new Mongoose.Schema({
                     dataOptions: [Mongoose.Schema.Types.Mixed], // OK
                     ajaxDataUrl: String,
                     isChecked: Boolean
-                }]
-            }],
+                  }
+                ]
+              }
+            ],
             labelPosition: String,
             isDynamic: Boolean,
             minInstance: Number,
             maxInstance: Number,
             instances: [Mongoose.Schema.Types.Mixed] // OK
-        }],
+          }
+        ],
         layout: String,
         _uniqueId: Number // From Form Builder
-    }],
-    permission: { // users & personas QUEM PODE RESPONDER!
-        type: Array,
-        required: true
+      }
+    ],
+    permission: {
+      // users & personas QUEM PODE RESPONDER!
+      type: Array,
+      required: true
     },
-    secret: { // Info Sensivel - Soh quem tem Admin OU Preencheu o Form
-        type: Boolean,
-        required: true
+    secret: {
+      // Info Sensivel - Soh quem tem Admin OU Preencheu o Form
+      type: Boolean,
+      required: true
     },
     creator: {
-        type: String,
-        ref: 'authentication',
-        required: true
+      type: String,
+      ref: 'authentication',
+      required: true
     },
     /**
      * * 0 Bloqueado
@@ -89,18 +106,20 @@ const modelFormSchema = new Mongoose.Schema({
      * * 3 Completo
      */
     status: {
-        type: Number,
-        required: true
+      type: Number,
+      required: true
     },
     tempoEstimado: {
-        type: Date
+      type: Date
     },
     tempoInicial: {
-        type: Date
+      type: Date
     },
     tempoUtilizado: {
-        type: Date
+      type: Date
     }
-}, options)
+  },
+  options
+);
 
-module.exports = Mongoose.model('modelForm', modelFormSchema)
+module.exports = Mongoose.model('modelForm', modelFormSchema);

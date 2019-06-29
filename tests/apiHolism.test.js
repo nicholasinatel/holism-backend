@@ -45,6 +45,7 @@ describe.only('Test Suite Starting Application', function testSuite() {
     global.userID = dados[0]._id;
     global.username = dados[0].username;
   });
+
   it('Create Project With Username', async function createProject() {
     const response = await FUNC.project(MOCK, mode, global, app, headers);
     // eslint-disable-next-line prefer-destructuring
@@ -61,10 +62,11 @@ describe.only('Test Suite Starting Application', function testSuite() {
       app,
       headers
     );
+
     // eslint-disable-next-line prefer-destructuring
     global = response.global;
-    const status = response.statusCode;
-    assert.deepEqual(status, 200);
+    const { statusCode } = response;
+    assert.deepEqual(statusCode, 200);
   });
 
   it('Create Form #1 With UserNAME AND FlowID and Update FlowFather', async function createForm1() {
@@ -75,7 +77,6 @@ describe.only('Test Suite Starting Application', function testSuite() {
       form: response.statusObject.form,
       flow: response.statusObject.flow
     };
-    console.log({ status });
     assert.deepEqual(status.form, 200);
     assert.deepEqual(status.flow, 200);
   });
