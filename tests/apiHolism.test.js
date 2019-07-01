@@ -20,7 +20,9 @@ let global = {
   flowID: 0,
   form1ID: 0,
   form2ID: 0,
-  responseID: 0
+  form3ID: 0,
+  responseID: 0,
+  importFlowID: 0
 };
 // Query Variables
 const mode = {
@@ -94,6 +96,19 @@ describe.only('Test Suite Starting Application', function testSuite() {
     assert.deepEqual(status.formUpdate, 200);
   });
 
+  it('Create Form #3 With UserNAME AND FlowID and Update previous Form', async function createForm3() {
+    const response = await FUNC.form3(MOCK, mode, global, app, headers);
+    // eslint-disable-next-line prefer-destructuring
+    global = response.global;
+    const status = {
+      formCreate: response.statusObject.formCreate,
+      formUpdate: response.statusObject.formUpdate
+    };
+
+    assert.deepEqual(status.formCreate, 200);
+    assert.deepEqual(status.formUpdate, 200);
+  });
+
   it('Create Response With UserNAME AND FormID', async function createResponse() {
     const response = await FUNC.response(MOCK, mode, global, app, headers);
     // eslint-disable-next-line prefer-destructuring
@@ -106,6 +121,12 @@ describe.only('Test Suite Starting Application', function testSuite() {
     const response = await FUNC.import(MOCK, mode, global, app, headers);
     // global = response.global
     // const status = response.statusCode
-    assert.deepEqual(response, 200);
+    global.importFlowID = response.id;
+    assert.deepEqual(response.statusCode, 200);
+  });
+
+  it('Read Imported Forms', async function readImported() {
+    const response = await FUNC.readImport(MOCK, mode, global, app, headers);
+    // console.log({ response });
   });
 });

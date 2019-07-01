@@ -37,22 +37,22 @@ const FORM_BUILDER_DATA = [
                 isAjax: false,
                 dataOptions: ["test"],
                 ajaxDataUrl: "test",
-                isChecked: false,
-              },
-            ],
-          },
+                isChecked: false
+              }
+            ]
+          }
         ],
         labelPosition: "top",
         isDynamic: false,
         minInstance: 1,
         maxInstance: 0,
-        instances: ["test"],
-      },
+        instances: ["test"]
+      }
     ],
     layout: "tab",
-    _uniqueId: 0.8719504664016076,
-  },
-]
+    _uniqueId: 0.8719504664016076
+  }
+];
 
 const RESPONSE_1 = [
   {
@@ -93,34 +93,34 @@ const RESPONSE_1 = [
                 isAjax: false,
                 dataOptions: ["test"],
                 ajaxDataUrl: "test",
-                isChecked: false,
-              },
-            ],
-          },
+                isChecked: false
+              }
+            ]
+          }
         ],
         labelPosition: "top",
         isDynamic: false,
         minInstance: 1,
         maxInstance: 0,
-        instances: ["test"],
-      },
+        instances: ["test"]
+      }
     ],
     layout: "tab",
-    _uniqueId: 0.8719504664016076,
-  },
-]
+    _uniqueId: 0.8719504664016076
+  }
+];
 
 const MOCK = {
   // DB Variables
   MOCK_USER: {
     username: "nicholas",
     password: "123",
-    roles: ["dev"],
+    roles: ["dev"]
   },
   MOCK_PROJECT: {
     title: "Node.js and ECMAScript 6 para iniciantes",
     completed: false,
-    creator: "nicholas",
+    creator: "nicholas"
   },
   MOCK_FLOW: {
     title: "Flow de Ementa",
@@ -130,7 +130,7 @@ const MOCK = {
     starter_form: "000000000000000000000000",
     creator: "nicholas",
     project: "111111111111111111111111",
-    tempoCompleto: "2002-12-08",
+    tempoCompleto: "2002-12-08"
   },
   MOCK_FORM_1: {
     title: "Form Modulo 1",
@@ -144,7 +144,7 @@ const MOCK = {
     status: 0,
     tempoEstimado: "2002-12-08",
     tempoUtilizado: "2002-12-08",
-    tempoInicial: "2002-12-08",
+    tempoInicial: "2002-12-08"
   },
   MOCK_FORM_2: {
     title: "Form Modulo 2",
@@ -158,13 +158,27 @@ const MOCK = {
     status: 0,
     tempoEstimado: "2002-12-08",
     tempoUtilizado: "2002-12-08",
-    tempoInicial: "2002-12-08",
+    tempoInicial: "2002-12-08"
+  },
+  MOCK_FORM_3: {
+    title: "Form Modulo 3",
+    step_forward: ["ffffffffffffffffffffffff"],
+    step_backward: ["000000000000000000000000"],
+    flow: "111111111111111111111111",
+    data: FORM_BUILDER_DATA,
+    permission: ["admin", "gui123", "nicholas"],
+    secret: true,
+    creator: "nicholas",
+    status: 0,
+    tempoEstimado: "2002-12-08",
+    tempoUtilizado: "2002-12-08",
+    tempoInicial: "2002-12-08"
   },
   MOCK_RESPONSE_1: {
     model_form: "111111111111111111111111",
     user: "nicholas",
-    data: RESPONSE_1,
-  },
-}
+    data: RESPONSE_1
+  }
+};
 
-module.exports = MOCK
+module.exports = MOCK;

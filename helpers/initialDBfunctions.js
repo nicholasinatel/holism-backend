@@ -188,6 +188,65 @@ const DbFuncModule = {
       statusObject
     };
     return response;
+  }, // Create & Verify Form3 Async Function
+  async form3(MOCK, mode, global, app, headers) {
+    // Create With Step_Backward Set
+    const result = await app.inject({
+      method: "GET",
+      headers,
+      url: `/model_form?skip=0&limit=1&search=${
+        global.flowID
+      }&mode=3&username=${global.username}`
+    });
+    const array = JSON.parse(result.payload);
+    let { statusCode } = result;
+    if (array.length === 2) {
+      MOCK.MOCK_FORM_3.creator = global.username;
+      MOCK.MOCK_FORM_3.flow = global.flowID;
+      MOCK.MOCK_FORM_3.step_backward[0] = global.form2ID;
+      const newForm = await app.inject({
+        method: "POST",
+        headers,
+        url: "/model_form/1",
+        payload: MOCK.MOCK_FORM_3
+      });
+      const dados = JSON.parse(newForm.payload);
+      global.form3ID = dados._id;
+      ({ statusCode } = newForm);
+    } else {
+      global.form3ID = array[1]._id;
+    }
+    // Update step_forward previousForm
+    const result2update = await app.inject({
+      method: "GET",
+      headers,
+      url: `/model_form?skip=0&limit=1&search=${MOCK.MOCK_FORM_2.title}&mode=${
+        mode.title
+      }&username=${global.username}`
+    });
+    const [previousForm] = JSON.parse(result2update.payload);
+    previousForm.step_forward[0] = global.form2ID;
+    delete previousForm.createdAt;
+    delete previousForm.updatedAt;
+    delete previousForm.__v;
+    delete previousForm._id;
+    const updateResult = await app.inject({
+      method: "PATCH",
+      headers,
+      url: `/model_form/${global.form1ID}/${MOCK.MOCK_USER.username}/["dev"]`,
+      payload: previousForm
+    });
+    const updatePreviousForm = updateResult.statusCode;
+    // Return
+    const statusObject = {
+      formCreate: statusCode,
+      formUpdate: updatePreviousForm
+    };
+    const response = {
+      global,
+      statusObject
+    };
+    return response;
   },
   async response(MOCK, mode, global, app, headers) {
     const result = await app.inject({
@@ -226,7 +285,10 @@ const DbFuncModule = {
         mode.title
       }&username=${global.username}`
     });
+    let { statusCode } = result;
+
     const array = JSON.parse(result.payload);
+    let { _id } = array;
 
     delete array[0].starter_form;
     delete array[0].createdAt;
@@ -234,7 +296,6 @@ const DbFuncModule = {
     delete array[0].__v;
     delete array[0]._id;
 
-    let { statusCode } = result;
     if (array[0].title === MOCK.MOCK_FLOW.title && array.length === 1) {
       const imported = await app.inject({
         method: "POST",
@@ -242,10 +303,30 @@ const DbFuncModule = {
         url: `/import/${global.flowID}/${MOCK.MOCK_USER.username}/["dev"]`,
         payload: array[0]
       });
-      // const dados = JSON.parse(imported.payload);
       ({ statusCode } = imported);
+      const dados = JSON.parse(imported.payload);
+      ({ _id } = dados);
     }
-    return statusCode;
+    const response = { id: _id, statusCode };
+    return response;
+  },
+  async readImport(MOCK, mode, global, app, headers) {
+    const result = await app.inject({
+      method: "GET",
+      headers,
+      url: `/model_form?skip=0&limit=3&search=${
+        global.importFlowID
+      }&mode=3&username=${global.username}&roles=["dev"]`
+    });
+    console.log("global.importFlowID: ", global.importFlowID);
+    console.log("result.lenght: ", result.length);
+
+    if (result.length === 3) {
+      console.log("ok");
+      return result;
+    }
+
+    return result;
   }
 };
 

@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 /* eslint-disable no-console */
 const Joi = require('joi');
 const Boom = require('boom');
