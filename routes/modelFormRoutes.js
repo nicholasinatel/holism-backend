@@ -309,6 +309,12 @@ class FormRoutes extends BaseRoute {
               starter_form: result._id
             });
 
+            // TODO:Test this!
+            await this.db.update(
+              { _id: step_forward },
+              { step_backward: result._id }
+            );
+
             if (status === 1)
               await this.db.update(result._id, {
                 tempoInicial: result.createdAt
