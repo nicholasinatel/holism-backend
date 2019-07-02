@@ -586,7 +586,7 @@ class FormRoutes extends BaseRoute {
 
           let turnStatus = false;
 
-          console.log('nuId: ', nuId);
+          // console.log('nuId: ', nuId);
 
           if (nuId.length === 0) {
             return Boom.unauthorized();
@@ -661,8 +661,7 @@ class FormRoutes extends BaseRoute {
               step_backward: nuId.step_backward[0]
             });
             if (turnStatus) {
-              await this.db.update(nuId.step_backward[0], {
-                step_forward: nuId.step_forward[0],
+              await this.db.update(nuId.step_forward[0], {
                 status: 1
               });
             }

@@ -278,6 +278,9 @@ const DbFuncModule = {
     return response;
   },
   async import(MOCK, mode, global, app, headers) {
+    /**
+     * * Read Flow To Import
+     */
     const result = await app.inject({
       method: "GET",
       headers,
@@ -288,7 +291,16 @@ const DbFuncModule = {
     let { statusCode } = result;
 
     const array = JSON.parse(result.payload);
-    let { _id } = array;
+    let _id;
+
+    /**
+     * ? Flow Already Imported?
+     * if yes get the _id
+     */
+    if (array.length === 2) {
+      const [, importedFlow] = array;
+      ({ _id } = importedFlow);
+    }
 
     delete array[0].starter_form;
     delete array[0].createdAt;
@@ -296,6 +308,10 @@ const DbFuncModule = {
     delete array[0].__v;
     delete array[0]._id;
 
+    /**
+     * ! Flow Not Imported Yet
+     * Import and get the _id
+     */
     if (array[0].title === MOCK.MOCK_FLOW.title && array.length === 1) {
       const imported = await app.inject({
         method: "POST",
@@ -316,17 +332,65 @@ const DbFuncModule = {
       headers,
       url: `/model_form?skip=0&limit=3&search=${
         global.importFlowID
-      }&mode=3&username=${global.username}&roles=["dev"]`
+      }&mode=${3}&username=${global.username}&roles=["dev"]`
     });
-    console.log("global.importFlowID: ", global.importFlowID);
-    console.log("result.lenght: ", result.length);
 
-    if (result.length === 3) {
-      console.log("ok");
-      return result;
+    const dados = JSON.parse(result.payload);
+
+    /**
+     * * Return statusCode, and first and second forms to update and delete
+     */
+    if (dados.length === 3) {
+      [MOCK.MOCK_FORM_1] = dados;
+      MOCK.MOCK_FORM_1.flow = global.importFlowID;
+      const response = {
+        statusCode: 200,
+        firstFormId: dados[0]._id,
+        secondFormId: dados[1]._id
+      };
+      return response;
     }
 
-    return result;
+    return 500;
+  },
+  async updateFirstImpForm(MOCK, mode, global, app, headers) {
+    MOCK.MOCK_FORM_1.status = 3;
+    delete MOCK.MOCK_FORM_1.createdAt;
+    delete MOCK.MOCK_FORM_1.updatedAt;
+    delete MOCK.MOCK_FORM_1._id;
+    delete MOCK.MOCK_FORM_1.__v;
+
+    const result = await app.inject({
+      method: "PATCH",
+      headers,
+      url: `/model_form/${global.form2Update}/${
+        MOCK.MOCK_USER.username
+      }/["dev"]`,
+      payload: MOCK.MOCK_FORM_1
+    });
+
+    // const dados = JSON.parse(result.payload);
+    const { statusCode } = result;
+    return statusCode;
+  },
+  async deleteMiddleForm(MOCK, mode, global, app, headers) {
+    const result = await app.inject({
+      method: "DELETE",
+      headers,
+      url: `/model_form/${global.form2DelID}/${MOCK.MOCK_USER.username}/["dev"]`
+    });
+
+    const { statusCode } = result;
+    return statusCode;
+  },
+  async deleteAll(MOCK, mode, global, app, headers) {
+    const result = await app.inject({
+      method: "DELETE",
+      headers,
+      url: `/project/${global.projectID}/${MOCK.MOCK_USER.username}`
+    });
+    const { statusCode } = result;
+    return statusCode;
   }
 };
 

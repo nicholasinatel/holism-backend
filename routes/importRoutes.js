@@ -90,7 +90,7 @@ class ImportRoutes extends BaseRoute {
 
           roles.push(username);
 
-          const help = new Help();
+          // const help = new Help();
           /**
            *  * Check if Starter Form Is Correct and then make import
            *  ! Get Flow Object
@@ -122,7 +122,7 @@ class ImportRoutes extends BaseRoute {
            * ! Delete _id, __v, createdAt, updatedAt
            * ! Create New Flow
            */
-          const importFlow = help.delFlowDirty(
+          const importFlow = Help.delFlowDirty(
             request.payload,
             dadosFlow.starter_form
           );
@@ -141,7 +141,7 @@ class ImportRoutes extends BaseRoute {
             /**
              * * Check Roles Vs Permission in starter form
              */
-            const ok = help.compareArrays(dadosStarterForm.permission, roles);
+            const ok = Help.compareArrays(dadosStarterForm.permission, roles);
 
             if (ok) {
               /**
@@ -149,7 +149,7 @@ class ImportRoutes extends BaseRoute {
                * ! Create New Starter_Form
                * ! Update New Flow
                */
-              const starterForm = help.delFormDirty(
+              const starterForm = Help.delFormDirty(
                 dadosStarterForm,
                 newFlow._id
               );
@@ -186,7 +186,7 @@ class ImportRoutes extends BaseRoute {
                     _id: `${stepFid}`
                   });
 
-                  let okLoop = help.compareArrays(
+                  let okLoop = Help.compareArrays(
                     dadosNewForm.permission,
                     roles
                   );
@@ -204,7 +204,7 @@ class ImportRoutes extends BaseRoute {
 
                     stepFid = dadosNewForm.step_forward;
 
-                    okLoop = help.compareArrays(dadosNewForm.permission, roles);
+                    okLoop = Help.compareArrays(dadosNewForm.permission, roles);
                   }
 
                   if (
@@ -218,7 +218,7 @@ class ImportRoutes extends BaseRoute {
                   }
 
                   if (okLoop) {
-                    const newForm1 = help.newForm1(
+                    const newForm1 = Help.newForm1(
                       dadosNewForm,
                       newFlow._id,
                       stepBid
@@ -261,7 +261,7 @@ class ImportRoutes extends BaseRoute {
                * * Check Roles Vs Permission in starter form
                * ? https://stackoverflow.com/questions/12433604/how-can-i-find-matching-values-in-two-arrays
                */
-              let ok2 = help.compareArrays(
+              let ok2 = Help.compareArrays(
                 newDadosStarterForm.permission,
                 roles
               );
@@ -273,7 +273,7 @@ class ImportRoutes extends BaseRoute {
                 [newDadosStarterForm] = await this.dbForm.read({
                   _id: newDadosStarterForm.step_forward
                 });
-                ok2 = help.compareArrays(newDadosStarterForm.permission, roles);
+                ok2 = Help.compareArrays(newDadosStarterForm.permission, roles);
               }
 
               if (ok2) {
@@ -285,7 +285,7 @@ class ImportRoutes extends BaseRoute {
                  * ! Create New Starter_Form
                  * ! Update New Flow
                  */
-                const starterForm = help.delFormDirty(
+                const starterForm = Help.delFormDirty(
                   newDadosStarterForm,
                   newFlow._id
                 );
@@ -325,7 +325,7 @@ class ImportRoutes extends BaseRoute {
                       _id: `${stepFid}`
                     });
 
-                    let okLoop = help.compareArrays(
+                    let okLoop = Help.compareArrays(
                       dadosNewForm.permission,
                       roles
                     );
@@ -344,7 +344,7 @@ class ImportRoutes extends BaseRoute {
 
                       stepFid = dadosNewForm.step_forward;
 
-                      okLoop = help.compareArrays(
+                      okLoop = Help.compareArrays(
                         dadosNewForm.permission,
                         roles
                       );
@@ -362,7 +362,7 @@ class ImportRoutes extends BaseRoute {
                     }
 
                     if (okLoop) {
-                      const newForm1 = help.newForm1(
+                      const newForm1 = Help.newForm1(
                         dadosNewForm,
                         newFlow._id,
                         stepBid

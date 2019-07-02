@@ -22,7 +22,9 @@ let global = {
   form2ID: 0,
   form3ID: 0,
   responseID: 0,
-  importFlowID: 0
+  importFlowID: 0,
+  form2Update: 0,
+  form2DelID: 0
 };
 // Query Variables
 const mode = {
@@ -127,6 +129,40 @@ describe.only('Test Suite Starting Application', function testSuite() {
 
   it('Read Imported Forms', async function readImported() {
     const response = await FUNC.readImport(MOCK, mode, global, app, headers);
-    // console.log({ response });
+
+    const { statusCode, firstFormId, secondFormId } = response;
+    global.form2Update = firstFormId;
+    global.form2DelID = secondFormId;
+    assert.deepEqual(statusCode, 200);
+    assert.notEqual(firstFormId, undefined);
+  });
+
+  it('Update first imported form status', async function updateForm() {
+    const response = await FUNC.updateFirstImpForm(
+      MOCK,
+      mode,
+      global,
+      app,
+      headers
+    );
+
+    assert.deepEqual(response, 200);
+  });
+
+  it('Delete middle imported form and update automatically throw routes', async function deleteMidForm() {
+    const response = await FUNC.deleteMiddleForm(
+      MOCK,
+      mode,
+      global,
+      app,
+      headers
+    );
+
+    assert.deepEqual(response, 200);
+  });
+
+  it('Delete Project->Flow->Form->Responses', async function deleteAll() {
+    const response = await FUNC.deleteAll(MOCK, mode, global, app, headers);
+    assert.deepEqual(response, 200);
   });
 });

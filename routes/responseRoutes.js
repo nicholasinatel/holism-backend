@@ -1,6 +1,7 @@
-const BaseRoute = require('./base/baseRoute');
+/* eslint-disable no-console */
 const Joi = require('joi');
 const Boom = require('boom');
+const BaseRoute = require('./base/baseRoute');
 
 const failAction = (request, headers, error) => {
   throw error;
@@ -77,6 +78,7 @@ class ResponseRoutes extends BaseRoute {
     super();
     this.db = db;
   }
+
   list() {
     return {
       path: '/response',
@@ -85,15 +87,14 @@ class ResponseRoutes extends BaseRoute {
         tags: ['api'],
         description: 'Deve listar Response de um Determinado Model Form',
         notes:
-          'Fornecer somente o _id do <b>model_form</b> em que o response existe.<br> \
-                ------------------------------------------------------------------------------------------------------------------------<br>\
-                Retorna: Responses filhos do form.<br> \
-                & Form em questão. <br> \
-                ------------------------------------------------------------------------------------------------------------------------<br>\
-                ...',
+          'Fornecer somente o _id do <b>model_form</b> em que o response existe.<br> ' +
+          '------------------------------------------------------------------------------------------------------------------------<br>' +
+          'Retorna: Responses filhos do form.<br> ' +
+          '& Form em questão. <br> ' +
+          '------------------------------------------------------------------------------------------------------------------------<br>',
         validate: {
           headers,
-          failAction: failAction,
+          failAction,
           query: {
             search: Joi.string()
               .min(24)
@@ -102,7 +103,7 @@ class ResponseRoutes extends BaseRoute {
           } // query end
         } // validate end
       },
-      handler: async (request, headers) => {
+      handler: async request => {
         try {
           const { search } = request.query;
 
@@ -115,9 +116,9 @@ class ResponseRoutes extends BaseRoute {
           console.error('Server Internal Error: ', error);
           return Boom.internal();
         }
-      } //handler end
+      } // handler end
     }; // list return end
-  } //list end
+  } // list end
 
   create() {
     return {
@@ -127,24 +128,23 @@ class ResponseRoutes extends BaseRoute {
         tags: ['api'],
         description: 'Deve criar Responses vinculadas ao Form',
         notes:
-          'Os valores sugeridos estão determinados como default no body->Modelo->Example Value.<br>\
-                Enviar dado direto do data vindo do Form Builder.<br>\
-                ------------------------------------------------------------------------------------------------------------------------<br>\
-                <b>Importante-1:</b> <br>\
-                ------------------------------------------------------------------------------------------------------------------------<br>\
-                Passar atributo: <b>readonly</b> = <b>true</b><br>\
-                Todos os responses nao podem ser mais editados, essa vai ser a principal maneira de identifica-los.<br>\
-                ------------------------------------------------------------------------------------------------------------------------<br>\
-                <b>Importante-2:</b> <br>\
-                Em data.sections.rows.controls.<b>componentType</b><br>\
-                O equivalente no objeto do Form-Builder é <b>type</b><br>\
-                No entanto, a palavra type é reservada e não posso salvá-la no objeto.<br>\
-                Modificar o objeto antes de enviar <br>\
-                exemplo: <br>\
-                OBJETO_CORRETO.data.sections.rows.controls.<b>componentType</b> = OBJETO_ORIGINAL.data.sections.rows.controls.<b>componentType</b><br>\
-                Realizar o processo inverso quando receber os objetos.<br>\
-                Salvar <b>id retornado</b> após criação com sucesso em alguma variável pois será útil em breve. <br>\
-                ',
+          'Os valores sugeridos estão determinados como default no body->Modelo->Example Value.<br>' +
+          'Enviar dado direto do data vindo do Form Builder.<br>' +
+          '------------------------------------------------------------------------------------------------------------------------<br>' +
+          '<b>Importante-1:</b> <br>' +
+          '------------------------------------------------------------------------------------------------------------------------<br>' +
+          'Passar atributo: <b>readonly</b> = <b>true</b><br>' +
+          'Todos os responses nao podem ser mais editados, essa vai ser a principal maneira de identifica-los.<br>' +
+          '------------------------------------------------------------------------------------------------------------------------<br>' +
+          '<b>Importante-2:</b> <br>' +
+          'Em data.sections.rows.controls.<b>componentType</b><br>' +
+          'O equivalente no objeto do Form-Builder é <b>type</b><br>' +
+          'No entanto, a palavra type é reservada e não posso salvá-la no objeto.<br>' +
+          'Modificar o objeto antes de enviar <br>' +
+          'exemplo: <br>' +
+          'OBJETO_CORRETO.data.sections.rows.controls.<b>componentType</b> = OBJETO_ORIGINAL.data.sections.rows.controls.<b>componentType</b><br>' +
+          'Realizar o processo inverso quando receber os objetos.<br>' +
+          'Salvar <b>id retornado</b> após criação com sucesso em alguma variável pois será útil em breve. <br>',
         validate: {
           failAction,
           headers,
@@ -162,7 +162,8 @@ class ResponseRoutes extends BaseRoute {
       }, // config end
       handler: async request => {
         try {
-          let { model_form, user, data } = request.payload;
+          // eslint-disable-next-line camelcase
+          const { model_form, user, data } = request.payload;
 
           // title = title.toLowerCase()
           // const [titulo] = await this.db.read({
@@ -200,21 +201,20 @@ class ResponseRoutes extends BaseRoute {
         tags: ['api'],
         description: 'Deve atualizar uma <b>Response</b> por <b>_id</b>',
         notes:
-          'Necessário objeto <b>id válido</b>.<br>\
-                Exemplo Válido No Default <br> \
-                <b>Importante-1:</b> <br>\
-                ------------------------------------------------------------------------------------------------------------------------<br>\
-                Passar atributo: <b>readonly</b> = <b>true</b><br>\
-                Todos os responses nao podem ser mais editados, essa vai ser a principal maneira de identifica-los.<br>\
-                ------------------------------------------------------------------------------------------------------------------------<br>\
-                <b>Importante-2:</b> <br>\
-                Em data.sections.rows.controls.<b>componentType</b><br>\
-                O equivalente no objeto do Form-Builder é <b>type</b><br>\
-                No entanto, a palavra type é reservada e não posso salvá-la no objeto.<br>\
-                Então modificar o objeto antes de enviar, exemplo: <br>\
-                OBJETO_CORRETO.data.sections.rows.controls.<b>componentType</b> = OBJETO_ORIGINAL.data.sections.rows.controls.<b>componentType</b><br> \
-                Realizar o processo inverso quando receber os objetos.<br>\
-                ',
+          'Necessário objeto <b>id válido</b>.<br>' +
+          'Exemplo Válido No Default <br> ' +
+          '<b>Importante-1:</b> <br>' +
+          '------------------------------------------------------------------------------------------------------------------------<br>' +
+          'Passar atributo: <b>readonly</b> = <b>true</b><br>' +
+          'Todos os responses nao podem ser mais editados, essa vai ser a principal maneira de identifica-los.<br>' +
+          '------------------------------------------------------------------------------------------------------------------------<br>' +
+          '<b>Importante-2:</b> <br>' +
+          'Em data.sections.rows.controls.<b>componentType</b><br>' +
+          'O equivalente no objeto do Form-Builder é <b>type</b><br>' +
+          'No entanto, a palavra type é reservada e não posso salvá-la no objeto.<br>' +
+          'Então modificar o objeto antes de enviar, exemplo: <br>' +
+          'OBJETO_CORRETO.data.sections.rows.controls.<b>componentType</b> = OBJETO_ORIGINAL.data.sections.rows.controls.<b>componentType</b><br> ' +
+          'Realizar o processo inverso quando receber os objetos.<br>',
         validate: {
           headers,
           params: {

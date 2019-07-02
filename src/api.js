@@ -190,7 +190,9 @@ async function main() {
       new ImportRoute(contextFlow, contextForm),
       ImportRoute.methods()
     ),
-    ...mapRoutes(new UtilRoute(), UtilRoute.methods()),
+    // ...mapRoutes(new UtilRoute(), UtilRoute.methods()),
+    // https://eslint.org/docs/rules/class-methods-use-this
+    UtilRoute.coverage(),
     ...mapRoutes(new AuthRoute(JWT_SECRET, contextAuth), AuthRoute.methods())
   ]);
 

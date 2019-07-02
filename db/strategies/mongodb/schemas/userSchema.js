@@ -1,20 +1,26 @@
-const Mongoose = require('mongoose')
+const Mongoose = require('mongoose');
+
 const options = {
-    timestamps: true
-}
-const userSchema = new Mongoose.Schema({
+  timestamps: true
+};
+const userSchema = new Mongoose.Schema(
+  {
     username: {
-        type: String,
-        unique: true,
-        required: true
+      type: String,
+      unique: true,
+      required: true
     },
     password: {
-        type: String,
-        required: true
+      type: String,
+      required: true
     },
-    role: [{
+    role: [
+      {
         type: String,
         ref: 'authentication'
-    }]
-}, options)
-module.exports = Mongoose.model('authentication', userSchema)
+      }
+    ]
+  },
+  options
+);
+module.exports = Mongoose.model('authentication', userSchema);

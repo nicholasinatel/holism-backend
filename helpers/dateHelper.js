@@ -1,29 +1,29 @@
-const {
-    promisify
-} = require('util')
+const { promisify } = require('util');
 
-const DateNowAsync = promisify(DateNow)
+const DateNowAsync = promisify(DateNow);
 
 // TIMESTAMP GETTER
 // https://tecadmin.net/get-current-date-time-javascript/
 function DateNow(callback) {
-    let today = new Date();
+  const today = new Date();
 
-    let date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-    let time = (today.getHours() - 2) + ":" + today.getMinutes() + ":" + today.getSeconds();
-    let dateTime = date + ' ' + time;
+  const date = `${today.getFullYear()}-${today.getMonth() +
+    1}-${today.getDate()}`;
+  const time = `${today.getHours() -
+    2}:${today.getMinutes()}:${today.getSeconds()}`;
+  const dateTime = `${date} ${time}`;
 
-    const now = {
-        time: dateTime
-    }
+  const now = {
+    time: dateTime
+  };
 
-    return callback(null, now)
+  return callback(null, now);
 }
 
 class DateHandler {
-    static DateGetter() {
-        return DateNowAsync()
-    }
+  static DateGetter() {
+    return DateNowAsync();
+  }
 }
 
-module.exports = DateHandler
+module.exports = DateHandler;
