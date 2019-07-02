@@ -39,7 +39,7 @@ class ImportRoutes extends BaseRoute {
           'PRIMEIRO STEP_BACKWARD PRECISA SER 000000000000000000000000 <br>' +
           'SE ESTIVER ERRADO TEREMOS UM LOOP INFINITO NO SERVER!<br>' +
           '------------------------------------------------------------------------------------------------------------------------<br>' +
-          'Body <br>' +
+          'Body: <br>' +
           '> <b>title</b>: <br>' +
           '> <b>permission_read</b>: <br>' +
           '> <b>permission_write</b>: <br>' +
