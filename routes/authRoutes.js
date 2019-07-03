@@ -140,7 +140,7 @@ class AuthRoutes extends BaseRoute {
 
   register() {
     return {
-      path: '/register',
+      path: '/register/{username}/{roles}',
       method: 'POST',
       config: {
         auth: false, // rota nao passa pela autenticacao para poder obter o token
@@ -164,6 +164,14 @@ class AuthRoutes extends BaseRoute {
           '<b>estudante</b> <br>' +
           '<b>terceiro</b> <br>',
         validate: {
+          headers,
+          params: {
+            username: Joi.string().required(),
+            roles: Joi.array()
+              .min(1)
+              .items(Joi.string())
+              .default(['dev'])
+          },
           failAction,
           payload: {
             username: Joi.string().required(),
@@ -176,6 +184,8 @@ class AuthRoutes extends BaseRoute {
       }, // config end
       handler: async request => {
         const { username, password, role } = request.payload;
+        const useradmin = request.params.username;
+        const { roles } = request.params;
 
         // Validacao se o usuario existe no Banco
         const [usuario] = await this.db.read({
@@ -186,10 +196,15 @@ class AuthRoutes extends BaseRoute {
         if (usuario) {
           return Boom.conflict('Usuário informado já existe');
         }
-        const Register = new Reg(username, password, role);
-        const User = await Register.register();
-        await this.db.create(User);
-        return 200;
+        if (useradmin === 'admin' && roles[0] === 'master') {
+          const Register = new Reg(username, password, roles);
+          const User = await Register.register();
+          await this.db.create(User);
+          return 200;
+        }
+        if (useradmin !== 'admin' && roles[0] !== 'master') {
+          return Boom.unauthorized();
+        }
       } // handler end
     }; // return end
   } // register end
@@ -260,9 +275,7 @@ class AuthRoutes extends BaseRoute {
 
           let flag = false;
 
-          roles.forEach(role => {
-            if (role === 'admin' || username === 'admin') flag = true;
-          });
+          if (roles[0] === 'master' && username === 'admin') flag = true;
 
           if (flag) {
             const query = {
@@ -277,7 +290,16 @@ class AuthRoutes extends BaseRoute {
             // FORMAT FOR UPDATE
             const dadosString = JSON.stringify(payload);
             const dados = JSON.parse(dadosString);
-            const result = await this.db.update(nuId[0]._id, dados);
+
+            const Register = new Reg(
+              dados.username,
+              dados.password,
+              dados.role
+            );
+
+            const User = await Register.register();
+
+            const result = await this.db.update(nuId[0]._id, User);
             if (result.nModified !== 1)
               return Boom.preconditionFailed(
                 'ID não encontrado ou arquivo sem modificações'
@@ -331,9 +353,8 @@ class AuthRoutes extends BaseRoute {
 
           console.log('roles: ', roles);
 
-          roles.forEach(role => {
-            if (role === 'admin' || username === 'admin') flag = true;
-          });
+          if (roles[0] === 'master' && username === 'admin') flag = true;
+
           if (flag) {
             const query = {
               // findByID

@@ -136,9 +136,9 @@ async function main() {
   // Criacao da estrategia de autenticacao
   app.auth.strategy('jwt', 'jwt', {
     key: JWT_SECRET,
-    // options:{
-    //     expiresIn: 120
-    // },
+    options: {
+      expiresIn: '1h'
+    },
     // eslint-disable-next-line no-unused-vars
     validate: async (dado, request) => {
       const [result] = await contextAuth.read({
