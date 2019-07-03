@@ -51,11 +51,15 @@ npm run aws
 npm run prod
 ```
 
-## MongoDB
-
-....
-
 ## Deploy Heroku
+
+Em uso
+
+```
+git add .
+git commit
+git push heroku master
+```
 
 ## Deploy Automático
 
