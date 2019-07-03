@@ -55,6 +55,8 @@ npm run prod
 
 ....
 
+## Deploy Heroku
+
 ## Deploy Automático
 
 (Fora de uso, somente com AWS)

@@ -37,6 +37,8 @@ const mode = {
 // Test Suite
 describe.only('Test Suite Starting Application', function testSuite() {
   this.beforeAll(async () => {
+    this.timeout(10000000);
+    console.log('ok');
     app = await api;
 
     const result = await app.inject({
@@ -44,6 +46,7 @@ describe.only('Test Suite Starting Application', function testSuite() {
       headers,
       url: `/login?skip=0&limit=1&search=nicholas&mode=1`
     });
+
     // const statusCode = result.statusCode;
     const dados = JSON.parse(result.payload);
     global.userID = dados[0]._id;

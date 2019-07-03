@@ -30,7 +30,11 @@ const env = process.env.NODE_ENV || 'dev';
  * Teste
  */
 ok(
-  env === 'prod' || env === 'dev' || env === 'gui' || env === 'heroku',
+  env === 'prod' ||
+    env === 'dev' ||
+    env === 'gui' ||
+    env === 'heroku' ||
+    env === 'testheroku',
   'error at env, heroku config:set NODE_ENV=AMBIENTE_DESEJADO'
 );
 
@@ -116,8 +120,8 @@ async function main() {
   // Configure Documentation
   const swaggerOptions = {
     info: {
-      title: 'API Holismo - #Dagora - MVP v1.1',
-      version: 'v1.1'
+      title: 'API Holismo - #Dagora - v2.0',
+      version: 'v2.0'
     },
     lang: 'pt'
   };
