@@ -267,4 +267,4 @@ Após execução dos testes e com o server online navegar até **18.231.115.112:
 
 ## Funcionamento Interno da API
 
-![ERD](utilities/ERD_HolismoSchemasV2.jpeg)
+![ERD](ERD_HolismoSchemasV2.jpeg)
