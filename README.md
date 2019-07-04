@@ -61,6 +61,12 @@ git commit
 git push heroku master
 ```
 
+Caso queira ver logs de erros:
+
+```
+heroku logs --tail
+```
+
 ## Deploy Automático
 
 (Fora de uso, somente com AWS)

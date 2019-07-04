@@ -11,7 +11,8 @@
     "dev": "cross-env NODE_ENV=dev npm t",
     "prod": "cross-env NODE_ENV=prod npm t",
     "aws": "NODE_ENV=prod forever start src/api.js",
-    "start": "cross-env NODE_ENV=heroku node src/api.js"
+    "start": "cross-env NODE_ENV=heroku node src/api.js",
+    "gui": "cross-env NODE_ENV=gui node src/api.js"
   },
   "engines": {
     "node": "10.16.0"
